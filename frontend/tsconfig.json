@@ -2,7 +2,7 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "rootDir": "./src",
+    // "rootDir": "./src",
     "outDir": "./dist",
     "removeComments": true,
     "noEmitOnError": true,
