@@ -1,17 +1,10 @@
-// express stuff
 const express = require("express");
-const bodyParser = require('body-parser')
 const db = require('./queries')
 const app = express();
 const PORT = 4000;
 
-app.use(bodyParser.json())
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-)
-
+// get request on the root directory, displays a list of projects in json format on the broswer
+// written by: Max and Louis
 app.get('/', async (req, res) => {
   try {
       const results = await db.get_projects();
@@ -21,6 +14,9 @@ app.get('/', async (req, res) => {
   }
 })
 
+// get request at url /projects/project_id, displays projects with project_id=project_id from
+// elephantsql in json format on the broswer
+// written by: Max and Louis
 app.get('/projects/:project_id', async (req, res) => {
   try {
       const results = await db.get_project(parseInt(req.params.project_id));
