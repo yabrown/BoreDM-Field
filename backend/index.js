@@ -1,39 +1,33 @@
+// express stuff
 const express = require("express");
-
+const bodyParser = require('body-parser')
+const db = require('./queries')
 const app = express();
-
 const PORT = 4000;
 
-// const text = 
-app.listen(PORT, () => console.log('Server listening on port ${PORT}'));
+app.use(bodyParser.json())
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+)
 
-var pg = require('pg');
-
-var conString = "postgres://iuskfbrh:6tDvSAVRHoYJm7TqtLjlXeb2o-mjH6sz@batyr.db.elephantsql.com/iuskfbrh"
-var client = new pg.Client(conString);
-client.connect(function(err) {
-  if(err) {
-    return console.error('could not connect to postgres', err);
+app.get('/', async (req, res) => {
+  try {
+      const results = await db.get_projects();
+      res.json(results);
+  } catch (err) {
+      console.log(err);
   }
-  
-  get_projects();
-  get_project(1);
-});
+})
 
-function get_projects() {
-  client.query('SELECT * FROM "public"."projects"', function(err, result) {
-    if(err) {
-      return console.error('error running query', err);
-    }
-    console.log(result.rows);
-  });
-}
+app.get('/projects/:project_id', async (req, res) => {
+  try {
+      const results = await db.get_project(parseInt(req.params.project_id));
+      res.json(results);
+  } catch (err) {
+      console.log(err);
+  }
+})
 
-function get_project(project_id) {
-  client.query('SELECT * FROM "public"."projects" WHERE project_id=' + project_id, function(err, result) {
-    if(err) {
-      return console.error('error running query', err);
-    }
-    console.log(result.rows);
-  });
-}
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
