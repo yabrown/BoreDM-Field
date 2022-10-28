@@ -12,18 +12,22 @@ app.use(
   })
 )
 
-app.get('/', (request, response) => {
-  response.json({ info: 'Node.js, Express, and Postgres API' })
+app.get('/', async (req, res) => {
+  try {
+      const results = await db.get_projects();
+      res.json(results);
+  } catch (err) {
+      console.log(err);
+  }
 })
 
-// app.get('/projects', db.get_projects)
-// app.get('/project', (request, response) => {db.get_project(1)})
-app.get('/project', (request, response) => {db.get_project(1)});
+app.get('/projects/:project_id', async (req, res) => {
+  try {
+      const results = await db.get_project(parseInt(req.params.project_id));
+      res.json(results);
+  } catch (err) {
+      console.log(err);
+  }
+})
 
-app.listen(PORT, () => console.log('Server listening on port ${PORT}'));
-
-// client.connect(function(err) {
-//   if(err) {
-//     return console.error('could not connect to postgres', err);
-//   }
-// });
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
