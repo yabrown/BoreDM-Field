@@ -20,8 +20,8 @@ client.connect(function(err) {
 
 // uses the client connection above to query for a list of projects from elephantsql
 // written by: Max and Louis
-async function get_projects() {
-  result = await client.query('SELECT * FROM "public"."projects"');
+async function get_all_project_names() {
+  result = await client.query('SELECT project_id, name FROM "public"."projects"');
   return result.rows;
 }
 
@@ -35,7 +35,7 @@ async function get_project(project_id) {
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
-  get_projects,
+  get_all_project_names,
   get_project,
   client,
 }

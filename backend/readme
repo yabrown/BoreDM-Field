@@ -1,0 +1,3 @@
+API:
+
+get_all_project_names() -- returns array of {"project_id":1,"name":"Test Project 0"}
