@@ -1,6 +1,8 @@
+import { stringLiteral } from '@babel/types';
 import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableHighlight, Alert } from 'react-native';
+
 
 export default function App() {
     return (
@@ -19,13 +21,51 @@ const onPress = () => {
 }
 
 
+const GetProjects =  async () => {
+   interface project_name{
+    id: number;
+    name: string;
+}
+// useState is generic function, so can pass in the type
+    const [data, setData] = useState<project_name[]>([])
+   try{
+     return await fetch("/")
+        .then(res => res.json())
+        .then(data => setData(data))
+   }catch(error){
+    console.error(error)
+   }
+}
 
 //This returns a scrollable view containing the projectButton components
 const SelectProjectList = () => {
+    
+    // the data state will eventually be filled with array of project types
+    interface project{
+        id: number;
+        name: string;
+    }
+    // useState is generic function, so can pass in the type
+    const [data, setData] = useState<project[]>([])
+
+    const GetProjects =  async () => {
+        try{
+            const all_project_names = await fetch('http://localhost:4000/')
+                .then(res => res.json())
+                .then(data => console.error(data))
+        }catch(error){
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        GetProjects();
+      }, []);
+
     return(
         <View style={{height: 300}}>
             <ScrollView style={styles.scrollView}>
-                <SelectProjectButton name={"First"}/>
+                <SelectProjectButton name={data[0].name}/>
                 <SelectProjectButton name={"Second"}/>
                 <SelectProjectButton name={"Third"}/>
                 <SelectProjectButton name={"Fourth"}/>
