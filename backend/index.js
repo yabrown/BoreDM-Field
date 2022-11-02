@@ -7,7 +7,7 @@ const PORT = 4000;
 // written by: Max and Louis
 app.get('/', async (req, res) => {
   try {
-      const results = await db.get_projects();
+      const results = await db.get_all_project_names();
       res.json(results);
   } catch (err) {
       console.log(err);
