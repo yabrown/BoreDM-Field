@@ -21,7 +21,7 @@ client.connect(function(err) {
 // uses the client connection above to query for a list of projects from elephantsql
 // written by: Max and Louis
 async function get_all_project_names() {
-  result = await client.query('SELECT project_id, name FROM "public"."projects"');
+  result = await client.query('SELECT project_id, project_name FROM "public"."projects"');
   return result.rows;
 }
 
