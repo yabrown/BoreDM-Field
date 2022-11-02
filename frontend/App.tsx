@@ -42,37 +42,31 @@ const SelectProjectList = () => {
     
     // the data state will eventually be filled with array of project types
     interface project{
-        id: number;
+        project_id: number;
         name: string;
     }
     // useState is generic function, so can pass in the type
-    const [data, setData] = useState<project[]>([])
+    const [data, setData] = useState<project[]>([{project_id: -1, name: "default"}])
+    //const [data, setData] = useState<void>()
 
-    const GetProjects =  async () => {
+    const GetProjects = async () => {
         try{
-            const all_project_names = await fetch('http://localhost:4000/')
-                .then(res => res.json())
-                .then(data => console.error(data))
+            await fetch('http://localhost:4000/').then(res => res.json()).then(data => setData(data))
+            //let data = fetched.json()
         }catch(error){
             console.error(error)
+
         }
     }
 
-    useEffect(() => {
-        GetProjects();
-      }, []);
+    GetProjects()
 
     return(
         <View style={{height: 300}}>
             <ScrollView style={styles.scrollView}>
-                <SelectProjectButton name={data[0].name}/>
-                <SelectProjectButton name={"Second"}/>
-                <SelectProjectButton name={"Third"}/>
-                <SelectProjectButton name={"Fourth"}/>
-                <SelectProjectButton name={"Fifth"}/>
-                <SelectProjectButton name={"Sixth"}/>
-                <SelectProjectButton name={"Seventh"}/>
-                <SelectProjectButton name={"Eighth"}/>
+                {data.map(project => (
+                    <SelectProjectButton name={project.name}/>
+                ))}
             </ScrollView>
         </View>
     )
