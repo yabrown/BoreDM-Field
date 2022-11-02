@@ -1,40 +1,78 @@
 import { stringLiteral } from '@babel/types';
 import { StatusBar } from 'expo-status-bar';
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableHighlight, Alert } from 'react-native';
+import { Button, StyleSheet, TextInput, Text, View, SafeAreaView, ScrollView, TouchableHighlight, Alert } from 'react-native';
 
 
 export default function App() {
+    const [text, onChangeText] = useState("Enter Project name");
+    const onPress = () => {
+        fetch('localhost:4000/post', {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(text),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+        });
+    }
     return (
         <View style={styles.container}>
             <Header/>
             <Title name="Project"/>
             <StatusBar style="auto" />
             <SelectProjectList/>
+            
+
+            <SafeAreaView>
+                <TextInput
+                    onChangeText={onChangeText}
+                    value={text}
+                />
+            </SafeAreaView>
+            <Button
+            onPress={onPress}
+            title="Add Project"
+            color="#841584"
+            accessibilityLabel="Learn more about this purple button"/>
+        
+
+
         </View>
     );
 }
 
+const AddProjectButton = () => {
+     return(
+        <Button
+        onPress={onPress}
+        title="Add Project"
+        color="#841584"
+        accessibilityLabel="Learn more about this purple button"/>
+     )
+}
+
+const UselessTextInput = () => {
+    const [text, onChangeText] = React.useState("Enter Project name");
+  
+    return (
+      <SafeAreaView>
+        <TextInput
+          onChangeText={onChangeText}
+          value={text}
+        />
+      </SafeAreaView>
+    );
+  };
 
 const onPress = () => {
   Alert.alert("Button clicked")
-}
-
-
-const GetProjects =  async () => {
-   interface project_name{
-    id: number;
-    name: string;
-}
-// useState is generic function, so can pass in the type
-    const [data, setData] = useState<project_name[]>([])
-   try{
-     return await fetch("/")
-        .then(res => res.json())
-        .then(data => setData(data))
-   }catch(error){
-    console.error(error)
-   }
 }
 
 //This returns a scrollable view containing the projectButton components
