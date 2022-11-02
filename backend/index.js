@@ -1,8 +1,10 @@
 const express = require("express");
 const db = require('./queries')
 const app = express();
+const cors = require('cors');
 const PORT = 4000;
 
+app.use(cors())
 // get request on the root directory, displays a list of projects in json format on the broswer
 // written by: Max and Louis
 app.get('/', async (req, res) => {
