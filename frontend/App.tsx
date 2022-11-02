@@ -81,10 +81,10 @@ const SelectProjectList = () => {
     // the data state will eventually be filled with array of project types
     interface project{
         project_id: number;
-        name: string;
+        project_name: string;
     }
     // useState is generic function, so can pass in the type
-    const [data, setData] = useState<project[]>([{project_id: -1, name: "default"}])
+    const [data, setData] = useState<project[]>([{project_id: -1, project_name: "default"}])
     //const [data, setData] = useState<void>()
 
     const GetProjects = async () => {
@@ -103,7 +103,7 @@ const SelectProjectList = () => {
         <View style={{height: 300}}>
             <ScrollView style={styles.scrollView}>
                 {data.map(project => (
-                    <SelectProjectButton name={project.name}/>
+                    <SelectProjectButton name={project.project_name}/>
                 ))}
             </ScrollView>
         </View>
