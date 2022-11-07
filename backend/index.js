@@ -19,6 +19,7 @@ app.get('/', async (req, res) => {
   }
 })
 
+// testing webpage, do not use. Hacky way to check functions in queries.js
 app.get('/testing', async (req, res) => {
   try {
       const results = await db.get_log(25, 1);

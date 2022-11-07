@@ -6,6 +6,7 @@ var client = new pg.Client(conString);
 const { Sequelize, Model, DataTypes, DATE, FLOAT } = require("sequelize");
 const sequelize = new Sequelize(conString);
 
+// Written by: Louis
 const Project = sequelize.define("Project", {
   name: DataTypes.TEXT,
   location: DataTypes.TEXT,
@@ -13,6 +14,7 @@ const Project = sequelize.define("Project", {
   notes: DataTypes.TEXT,
 });
 
+// Written by: Louis
 const Log = sequelize.define("Log", {
   project_id: DataTypes.INTEGER,
   name: DataTypes.TEXT,
@@ -23,6 +25,7 @@ const Log = sequelize.define("Log", {
   // date: DataTypes.DATE,
 });
 
+// Written by: Louis
 const Sample = sequelize.define("Sample", {
   log_id: DataTypes.INTEGER,
   start_depth: DataTypes.FLOAT,
@@ -37,6 +40,7 @@ const Sample = sequelize.define("Sample", {
   sampler_type: DataTypes.TEXT,
 });
 
+// Written by: Louis
 const Classification = sequelize.define("Classification", {
   log_id: DataTypes.INTEGER,
   start_depth: DataTypes.FLOAT,
@@ -48,12 +52,14 @@ const Classification = sequelize.define("Classification", {
   hardness: DataTypes.STRING,
 });
 
+// Written by: Louis
 const Coordinate = sequelize.define("Coordinate", {
   location_id: DataTypes.INTEGER,
   latitude: DataTypes.FLOAT,
   longitude: DataTypes.FLOAT,
 });
 
+// Written by: Louis
 (async () => {
   await sequelize.sync();
 
