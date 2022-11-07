@@ -85,7 +85,7 @@ const Coordinate = sequelize.define("Coordinate", {
                                                   description: "Description of Sample 1",
                                                   refusal_length: 0,
                                                   sampler_type: "SSS"})
-  
+
   const project_2 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
   const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
@@ -147,11 +147,23 @@ async function add_project(project_name, client_name, location) {
   return new_proj.id;
 }
 
+// updates project associated with project_id
+// writteb by; Max
+async function update_project(project_id, project_name, client_name, location, project_notes) {
+  const updated_proj = await Project.update({ name:project_name, client:client_name, location:location}, {
+    where: {
+      id: project_id
+    }
+  });
+  return update_proj.id
+}
+
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
   get_all_project_names,
   get_project,
   add_project,
+  update_project,
   client,
 }
