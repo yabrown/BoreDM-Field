@@ -34,7 +34,7 @@ const Coordinate = sequelize.define("Coordinate", {
   const project_1 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 1"});
   const home_1 = await Coordinate.create({ latitude: 10, longitude: 15 });
   const log_1 = await Log.create({ project_id: project_1.id, name: "Test Log 1", driller: "Danny", logger: "Ari", notes: "Nice", location: home_1.id});
-  
+
   const project_2 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
   const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
@@ -70,10 +70,19 @@ async function get_project(project_id) {
   return result;
 }
 
+// creates project in db based on params, returns integer project_id of project that was created
+// written by: Max
+async function add_project(project_name, client_name, location) {
+  const new_proj = await Project.create({ name:project_name, client:client_name, location:location});
+  console.log("New Project " + project_name + " created.");
+  return new_proj.id;
+}
+
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
   get_all_project_names,
   get_project,
+  add_project,
   client,
 }
