@@ -22,6 +22,31 @@ const Log = sequelize.define("Log", {
   // date: DataTypes.DATE,
 });
 
+const Sample = sequelize.define("Sample", {
+  log_id: DataTypes.INTEGER,
+  start_depth: DataTypes.FLOAT,
+  end_depth: DataTypes.FLOAT,
+  length: DataTypes.FLOAT,
+  blows_1: DataTypes.INTEGER,
+  blows_2: DataTypes.INTEGER,
+  blows_3: DataTypes.INTEGER,
+  blows_4: DataTypes.INTEGER,
+  description: DataTypes.TEXT,
+  refusal_length: DataTypes.FLOAT,
+  sampler_type: DataTypes.TEXT,
+});
+
+const Classification = sequelize.define("Classification", {
+  log_id: DataTypes.INTEGER,
+  start_depth: DataTypes.FLOAT,
+  end_depth: DataTypes.FLOAT,
+  uscs: DataTypes.STRING,
+  color: DataTypes.STRING,
+  moisture: DataTypes.STRING,
+  density: DataTypes.STRING,
+  hardness: DataTypes.STRING,
+});
+
 const Coordinate = sequelize.define("Coordinate", {
   location_id: DataTypes.INTEGER,
   latitude: DataTypes.FLOAT,
@@ -31,13 +56,57 @@ const Coordinate = sequelize.define("Coordinate", {
 (async () => {
   await sequelize.sync();
 
-  const project_1 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 1"});
-  const home_1 = await Coordinate.create({ latitude: 10, longitude: 15 });
-  const log_1 = await Log.create({ project_id: project_1.id, name: "Test Log 1", driller: "Danny", logger: "Ari", notes: "Nice", location: home_1.id});
+  const project_1 = await Project.create({  name: "Kuba",
+                                            location: "Princeton, NJ",
+                                            client: "Alicki",
+                                            notes: "Test Project 1"});
+  const home_1 = await Coordinate.create({  latitude: 10, longitude: 15 });
+  const log_1 = await Log.create({  project_id: project_1.id,
+                                    name: "Test Log 1",
+                                    driller: "Danny",
+                                    logger: "Ari",
+                                    notes: "Nice",
+                                    location: home_1.id});
+  const classification_1 = await Classification.create({  log_id : log_1.id,
+                                                          start_depth: 0,
+                                                          end_depth: 10,
+                                                          uscs: "CL",
+                                                          color: "Brown",
+                                                          moisture: "Moist",
+                                                          density: "Dense",
+                                                          hardness: "Very hard"})
+  const sample_1 = await Classification.create({  log_id : log_1.id,
+                                                  start_depth: 10,
+                                                  length: 6,
+                                                  blows_1: 13,
+                                                  blows_2: 22,
+                                                  blows_3: 24,
+                                                  blows_4: 31,
+                                                  description: "Description of Sample 1",
+                                                  refusal_length: 0,
+                                                  sampler_type: "SSS"})
   
   const project_2 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
   const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
+  const classification_2 = await Classification.create({  log_id : log_2.id,
+    start_depth: 10,
+    end_depth: 14,
+    uscs: "CL-ML",
+    color: "Brown",
+    moisture: "Very moist",
+    density: "Medium dense",
+    hardness: "Hard"})
+  const sample_2 = await Classification.create({  log_id : log_1.id,
+      start_depth: 10,
+      length: 6,
+      blows_1: 15,
+      blows_2: 25,
+      blows_3: 24,
+      blows_4: 50,
+      description: "Description of Sample 2",
+      refusal_length: 4,
+      sampler_type: "SPS"})
 })();
 
 
