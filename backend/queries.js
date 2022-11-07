@@ -83,7 +83,7 @@ const Coordinate = sequelize.define("Coordinate", {
                                                   blows_3: 24,
                                                   blows_4: 31,
                                                   description: "Description of Sample 1",
-                                                  refusal_length: 0,
+                                                  refusal_length: 0,});
 
 
   const project_2 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
@@ -154,8 +154,8 @@ async function update_project(project_id, project_name, client_name, location, p
     where: {
       id: project_id
     }
-  });
-  return update_proj.id
+  })
+  return updated_proj.id;
 }
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
