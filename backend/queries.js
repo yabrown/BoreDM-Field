@@ -3,6 +3,26 @@ var conString = "postgres://iuskfbrh:6tDvSAVRHoYJm7TqtLjlXeb2o-mjH6sz@batyr.db.e
 var pg = require('pg')
 var client = new pg.Client(conString);
 
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize(conString);
+
+const project = sequelize.define('project', {
+  // Model attributes
+  project_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true
+  },
+  project_name: DataTypes.STRING,
+  city_state:  DataTypes.STRING,
+  client_name: DataTypes.STRING,
+  project_notes: DataTypes.STRING,
+},{
+  timestamps: false
+});
+
+
+// const projects = await projects.findAll()
+
 // creates a persistent connection to the elephantsql db. if persistence is undesirable (and we instead
 // want to open and close connections with each query, we will need to rewrite this)
 // written by: Max and Louis
@@ -21,8 +41,8 @@ client.connect(function(err) {
 // uses the client connection above to query for a list of projects from elephantsql
 // written by: Max and Louis
 async function get_all_project_names() {
-  result = await client.query('SELECT project_id, project_name FROM "public"."projects"');
-  return result.rows;
+  result = await project.findAll();
+  return result;
 }
 
 // uses the client connection above to query for the projects with project_id=project_id from elephantsql
