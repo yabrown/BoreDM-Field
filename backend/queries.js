@@ -3,22 +3,22 @@ var conString = "postgres://iuskfbrh:6tDvSAVRHoYJm7TqtLjlXeb2o-mjH6sz@batyr.db.e
 var pg = require('pg')
 var client = new pg.Client(conString);
 
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize(conString);
+// const { Sequelize, DataTypes } = require('sequelize');
+// const sequelize = new Sequelize(conString);
 
-const project = sequelize.define('project', {
-  // Model attributes
-  project_id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true
-  },
-  project_name: DataTypes.STRING,
-  city_state:  DataTypes.STRING,
-  client_name: DataTypes.STRING,
-  project_notes: DataTypes.STRING,
-},{
-  timestamps: false
-});
+// const project = sequelize.define('project', {
+//   // Model attributes
+//   project_id: {
+//     type: DataTypes.INTEGER,
+//     primaryKey: true
+//   },
+//   project_name: DataTypes.STRING,
+//   city_state:  DataTypes.STRING,
+//   client_name: DataTypes.STRING,
+//   project_notes: DataTypes.STRING,
+// },{
+//   timestamps: false
+// });
 
 
 // const projects = await projects.findAll()
@@ -40,22 +40,22 @@ client.connect(function(err) {
 
 // uses the client connection above to query for a list of projects from elephantsql
 // written by: Max and Louis
-async function get_all_project_names() {
-  result = await project.findAll();
+async function get_all_project_names(Project) {
+  result = await Project.findAll();
   return result;
 }
 
 // uses the client connection above to query for the projects with project_id=project_id from elephantsql
 // written by: Max and Louis
-async function get_project(project_id) {
-  result = await client.query('SELECT * FROM "public"."projects" WHERE project_id=' + project_id);
-  return result.rows;
-}
+// async function get_project(project_id) {
+//   result = await client.query('SELECT * FROM "public"."projects" WHERE project_id=' + project_id);
+//   return result.rows;
+// }
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
   get_all_project_names,
-  get_project,
+  // get_project,
   client,
 }
