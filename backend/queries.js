@@ -170,6 +170,18 @@ async function get_all_log_names(project_id){
   return log_list;
 }
 
+// retrieves information about a specific log given project_id, log_id
+// written by: Max
+async function get_log(project_id, log_id){
+  log = await Log.findAll({
+    where: {
+      project_id: project_id,
+      id: log_id
+    }
+  });
+  return log;
+}
+
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
@@ -178,5 +190,6 @@ module.exports = {
   add_project,
   update_project,
   get_all_log_names,
+  get_log,
   client,
 }
