@@ -74,8 +74,8 @@ const Coordinate = sequelize.define("Coordinate", {
                                                           color: "Brown",
                                                           moisture: "Moist",
                                                           density: "Dense",
-                                                          hardness: "Very hard"})
-  const sample_1 = await Classification.create({  log_id : log_1.id,
+                                                          hardness: "Very hard"});
+  const sample_1 = await Sample.create({  log_id : log_1.id,
                                                   start_depth: 10,
                                                   length: 6,
                                                   blows_1: 13,
@@ -84,7 +84,7 @@ const Coordinate = sequelize.define("Coordinate", {
                                                   blows_4: 31,
                                                   description: "Description of Sample 1",
                                                   refusal_length: 0,
-                                                  sampler_type: "SSS"})
+
 
   const project_2 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
@@ -96,8 +96,8 @@ const Coordinate = sequelize.define("Coordinate", {
     color: "Brown",
     moisture: "Very moist",
     density: "Medium dense",
-    hardness: "Hard"})
-  const sample_2 = await Classification.create({  log_id : log_1.id,
+    hardness: "Hard"});
+  const sample_2 = await Sample.create({  log_id : log_2.id,
       start_depth: 10,
       length: 6,
       blows_1: 15,
@@ -106,7 +106,7 @@ const Coordinate = sequelize.define("Coordinate", {
       blows_4: 50,
       description: "Description of Sample 2",
       refusal_length: 4,
-      sampler_type: "SPS"})
+      sampler_type: "SPS"});
 })();
 
 
