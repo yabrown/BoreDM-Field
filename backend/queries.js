@@ -139,10 +139,19 @@ async function get_project(project_id) {
   return result;
 }
 
+// creates project in db based on params, returns integer project_id of project that was created
+// written by: Max
+async function add_project(project_name, client_name, location) {
+  const new_proj = await Project.create({ name:project_name, client:client_name, location:location});
+  console.log("New Project " + project_name + " created.");
+  return new_proj.id;
+}
+
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
   get_all_project_names,
   get_project,
+  add_project,
   client,
 }

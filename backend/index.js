@@ -19,6 +19,15 @@ app.get('/', async (req, res) => {
   }
 })
 
+app.get('/testing', async (req, res) => {
+  try {
+      const results = await db.add_project("Testing", "Testing client", "Your Mom");
+      res.json(results);
+  } catch (err) {
+      console.log(err);
+  }
+})
+
 app.post('/post', (req, res) => {
   try {
       console.log("req.body: ", req.body);
