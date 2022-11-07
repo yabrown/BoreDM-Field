@@ -151,11 +151,11 @@ async function add_project(project_name, client_name, location) {
 // writteb by; Max
 async function update_project(project_id, project_name, client_name, location, project_notes) {
   const updated_proj = await Project.update({ name:project_name, client:client_name, location:location}, {
-    where: {
-      id: project_id
-    }
-  })
-  return updated_proj.id;
+    where: { id: project_id },
+    returning: true,
+    raw: true,
+  });
+  return updated_proj[1][0].id;
 }
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
