@@ -21,8 +21,7 @@ app.get('/', async (req, res) => {
 
 app.get('/testing', async (req, res) => {
   try {
-      const results = await db.update_project(3, "Testing", "Testing client", "Your brother");
-      console.log(results)
+      const results = await db.get_all_log_names(25);
       res.json(results);
   } catch (err) {
       console.log(err);

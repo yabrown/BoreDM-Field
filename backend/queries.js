@@ -15,6 +15,7 @@ const Project = sequelize.define("Project", {
 
 const Log = sequelize.define("Log", {
   project_id: DataTypes.INTEGER,
+  name: DataTypes.TEXT,
   driller: DataTypes.TEXT,
   logger: DataTypes.TEXT,
   notes: DataTypes.TEXT,
@@ -125,7 +126,7 @@ client.connect(function(err) {
   });
 });
 
-// uses the client connection above to query for a list of projects from elephantsql
+// uses the client connection above to query for a list of projects from db
 // written by: Max and Louis
 async function get_all_project_names() {
   result = await Project.findAll();
@@ -143,7 +144,6 @@ async function get_project(project_id) {
 // written by: Max
 async function add_project(project_name, client_name, location) {
   const new_proj = await Project.create({ name:project_name, client:client_name, location:location});
-  console.log("New Project " + project_name + " created.");
   return new_proj.id;
 }
 
@@ -158,6 +158,18 @@ async function update_project(project_id, project_name, client_name, location, p
   return updated_proj[1][0].id;
 }
 
+// retrieves list of all log names for given project_id
+// written by: Max
+async function get_all_log_names(project_id){
+  const log_list = await Log.findAll({
+    attributes: ['project_id', 'id', 'name'],
+    where: {
+      project_id: project_id
+    }
+  });
+  return log_list;
+}
+
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
@@ -165,5 +177,6 @@ module.exports = {
   get_project,
   add_project,
   update_project,
+  get_all_log_names,
   client,
 }
