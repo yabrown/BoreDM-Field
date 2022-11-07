@@ -61,7 +61,7 @@ const Coordinate = sequelize.define("Coordinate", {
 
 // Written by: Louis
 (async () => {
-  await sequelize.sync();
+  await sequelize.sync({ force: true });
 
   const project_1 = await Project.create({  name: "Kuba",
                                             location: "Princeton, NJ",
@@ -135,14 +135,14 @@ client.connect(function(err) {
 // uses the client connection above to query for a list of projects from db
 // written by: Max and Louis
 async function get_all_project_names() {
-  result = await Project.findAll();
+  const result = await Project.findAll();
   return result;
 }
 
 // uses the client connection above to query for the projects with project_id=project_id from elephantsql
 // written by: Max and Louis
 async function get_project(project_id) {
-  result = await Project.findByPk(project_id);
+  const result = await Project.findByPk(project_id);
   return result;
 }
 
@@ -179,7 +179,7 @@ async function get_all_log_names(project_id){
 // retrieves information about a specific log given project_id, log_id
 // written by: Max
 async function get_log(project_id, log_id){
-  log = await Log.findAll({
+  const log = await Log.findAll({
     where: {
       project_id: project_id,
       id: log_id

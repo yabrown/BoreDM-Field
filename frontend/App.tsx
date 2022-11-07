@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react'
 import { Button, StyleSheet, TextInput, Text, View, SafeAreaView, ScrollView, TouchableHighlight, Alert } from 'react-native';
+import { v4 as uuidv4 } from 'uuid';
 
 
 function SubmitProject(props:{text: string}) {
@@ -79,11 +80,10 @@ const SelectProjectList = () => {
     
     // the data state will eventually be filled with array of project types
     interface project{
-        project_id: number;
-        project_name: string;
+            notes: string;
     }
     // useState is generic function, so can pass in the type
-    const [data, setData] = useState<project[]>([{project_id: -1, project_name: "default"}])
+    const [data, setData] = useState<project[]>([{notes: "default"}])
     //const [data, setData] = useState<void>()
 
     const GetProjects: () => void = async () => {
@@ -102,7 +102,7 @@ const SelectProjectList = () => {
         <View style={{height: 300}}>
             <ScrollView style={styles.scrollView}>
                 {data.map(project => (
-                    <SelectProjectButton name={project.project_name}/>
+                    <SelectProjectButton name={project.notes} key={uuidv4()}/>
                 ))}
             </ScrollView>
         </View>
@@ -129,11 +129,11 @@ const Title = (props: { name:string }) =>{
 }
 
 // Takes in a name, returns a button that takes you to the project page
-const SelectProjectButton = (props: { name:string }) => {
+const SelectProjectButton = ({ name }: {name : string}) => {
    return(
         <TouchableHighlight style={styles.touchable} onPress={onPress} activeOpacity={.8} underlayColor={"#00000011"}>
             <View style={styles.button}>
-                <Text>{props.name}</Text>
+                <Text>{name}</Text>
             </View>
         </TouchableHighlight>
    )
