@@ -1,51 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react'
-import { Button, StyleSheet, TextInput, Text, View, SafeAreaView, ScrollView, TouchableHighlight, Alert } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Home from './screens/home'
+import Project from './screens/project'
 
+type RootStackParamList = {
+    Home: undefined;
+    Project: { notes: string };
+};
 
-function SubmitProject(props:{text: string}) {
-    const onPress = async () => {
-        try {
-            let fetched = await fetch('http://localhost:4000/post', {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({project_name: props.text})
-            })
-            let json_text = await fetched.json()
-            console.log(json_text)
-        } catch(error) {
-                console.error('Error:', error);
-            }
-    }
-
-    return (<Button
-        onPress={onPress}
-        title="Add Project"
-        color="#841584"
-        accessibilityLabel="Learn more about this purple button"/>);
-}
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
-    const [text, onChangeText] = useState("Enter Project name");
     return (
-        <View style={styles.container}>
-            <Header/>
-            <Title name="Project"/>
-            <StatusBar style="auto"/>
-            <SelectProjectList/>
-
-            <SafeAreaView>
-                <TextInput
-                    onChangeText={onChangeText}
-                    value={text}
-                />
-            </SafeAreaView>
-            <SubmitProject text={text}/>
-        </View>
-    );
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName='Home'>
+                <Stack.Screen name='Home' component={Home} options={{title: 'BoreDM Home'}} />
+                <Stack.Screen name='Project' component={Project} options={{title: 'Project Details'}} initialParams={{notes: "default"}} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    ); 
 }
 
 // const AddProjectButton = () => {
@@ -71,123 +44,6 @@ export default function App() {
 //     );
 //   };
 
-const onPress = () => {
-  Alert.alert("Button clicked")
-}
-
-//This returns a scrollable view containing the projectButton components
-const SelectProjectList = () => {
-    
-    // the data state will eventually be filled with array of project types
-    interface project{
-            notes: string;
-    }
-    // useState is generic function, so can pass in the type
-    const [data, setData] = useState<project[]>([{notes: "default"}])
-    //const [data, setData] = useState<void>()
-
-    const GetProjects: () => void = async () => {
-        try{
-            let fetched = await fetch('http://localhost:4000/');
-            let res_data = await fetched.json()
-            setData(res_data)
-        } catch(error) {
-            console.error(error)
-        }
-    }
-
-    GetProjects()
-
-    return(
-        <View style={{height: 300}}>
-            <ScrollView style={styles.scrollView}>
-                {data.map(project => (
-                    <SelectProjectButton name={project.notes} key={uuidv4()}/>
-                ))}
-            </ScrollView>
-        </View>
-    )
-}
-
 // Returns view containing "BOREDM Field" text
-const Header = () =>{
-    return(
-        <View style={styles.headerView}>
-            <Text style={{fontWeight:'800', fontSize: 50, color: 'black'}}>BORE<Text style={{ fontWeight: '800', color: 'grey' }}>
-            DM</Text> <Text style={{ fontWeight: '400' }}>Field</Text></Text>
-        </View>
-    )
-}
-
-// Returns text to go above changing view-- Ex: Project, Map, Mariner's Apartment 
-const Title = (props: { name:string }) =>{
-    return(
-        <View style={styles.titleView}>
-            <Text style={{fontWeight:'500', fontSize: 20, color: 'black'}}>{props.name}</Text>
-        </View>
-    )
-}
 
 // Takes in a name, returns a button that takes you to the project page
-const SelectProjectButton = ({ name }: {name : string}) => {
-   return(
-        <TouchableHighlight style={styles.touchable} onPress={onPress} activeOpacity={.8} underlayColor={"#00000011"}>
-            <View style={styles.button}>
-                <Text>{name}</Text>
-            </View>
-        </TouchableHighlight>
-   )
-}
-
-
-const showViews = 0
-const styles = StyleSheet.create({
-  button: {
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: 'rgba(0,0,0,0)',
-    borderWidth: showViews,
-    borderColor: 'red'
-  },
-  scrollView: {
-    borderWidth: showViews,
-    borderColor: 'red'
-  },
-  touchable: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    borderWidth: showViews,
-    borderColor: 'red'
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    borderWidth: showViews,
-    borderColor: 'red'
-  },
-  text: {
-
-  },
-  headerView: {
-    height: 100, 
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    borderWidth: showViews,
-    borderColor: 'red'
-  },
-  titleView: {
-    height: 30, 
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    borderWidth: showViews,
-    borderColor: 'red'
-  }
-});
