@@ -21,9 +21,6 @@ const SelectProjectList = ({ navigate }) => {
   type project = {
           notes: string;
   };
-
-  let projects_list = undefined;
-
   // useState is generic function, so can pass in the type
   const [data, setData] = useState<project[]>([{notes: "default"}])
   //const [data, setData] = useState<void>()
@@ -31,15 +28,15 @@ const SelectProjectList = ({ navigate }) => {
   useEffect(() => {
       const GetProjects: () => void = async () => {
           try{
-              let fetched = await fetch('http://localhost:4000/');
-              let projects_list = await fetched.json()
+              const fetched = await fetch('http://localhost:4000/');
+              const projects_list = await fetched.json()
               setData(projects_list)
           } catch(error) {
               console.error(error)
           }
       }
       GetProjects()
-  }, [projects_list])
+  }, [])
 
   return(
       <View style={{height: 300}}>
