@@ -3,14 +3,19 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './screens/home'
 import Project from './screens/project'
 
-const Stack = createNativeStackNavigator();
+type RootStackParamList = {
+    Home: undefined;
+    Project: { notes: string };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName='Home'>
                 <Stack.Screen name='Home' component={Home} options={{title: 'BoreDM Home'}} />
-                <Stack.Screen name='Project' component={Project} options={{title: 'Project Details'}} />
+                <Stack.Screen name='Project' component={Project} options={{title: 'Project Details'}} initialParams={{notes: "default"}} />
             </Stack.Navigator>
         </NavigationContainer>
     ); 

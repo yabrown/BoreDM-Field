@@ -2,8 +2,16 @@ import React, { useState} from 'react'
 import { Button, StyleSheet, TextInput, Text, View, SafeAreaView } from 'react-native';
 import Header from '../common/header';
 import SelectProjectList from '../models/SelectProjectList';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-const SubmitProject = (props:{text: string}) => {
+type RootStackParamList = {
+  Home: undefined;
+  Project: { notes: string };
+};
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+const SubmitProject = ({text}: {text: string}) => {
   const onPress = async () => {
       try {
           let fetched = await fetch('http://localhost:4000/post', {
@@ -11,7 +19,7 @@ const SubmitProject = (props:{text: string}) => {
               headers: {
                   'Content-Type': 'application/json',
               },
-              body: JSON.stringify({project_name: props.text})
+              body: JSON.stringify({project_name: text})
           })
           let json_text = await fetched.json()
           console.log(json_text)
@@ -38,14 +46,14 @@ const Title = (props: { name:string }) =>{
   )
 }
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation }: Props) => {
 
   const [text, setText] = useState("Enter Project name");
 
   return (
     <View style={styles.container}>
                     <Header/>
-                    <Title name="Project"/>
+                    <Title name="Projects List"/>
                     <SelectProjectList navigate={navigation}/>
                     <SafeAreaView>
                         <TextInput

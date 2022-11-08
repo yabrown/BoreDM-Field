@@ -3,13 +3,13 @@ import { StyleSheet } from "react-native";
 import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 
-const SelectProjectButton = ({ name, navigate }) => {
+const SelectProjectButton = ({ notes, navigate }) => {
     return(
          <TouchableHighlight style={styles.touchable} 
-         onPress={() => navigate.navigate('Project', {name})}
+         onPress={() => navigate.navigate('Project', {notes})}
           activeOpacity={.8} underlayColor={"#00000011"}>
              <View style={styles.button}>
-                 <Text>{name}</Text>
+                 <Text>{notes}</Text>
              </View>
          </TouchableHighlight>
     )
@@ -18,15 +18,15 @@ const SelectProjectButton = ({ name, navigate }) => {
 const SelectProjectList = ({ navigate }) => {
     
   // the data state will eventually be filled with array of project types
-  interface project{
+  type project = {
           notes: string;
-  }
+  };
+
+  let projects_list = undefined;
 
   // useState is generic function, so can pass in the type
   const [data, setData] = useState<project[]>([{notes: "default"}])
   //const [data, setData] = useState<void>()
-
-  let projects_list = null;
 
   useEffect(() => {
       const GetProjects: () => void = async () => {
@@ -45,7 +45,7 @@ const SelectProjectList = ({ navigate }) => {
       <View style={{height: 300}}>
           <ScrollView style={styles.scrollView}>
               {data.map(project => (
-                  <SelectProjectButton name={project.notes} key={uuid()} navigate={navigate}/>
+                  <SelectProjectButton notes={project.notes} key={uuid()} navigate={navigate}/>
               ))}
           </ScrollView>
       </View>
