@@ -143,7 +143,16 @@ client.connect(function(err) {
 // written by: Max and Louis
 async function get_all_project_names() {
   const result = await Project.findAll({
-    attributes: ['name']
+    // attributes: ['name']
+  });
+  return result;
+}
+
+// uses the client connection above to query for a list of projects from db
+// written by: Max and Louis
+async function get_all_log_names() {
+  const result = await Project.findAll({
+    // attributes: ['name']
   });
   return result;
 }
@@ -195,6 +204,13 @@ async function get_log(project_id, log_id){
     }
   });
   return log;
+}
+
+// creates project in db based on params, returns integer project_id of project that was created
+// written by: Max
+async function create_log(boring_name) {
+  const new_log = await Log.create({ name:boring_name });
+  return new_log.id;
 }
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
