@@ -143,7 +143,7 @@ client.connect(function(err) {
 // written by: Max and Louis
 async function get_all_project_names() {
   const result = await Project.findAll({
-    attributes: ['notes']
+    attributes: ['name']
   });
   return result;
 }
