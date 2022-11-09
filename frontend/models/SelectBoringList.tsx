@@ -3,13 +3,13 @@ import { StyleSheet } from "react-native";
 import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 
-const SelectBoringButton = ({ notes, navigate }) => {
+const SelectBoringButton = ({ name, navigate }) => {
     return(
          <TouchableHighlight style={styles.touchable} 
-          onPress={() => navigate.navigate('Boring', {notes})}
+          onPress={() => navigate.navigate('Boring', {name})}
           activeOpacity={.8} underlayColor={"#00000011"}>
              <View style={styles.button}>
-                 <Text>{notes}</Text>
+                 <Text>{name}</Text>
              </View>
          </TouchableHighlight>
     )
@@ -19,10 +19,10 @@ const SelectBoringList = ({ navigate }) => {
     
   // the data state will eventually be filled with array of boring types
   type boring = {
-          notes: string;
+          name: string;
   };
   // useState is generic function, so can pass in the type
-  const [data, setData] = useState<boring[]>([{notes: "default"}])
+  const [data, setData] = useState<boring[]>([{name: "default"}])
   //const [data, setData] = useState<void>()
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const SelectBoringList = ({ navigate }) => {
       <View style={{height: 300}}>
           <ScrollView style={styles.scrollView}>
               {data.map(boring => (
-                  <SelectBoringButton notes={boring.notes} key={uuid()} navigate={navigate}/>
+                  <SelectBoringButton name={boring.name} key={uuid()} navigate={navigate}/>
               ))}
           </ScrollView>
       </View>
