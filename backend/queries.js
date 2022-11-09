@@ -214,5 +214,6 @@ module.exports = {
   update_project,
   get_all_log_names,
   get_log,
+  create_log,
   client,
 }
