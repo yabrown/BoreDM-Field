@@ -1,5 +1,5 @@
 import React, { useState} from 'react'
-import { Button, StyleSheet, TextInput, Text, View, SafeAreaView } from 'react-native';
+import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Text, View, SafeAreaView } from 'react-native';
 import Header from '../common/header';
 import SelectProjectList from '../models/SelectProjectList';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -11,7 +11,9 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-const SubmitProject = ({text}: {text: string}) => {
+
+// The component that deals with the adding a new project
+const SubmitProject = (props) => {
   const onPress = async () => {
       try {
           let fetched = await fetch('http://localhost:4000/post', {
@@ -19,7 +21,7 @@ const SubmitProject = ({text}: {text: string}) => {
               headers: {
                   'Content-Type': 'application/json',
               },
-              body: JSON.stringify({project_name: text})
+              body: JSON.stringify({project_name: props.name, project_client: props.client, project_location: props.location})
           })
           let json_text = await fetched.json()
           console.log(json_text)
@@ -31,7 +33,7 @@ const SubmitProject = ({text}: {text: string}) => {
   return (<Button
       onPress={onPress}
       title="Add Project"
-      color="#841584"
+      color="#000000"
       accessibilityLabel="Learn more about this purple button"/>);
 }
 
@@ -46,6 +48,64 @@ const Title = (props: { name:string }) =>{
   )
 }
 
+interface project {
+    theClass: string
+    columnTitle: string
+    onClickAction: string
+  }
+
+const AddProjectModal = () => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [textProject, setTextProject] = useState("");
+    const [textClient, setTextClient] = useState("");
+    const [textLocation, setTextLocation] = useState("");
+    
+    return(
+    <View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setTextProject}
+                    placeholder = "Enter Project Name"
+                />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setTextClient}
+                    placeholder = "Enter Client Name"
+                />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setTextLocation}
+                    placeholder = "Enter Location"
+                />
+                <SubmitProject name={textProject} client={textClient} location={textLocation}/>
+                <Button 
+                    onPress={() => setModalVisible(false)}
+                    title="Done"
+                    color="#000000"
+                    accessibilityLabel="Gets rid of modal"/>
+           </View>
+        </View>
+      </Modal>
+      <Button 
+            onPress={() => setModalVisible(true)}
+            title="+Project"
+            color="#000000"
+            accessibilityLabel="Activates popup Modal for project detail entry"/>
+    </View>
+    )
+}
+
 const Home = ({ navigation }: Props) => {
 
   const [text, setText] = useState("Enter Project name");
@@ -55,18 +115,15 @@ const Home = ({ navigation }: Props) => {
                     <Header/>
                     <Title name="Projects List"/>
                     <SelectProjectList navigate={navigation}/>
-                    <SafeAreaView>
-                        <TextInput
-                            onChangeText={setText}
-                            value={text}
-                        />
-                    </SafeAreaView>
-                    <SubmitProject text={text}/>
+                    <AddProjectModal/>
                 </View>
   )
 }
 
 const showViews = 0
+//TODO: change this so that it only calulcates once, in the right place
+let height = Dimensions.get('window').height
+let width = Dimensions.get('window').width
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -82,6 +139,61 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     borderWidth: showViews,
     borderColor: 'red'
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderWidth: showViews,
+    borderColor: 'red'
+  },
+  modalView: {
+    margin: 20,
+    height: height/2,
+    width: width/2,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    justifyContent: 'space-evenly',
+    borderWidth: showViews,
+    borderColor: 'red'
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#000000",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
   }
 });
 
