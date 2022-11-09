@@ -31,8 +31,7 @@ app.get('/testing', async (req, res) => {
 
 app.post('/add_project', (req, res) => {
   try {
-      console.log("add_project: req.body: ", req.body);
-      res.json(req.body);
+      db.add_project(req.body.project_name, req.body.project_id, req.body.project_location)
       res.status(200).send();
   } catch (err) {
       console.log(err);
@@ -42,12 +41,23 @@ app.post('/add_project', (req, res) => {
 app.post('/add_boring_to_project', (req, res) => {
     try {
         console.log("add_boring_to_project: req.body: ", req.body);
-        res.json(req.body);
+        db.create_log(req.body.project_name, req.body.project_id, req.body.project_location);
         res.status(200).send();
     } catch (err) {
         console.log(err);
     }
   })
+
+// get request on the root directory, displays a list of projects in json format on the broswer
+// written by: Max and Louis
+app.get('/get_log_names', async (req, res) => {
+  try {
+      const results = await db.get_all_log_names();
+      res.json(results);
+  } catch (err) {
+      console.log(err);
+  }
+})
 
 // get request at url /projects/project_id, displays projects with project_id=project_id from
 // elephantsql in json format on the broswer
