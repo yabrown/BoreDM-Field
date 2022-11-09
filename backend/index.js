@@ -40,9 +40,10 @@ app.post('/add_project', (req, res) => {
 })
 
 app.post('/add_boring_to_project', (req, res) => {
+    console.log("matched correctly")
     try {
         console.log("add_boring_to_project: req.body: ", req.body);
-        db.create_log(req.body.project_name, req.body.project_id, req.body.project_location);
+        db.create_log(req.body.boring_name, req.body.project_id);
         res.status(200).send();
     } catch (err) {
         console.log(err);

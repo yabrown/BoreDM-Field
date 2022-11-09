@@ -16,14 +16,14 @@ const Project = ({navigation, route}: Props) => {
       <Header/>
       <Text>{route.params.name}</Text>
       <SelectBoringList id={route.params.id} navigate={navigation}/>
-      <AddBoringModal/>
+      <AddBoringModal project_id={route.params.id}/>
 
     </View>
   );
 }
 
 // The button that deals with submitting a new boring
-const SubmitBoring = ({name}) => {
+const SubmitBoring = ({name, id}) => {
     const onPress = async () => {
         try {
             let fetched = await fetch(`${PORT}:4000/add_boring_to_project`, {
@@ -31,7 +31,7 @@ const SubmitBoring = ({name}) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({boring_name: name})
+                body: JSON.stringify({boring_name: name, project_id: id})
             })
             let json_text = await fetched.json()
             console.log(json_text)
@@ -47,7 +47,7 @@ const SubmitBoring = ({name}) => {
         accessibilityLabel="Learn more about this purple button"/>);
   }
 
-const AddBoringModal = () => {
+const AddBoringModal = ({project_id}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [textBoring, setTextBoring] = useState("");
     
@@ -69,7 +69,7 @@ const AddBoringModal = () => {
                     onChangeText={setTextBoring}
                     placeholder = "Enter Boring Name"
                 />
-                <SubmitBoring name={textBoring}/>
+                <SubmitBoring name={textBoring} id={project_id}/>
                 <Button 
                     onPress={() => setModalVisible(false)}
                     title="Done"

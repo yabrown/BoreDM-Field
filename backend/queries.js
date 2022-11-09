@@ -200,8 +200,8 @@ async function get_log(project_id, log_id){
 
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Max
-async function create_log(boring_name) {
-  const new_log = await Log.create({ name:boring_name });
+async function create_log(boring_name, project_id) {
+  const new_log = await Log.create({ name:boring_name, project_id: project_id});
   return new_log.id;
 }
 
@@ -214,5 +214,6 @@ module.exports = {
   update_project,
   get_all_log_names,
   get_log,
+  create_log,
   client,
 }
