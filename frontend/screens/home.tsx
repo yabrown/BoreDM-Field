@@ -23,8 +23,7 @@ const SubmitProject = (props) => {
               },
               body: JSON.stringify({project_name: props.name, project_client: props.client, project_location: props.location})
           })
-          let json_text = await fetched.json()
-          console.log(json_text)
+          console.log("status:", fetched.status)
       } catch(error) {
               console.error('Error:', error);
           }
@@ -75,17 +74,17 @@ const AddProjectModal = () => {
             <View style={styles.modalView}>
                 <TextInput
                     style={styles.input}
-                    onChangeText={setTextProject}
+                    onChangeText={(text) => setTextProject(text)}
                     placeholder = "Enter Project Name"
                 />
                 <TextInput
                     style={styles.input}
-                    onChangeText={setTextClient}
+                    onChangeText={(text) => setTextClient(text)}
                     placeholder = "Enter Client Name"
                 />
                 <TextInput
                     style={styles.input}
-                    onChangeText={setTextLocation}
+                    onChangeText={(text) => setTextLocation(text)}
                     placeholder = "Enter Location"
                 />
                 <SubmitProject name={textProject} client={textClient} location={textLocation}/>

@@ -33,7 +33,7 @@ app.get('/testing', async (req, res) => {
 app.post('/add_project', (req, res) => {
   try {
       db.add_project(req.body.project_name, req.body.project_id, req.body.project_location)
-      res.status(200).send();
+      res.status(200).send("Project added");
   } catch (err) {
       console.log(err);
   }
