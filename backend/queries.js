@@ -100,7 +100,7 @@ const Coordinate = sequelize.define("Coordinate", {
                                                   refusal_length: 0,});
 
 
-  const project_2 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
+  const project_2 = await Project.create({ name: "Robert", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
   const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
   const classification_2 = await Classification.create({  log_id : log_2.id,
@@ -148,14 +148,6 @@ async function get_all_project_names() {
   return result;
 }
 
-// uses the client connection above to query for a list of projects from db
-// written by: Max and Louis
-async function get_all_log_names() {
-  const result = await Project.findAll({
-    // attributes: ['name']
-  });
-  return result;
-}
 
 // uses the client connection above to query for the projects with project_id=project_id from elephantsql
 // written by: Max and Louis

@@ -10,7 +10,8 @@ app.use(express.urlencoded({ extended: true }))
 
 // get request on the root directory, displays a list of projects in json format on the broswer
 // written by: Max and Louis
-app.get('/', async (req, res) => {
+app.get('/get_all_project_names', async (req, res) => {
+    console.log("doing default theing")
   try {
       const results = await db.get_all_project_names();
       res.json(results);
@@ -50,9 +51,11 @@ app.post('/add_boring_to_project', (req, res) => {
 
 // get request on the root directory, displays a list of projects in json format on the broswer
 // written by: Max and Louis
-app.get('/get_log_names', async (req, res) => {
+app.post('/get_log_names', async (req, res) => {
+    console.log("matched request to getlognames, id is ")
+    console.log(req.body)
   try {
-      const results = await db.get_all_log_names();
+      const results = await db.get_all_log_names(req.body.project_id);
       res.json(results);
   } catch (err) {
       console.log(err);

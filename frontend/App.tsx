@@ -5,7 +5,7 @@ import Project from './screens/project'
 
 type RootStackParamList = {
     Home: undefined;
-    Project: { notes: string };
+    Project: { name: string, id: number};
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -15,7 +15,7 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator initialRouteName='Home'>
                 <Stack.Screen name='Home' component={Home} options={{title: 'BoreDM Home'}} />
-                <Stack.Screen name='Project' component={Project} options={{title: 'Project Details'}} initialParams={{notes: "default"}} />
+                <Stack.Screen name='Project' component={Project} options={{title: 'Project Details'}} initialParams={{name: "default"}} />
             </Stack.Navigator>
         </NavigationContainer>
     ); 

@@ -16,7 +16,7 @@ const SelectBoringButton = ({ name, navigate }) => {
     )
   }
 
-const SelectBoringList = ({ navigate }) => {
+const SelectBoringList = ({ id, navigate }) => {
     
   // the data state will eventually be filled with array of boring types
   type boring = {
@@ -28,8 +28,15 @@ const SelectBoringList = ({ navigate }) => {
 
   useEffect(() => {
       const GetBorings: () => void = async () => {
+        console.log(id)
           try{
-              const fetched = await fetch(`${PORT}:4000/`);
+              const fetched = await fetch(`${PORT}:4000/get_log_names`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({project_id: id})
+            });
               const borings_list = await fetched.json()
               setData(borings_list)
           } catch(error) {
@@ -41,6 +48,7 @@ const SelectBoringList = ({ navigate }) => {
 
   return(
       <View style={{height: 300}}>
+        <Text> Project ID: {id}</Text>
           <ScrollView style={styles.scrollView}>
               {data.map(boring => (
                   <SelectBoringButton name={boring.name} key={uuid()} navigate={navigate}/>

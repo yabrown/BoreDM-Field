@@ -7,14 +7,15 @@ import { PORT } from '../port'
 
 type RootStackParamList = {
   Home: undefined;
-  Project: { notes: string };
+  Project: { name: string, id: number };
 };
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
-const Project = ({route}: Props) => {
+const Project = ({navigation, route}: Props) => {
   return (
     <View style={styles.container}>
       <Header/>
-      <Text>{route.params.notes}</Text>
+      <Text>{route.params.name}</Text>
+      <SelectBoringList id={route.params.id} navigate={navigation}/>
       <AddBoringModal/>
 
     </View>
