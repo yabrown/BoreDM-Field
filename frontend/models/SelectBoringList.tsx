@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet } from "react-native";
 import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
+import { PORT } from '../port'
 
 const SelectBoringButton = ({ name, navigate }) => {
     return(
@@ -28,7 +29,7 @@ const SelectBoringList = ({ navigate }) => {
   useEffect(() => {
       const GetBorings: () => void = async () => {
           try{
-              const fetched = await fetch('http://localhost:4000/');
+              const fetched = await fetch(`${PORT}:4000/`);
               const borings_list = await fetched.json()
               setData(borings_list)
           } catch(error) {

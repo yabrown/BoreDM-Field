@@ -10,7 +10,7 @@ const sequelize = new Sequelize(conString, {
     min: 0,
     idle: 10000
 },
-logging: false
+logging: true
 });
 
 // Written by: Louis

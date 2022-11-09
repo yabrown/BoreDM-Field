@@ -3,6 +3,7 @@ import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Tex
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SelectBoringList from '../models/SelectBoringList';
 import Header from '../common/header';
+import { PORT } from '../port'
 
 type RootStackParamList = {
   Home: undefined;
@@ -24,7 +25,7 @@ const Project = ({route}: Props) => {
 const SubmitBoring = ({name}) => {
     const onPress = async () => {
         try {
-            let fetched = await fetch('http://localhost:4000/add_boring_to_project', {
+            let fetched = await fetch(`${PORT}:4000/add_boring_to_project`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
