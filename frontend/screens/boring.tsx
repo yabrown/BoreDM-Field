@@ -7,8 +7,9 @@ import Header from '../common/header';
 type RootStackParamList = {
   Home: undefined;
   Project: { notes: string };
+  Boring: { notes: string };
 };
-type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'Boring'>;
 const Project = ({route}: Props) => {
   return (
     <View style={styles.container}>
@@ -21,7 +22,7 @@ const Project = ({route}: Props) => {
 }
 
 // The button that deals with submitting a new boring
-const SubmitBoring = ({name}) => {
+const SubmitBoring = (props) => {
     const onPress = async () => {
         try {
             let fetched = await fetch('http://localhost:4000/add_boring_to_project', {
@@ -29,7 +30,7 @@ const SubmitBoring = ({name}) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({boring_name: name})
+                body: JSON.stringify({boring_name: props.name})
             })
             let json_text = await fetched.json()
             console.log(json_text)

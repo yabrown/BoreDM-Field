@@ -29,15 +29,25 @@ app.get('/testing', async (req, res) => {
   }
 })
 
-app.post('/post', (req, res) => {
+app.post('/add_project', (req, res) => {
   try {
-      console.log("req.body: ", req.body);
+      console.log("add_project: req.body: ", req.body);
       res.json(req.body);
       res.status(200).send();
   } catch (err) {
       console.log(err);
   }
 })
+
+app.post('/add_boring_to_project', (req, res) => {
+    try {
+        console.log("add_boring_to_project: req.body: ", req.body);
+        res.json(req.body);
+        res.status(200).send();
+    } catch (err) {
+        console.log(err);
+    }
+  })
 
 // get request at url /projects/project_id, displays projects with project_id=project_id from
 // elephantsql in json format on the broswer

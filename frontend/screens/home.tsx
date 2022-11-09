@@ -16,7 +16,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 const SubmitProject = (props) => {
   const onPress = async () => {
       try {
-          let fetched = await fetch('http://localhost:4000/post', {
+          let fetched = await fetch('http://localhost:4000/add_project', {
               method: 'POST', // or 'PUT'
               headers: {
                   'Content-Type': 'application/json',
