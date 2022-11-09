@@ -51,20 +51,22 @@ const SelectProjectList = ({ navigate }) => {
   )
 }
 
-const showViews = 0
+const showViews = 3
 const styles = StyleSheet.create({
 
   touchable: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#68a0cf',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
-    borderColor: 'red'
+    padding: 5,
+    margin: 5,
   },
   scrollView: {
     borderWidth: showViews,
-    borderColor: 'red'
+    borderColor: 'white',
+    backgroundColor: 'white'
   },
   button: {
     alignItems: 'center',
@@ -73,9 +75,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: 'rgba(0,0,0,0)',
-    borderWidth: showViews,
-    borderColor: 'red'
   },
 
 });

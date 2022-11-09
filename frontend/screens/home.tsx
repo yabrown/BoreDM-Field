@@ -3,6 +3,7 @@ import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Tex
 import Header from '../common/header';
 import SelectProjectList from '../models/SelectProjectList';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { PORT } from '../port'
 
 type RootStackParamList = {
   Home: undefined;
@@ -16,7 +17,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 const SubmitProject = (props) => {
   const onPress = async () => {
       try {
-          let fetched = await fetch('http://localhost:4000/add_project', {
+          let fetched = await fetch(`${PORT}:4000/add_project`, {
               method: 'POST', // or 'PUT'
               headers: {
                   'Content-Type': 'application/json',

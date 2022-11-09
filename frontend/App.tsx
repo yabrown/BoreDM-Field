@@ -19,31 +19,4 @@ export default function App() {
             </Stack.Navigator>
         </NavigationContainer>
     ); 
-}
-
-// const AddProjectButton = () => {
-//      return(
-//         <Button
-//         onPress={onPress}
-//         title="Add Project"
-//         color="#841584"
-//         accessibilityLabel="Learn more about this purple button"/>
-//      )
-// }
-
-// const UselessTextInput = () => {
-//     const [text, onChangeText] = React.useState("Enter Project name");
-  
-//     return (
-//       <SafeAreaView>
-//         <TextInput
-//           onChangeText={onChangeText}
-//           value={text}
-//         />
-//       </SafeAreaView>
-//     );
-//   };
-
-// Returns view containing "BOREDM Field" text
-
-// Takes in a name, returns a button that takes you to the project page
+    }
