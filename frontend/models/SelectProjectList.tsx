@@ -4,13 +4,22 @@ import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 import { PORT } from '../port'
 
-const SelectProjectButton = ({ name, id, navigate }) => {
+// the data state will eventually be filled with array of project types
+type project = {
+    id:         number
+    name:       string
+    client:     string
+    location:   string
+    notes:      string
+  }
+
+const SelectProjectButton = ({project: project, navigate }) => {
     return(
          <TouchableHighlight style={styles.touchable} 
-         onPress={() => navigate.navigate('Project', {name, id})}
+         onPress={() => navigate.navigate('Project', {project})}
           activeOpacity={.8} underlayColor={"#00000011"}>
              <View style={styles.button}>
-                 <Text>{name}</Text>
+                 <Text>{project.name}</Text>
              </View>
          </TouchableHighlight>
     )
@@ -18,19 +27,15 @@ const SelectProjectButton = ({ name, id, navigate }) => {
 
 const SelectProjectList = ({ navigate }) => {
     
-  // the data state will eventually be filled with array of project types
-  type project = {
-          name: string;
-          id: number
-  };
+  
   // useState is generic function, so can pass in the type
-  const [data, setData] = useState<project[]>([{name: "default", id: -1}])
+  const [data, setData] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
   //const [data, setData] = useState<void>()
 
   useEffect(() => {
       const GetProjects: () => void = async () => {
           try{
-              const fetched = await fetch(`${PORT}:4000/get_all_project_names`);
+              const fetched = await fetch(`${PORT}:4000/get_all_projects`);
               const projects_list = await fetched.json()
               setData(projects_list)
           } catch(error) {
@@ -44,7 +49,7 @@ const SelectProjectList = ({ navigate }) => {
       <View style={{height: 300}}>
           <ScrollView style={styles.scrollView}>
               {data.map(project => (
-                  <SelectProjectButton name={project.name} id={project.id} key={uuid()} navigate={navigate}/>
+                  <SelectProjectButton project = {project} key={uuid()} navigate={navigate}/>
               ))}
           </ScrollView>
       </View>

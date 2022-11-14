@@ -5,16 +5,24 @@ import SelectProjectList from '../models/SelectProjectList';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PORT } from '../port'
 
+interface project  {
+    id:         number
+    name:       string
+    client:     string
+    location:   string
+    notes:      string
+  }
+
 type RootStackParamList = {
   Home: undefined;
-  Project: { notes: string };
+  Project: { project: project };
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 
 // The component that deals with the adding a new project
-const SubmitProject = (props) => {
+const SubmitProject = ( props: {name: string, client: string, location: string, notes: string}) => {
   const onPress = async () => {
       try {
           let fetched = await fetch(`${PORT}:4000/add_project`, {
@@ -22,7 +30,7 @@ const SubmitProject = (props) => {
               headers: {
                   'Content-Type': 'application/json',
               },
-              body: JSON.stringify({project_name: props.name, project_client: props.client, project_location: props.location})
+              body: JSON.stringify({project_name: props.name, client_name: props.client, project_location: props.location, project_notes: props.notes})
           })
           console.log("status:", fetched.status)
       } catch(error) {
@@ -48,17 +56,13 @@ const Title = (props: { name:string }) =>{
   )
 }
 
-interface project {
-    theClass: string
-    columnTitle: string
-    onClickAction: string
-  }
 
 const AddProjectModal = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [textProject, setTextProject] = useState("");
     const [textClient, setTextClient] = useState("");
     const [textLocation, setTextLocation] = useState("");
+    const [textNotes, setTextNotes] = useState("");
     
     return(
     <View>
@@ -88,7 +92,12 @@ const AddProjectModal = () => {
                     onChangeText={(text) => setTextLocation(text)}
                     placeholder = "Enter Location"
                 />
-                <SubmitProject name={textProject} client={textClient} location={textLocation}/>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(text) => setTextNotes(text)}
+                    placeholder = "Enter Notes"
+                />
+                <SubmitProject name={textProject} client={textClient} location={textLocation} notes={textNotes}/>
                 <Button 
                     onPress={() => setModalVisible(false)}
                     title="Done"
@@ -107,8 +116,6 @@ const AddProjectModal = () => {
 }
 
 const Home = ({ navigation }: Props) => {
-
-  const [text, setText] = useState("Enter Project name");
 
   return (
     <View style={styles.container}>

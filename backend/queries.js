@@ -141,7 +141,7 @@ client.connect(function(err) {
 
 // uses the client connection above to query for a list of projects from db
 // written by: Max and Louis
-async function get_all_project_names() {
+async function get_all_projects() {
   const result = await Project.findAll({
     // attributes: ['name']
   });
@@ -158,15 +158,15 @@ async function get_project(project_id) {
 
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Max
-async function add_project(project_name, client_name, location) {
-  const new_proj = await Project.create({ name:project_name, client:client_name, location:location});
+async function add_project(project_name, client_name, location, notes) {
+  const new_proj = await Project.create({ name:project_name, client:client_name, location:location, notes: notes});
   return new_proj.id;
 }
 
 // updates project associated with project_id
 // writteb by; Max
 async function update_project(project_id, project_name, client_name, location, project_notes) {
-  const updated_proj = await Project.update({ name:project_name, client:client_name, location:location}, {
+  const updated_proj = await Project.update({ name:project_name, client:client_name, location:location, notes: project_notes}, {
     where: { id: project_id },
     returning: true,
     raw: true,
@@ -200,15 +200,15 @@ async function get_log(project_id, log_id){
 
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Max
-async function create_log(boring_name, project_id) {
-  const new_log = await Log.create({ name:boring_name, project_id: project_id});
+async function create_log(project_id, boring_name, driller, logger, notes) {
+  const new_log = await Log.create({  project_id: project_id, name:boring_name,driller: driller, logger:logger, notes:notes });
   return new_log.id;
 }
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
-  get_all_project_names,
+  get_all_projects,
   get_project,
   add_project,
   update_project,
