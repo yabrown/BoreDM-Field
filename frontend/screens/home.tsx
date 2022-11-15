@@ -3,8 +3,8 @@ import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Tex
 import Header from '../common/header';
 import SelectProjectList from '../models/SelectProjectList';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { PORT } from '../port'
-import { Box, Flex } from "@react-native-material/core";
+import { PORT } from '../port';
+import { Box, Flex, Spacer } from "@react-native-material/core";
 
 
 interface project  {
@@ -128,11 +128,12 @@ const Home = ({ navigation }: Props) => {
             <Header/>
           </Box>
           <Box>
-            <Title name="Projects List"/>
+            <Title name="Projects"/>
           </Box>
           <Box>
             <SelectProjectList navigate={navigation}/>
           </Box>
+          <Spacer />
           <Box>
             <AddProjectModal/>
           </Box>

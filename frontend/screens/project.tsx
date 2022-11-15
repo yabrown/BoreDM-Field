@@ -3,7 +3,9 @@ import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Tex
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SelectBoringList from '../models/SelectBoringList';
 import Header from '../common/header';
-import { PORT } from '../port'
+import { PORT } from '../port';
+import { Box, Flex, Spacer } from "@react-native-material/core";
+
 
 interface project  {
     id:         number
@@ -28,16 +30,33 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
 
+const Title = (props: { name:string }) =>{
+  return(
+      <View style={styles.titleView}>
+          <Text style={{fontWeight:'500', fontSize: 20, color: 'black'}}>{props.name}</Text>
+      </View>
+  )
+}
+
 const Project = ({navigation, route}: Props) => {
   return (
     <View style={styles.container}>
-      <Header/>
-      <Text>{route.params.project.name}</Text>
-      <SelectBoringList id={route.params.project.id} navigate={navigation}/>
-      <AddBoringModal project_id={route.params.project.id}/>
-
-      <EditProjectModal project={route.params.project}/>
-
+        <Flex fill flex-grow>
+          <Box>
+            <Header/>
+          </Box>
+          <Box>
+            <Title name={route.params.project.name}/>
+          </Box>
+          <Box>
+          <SelectBoringList id={route.params.project.id} navigate={navigation}/>
+          </Box>
+          <Spacer />
+          <Box>
+            <AddBoringModal project_id={route.params.project.id}/>
+            <EditProjectModal project={route.params.project}/>
+          </Box>
+        </Flex>
     </View>
   );
 }
@@ -220,7 +239,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
-    borderColor: 'red'
+    borderColor: 'red',
+    padding: 10,
   },
   titleView: {
     height: 30, 
