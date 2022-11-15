@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet } from "react-native";
-import { TouchableHighlight, View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 import { PORT } from '../port'
-import { ListItem } from "@react-native-material/core";
+import { ListItem, Box, Divider} from "@react-native-material/core";
+import { Stack, HStack, VStack } from 'react-native-flex-layout';
+
 
 // the data state will eventually be filled with array of project types
 type project = {

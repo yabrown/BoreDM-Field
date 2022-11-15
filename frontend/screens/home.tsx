@@ -4,6 +4,8 @@ import Header from '../common/header';
 import SelectProjectList from '../models/SelectProjectList';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PORT } from '../port'
+import { Box, Flex } from "@react-native-material/core";
+
 
 interface project  {
     id:         number
@@ -111,7 +113,8 @@ const AddProjectModal = () => {
             onPress={() => setModalVisible(true)}
             title="+Project"
             color="#000000"
-            accessibilityLabel="Activates popup Modal for project detail entry"/>
+            accessibilityLabel="Activates popup Modal for project detail entry"
+      />
     </View>
     )
 }
@@ -120,11 +123,21 @@ const Home = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
-                    <Header/>
-                    <Title name="Projects List"/>
-                    <SelectProjectList navigate={navigation}/>
-                    <AddProjectModal/>
-                </View>
+        <Flex fill flex-grow>
+          <Box>
+            <Header/>
+          </Box>
+          <Box>
+            <Title name="Projects List"/>
+          </Box>
+          <Box>
+            <SelectProjectList navigate={navigation}/>
+          </Box>
+          <Box>
+            <AddProjectModal/>
+          </Box>
+        </Flex>
+    </View>
   )
 }
 
@@ -139,7 +152,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
-    borderColor: 'red'
+    borderColor: 'red',
+    padding: 10,
   },
   titleView: {
     height: 30, 
