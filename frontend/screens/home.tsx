@@ -22,8 +22,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 
 // The component that deals with the adding a new project
-const SubmitProject = ( props: {name: string, client: string, location: string, notes: string}) => {
+const SubmitProject = ( props: {name: string, client: string, location: string, notes: string, setModalVisible}) => {
   const onPress = async () => {
+    props.setModalVisible(false)
       try {
           let fetched = await fetch(`${PORT}:4000/add_project`, {
               method: 'POST', // or 'PUT'
@@ -97,7 +98,7 @@ const AddProjectModal = () => {
                     onChangeText={(text) => setTextNotes(text)}
                     placeholder = "Enter Notes"
                 />
-                <SubmitProject name={textProject} client={textClient} location={textLocation} notes={textNotes}/>
+                <SubmitProject name={textProject} client={textClient} location={textLocation} notes={textNotes} setModalVisible={setModalVisible}/>
                 <Button 
                     onPress={() => setModalVisible(false)}
                     title="Done"

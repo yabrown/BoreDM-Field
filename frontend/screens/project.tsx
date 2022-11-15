@@ -4,7 +4,6 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SelectBoringList from '../models/SelectBoringList';
 import Header from '../common/header';
 import { PORT } from '../port'
-import { DefaultNavigatorOptions } from '@react-navigation/native';
 
 interface project  {
     id:         number
@@ -44,8 +43,9 @@ const Project = ({navigation, route}: Props) => {
 }
 
 // The button that deals with submitting a new boring
-const SubmitBoring = ({log}) => {
+const SubmitBoring = ({log, setModalVisible}) => {
     const onPress = async () => {
+        setModalVisible(false)
         try {
             let fetched = await fetch(`${PORT}:4000/add_boring_to_project`, {
                 method: 'POST', // or 'PUT'
@@ -69,15 +69,16 @@ const SubmitBoring = ({log}) => {
   }
 
 // The component that deals with the adding a new project
-const UpdateProject = ( props:{project:project}) => {
+const UpdateProject = ( {project, setModalVisible}) => {
     const onPress = async () => {
+        setModalVisible(false)
         try {
             let fetched = await fetch(`${PORT}:4000/update_project`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({project_id: props.project.id, project_name: props.project.name, client_name: props.project.client, project_location: props.project.location, project_notes: props.project.notes})
+                body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
             })
             console.log("status:", fetched.status)
         } catch(error) {
@@ -131,7 +132,7 @@ const AddBoringModal = ({project_id}) => {
                     onChangeText={setTextNotes}
                     placeholder = "Log Notes"
                 />
-                <SubmitBoring log={{project_id: project_id, name: textBoring, driller: textDrilled, logger: textLogged, notes: textNotes}}/>
+                <SubmitBoring setModalVisible={setModalVisible} log={{project_id: project_id, name: textBoring, driller: textDrilled, logger: textLogged, notes: textNotes}} />
                 <Button 
                     onPress={() => setModalVisible(false)}
                     title="Done"
@@ -189,7 +190,7 @@ const EditProjectModal = ({project}) => {
                     onChangeText={(text) => setTextNotes(text)}
                     value={textNotes}
                 />
-                <UpdateProject project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
+                <UpdateProject setModalVisible={setModalVisible} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
                 <Button 
                     onPress={() => setModalVisible(false)}
                     title="Done"
