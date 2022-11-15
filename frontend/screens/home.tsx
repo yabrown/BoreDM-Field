@@ -111,7 +111,7 @@ const AddProjectModal = () => {
       </Modal>
       <Button 
             onPress={() => setModalVisible(true)}
-            title="+Project"
+            title="+ Project"
             color="#000000"
             accessibilityLabel="Activates popup Modal for project detail entry"
       />
@@ -123,7 +123,7 @@ const Home = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
-        <Flex fill flex-grow>
+        <Flex fill flex-grow style={{width:"100%"}}>
           <Box>
             <Header/>
           </Box>
@@ -134,7 +134,7 @@ const Home = ({ navigation }: Props) => {
             <SelectProjectList navigate={navigation}/>
           </Box>
           <Spacer />
-          <Box>
+          <Box style={{ margin: 4 }}>
             <AddProjectModal/>
           </Box>
         </Flex>
@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: showViews,
     borderColor: 'red',
     padding: 10,
