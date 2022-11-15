@@ -3,16 +3,12 @@ import { StyleSheet } from "react-native";
 import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 import { PORT } from '../port'
+import { ListItem } from "@react-native-material/core";
+
 
 const SelectBoringButton = ({ name, navigate }) => {
     return(
-         <TouchableHighlight style={styles.touchable} 
-          onPress={() => navigate.navigate('Boring', {name})}
-          activeOpacity={.8} underlayColor={"#00000011"}>
-             <View style={styles.button}>
-                 <Text>{name}</Text>
-             </View>
-         </TouchableHighlight>
+      <ListItem title={name} onPress={() => navigate.navigate('Boring', {name})}/>
     )
   }
 

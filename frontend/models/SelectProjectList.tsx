@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 import { PORT } from '../port'
+import { ListItem } from "@react-native-material/core";
 
 // the data state will eventually be filled with array of project types
 type project = {
@@ -15,13 +16,7 @@ type project = {
 
 const SelectProjectButton = ({project: project, navigate }) => {
     return(
-         <TouchableHighlight style={styles.touchable} 
-         onPress={() => navigate.navigate('Project', {project})}
-          activeOpacity={.8} underlayColor={"#00000011"}>
-             <View style={styles.button}>
-                 <Text>{project.name}</Text>
-             </View>
-         </TouchableHighlight>
+      <ListItem title={project.name} onPress={() => navigate.navigate('Project', {project})}/>
     )
   }
 
