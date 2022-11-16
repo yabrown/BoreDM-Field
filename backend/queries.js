@@ -150,9 +150,9 @@ async function get_all_projects() {
 
 // uses the client connection above to query for a list of projects from db
 // written by: Max and Louis
-async function get_all_samples() {
+async function get_all_samples(log_id) {
   const result = await Sample.findAll({
-    // attributes: ['name']
+    where: { id: log_id },
   });
   return result;
 }
