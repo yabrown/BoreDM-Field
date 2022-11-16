@@ -48,6 +48,15 @@ app.post('/update_project', (req, res) => {
     }
   })
 
+  app.post('/update_log', (req, res) => {
+    try {
+        db.update_log(req.body.log_id, req.body.log_name ,req.body.client_name, req.body.driller, req.body.logger, req.body.notes)
+        res.status(200).send("Log added");
+    } catch (err) {
+        console.log(err);
+    }
+  })
+
 app.post('/add_boring_to_project', (req, res) => {
     console.log("matched correctly")
     try {

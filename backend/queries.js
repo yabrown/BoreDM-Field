@@ -198,10 +198,21 @@ async function get_log(project_id, log_id){
   return log;
 }
 
+// updates log associated with log_id
+// writteb by; Max
+async function update_log(log_id, name, driller, logger, notes, location__id) {
+  const updated_log = await Log.update({ id:log_id, name:name, driller:driller, logger:logger, notes:notes, location:location__id}, {
+    where: { id: log_id },
+    returning: true,
+    raw: true,
+  });
+  return updated_log[1][0].id;
+}
+
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Max
-async function create_log(project_id, boring_name, driller, logger, notes) {
-  const new_log = await Log.create({  project_id: project_id, name:boring_name,driller: driller, logger:logger, notes:notes });
+async function create_log(project_id, log_name, driller, logger, notes) {
+  const new_log = await Log.create({ project_id: project_id, name:log_name, driller: driller, logger:logger, notes:notes });
   return new_log.id;
 }
 
@@ -212,6 +223,7 @@ module.exports = {
   get_project,
   add_project,
   update_project,
+  update_log,
   get_all_log_names,
   get_log,
   create_log,
