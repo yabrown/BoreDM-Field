@@ -86,11 +86,7 @@ const UpdateProject = ( {project, setModalVisible}) => {
                 console.error('Error:', error);
             }
     }
-    return (<Button
-        onPress={onPress}
-        title="Update Project"
-        color="#000000"
-        accessibilityLabel="Learn more about this purple button"/>);
+    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
   }
 
 const AddLogModal = ({project_id}) => {
@@ -127,64 +123,40 @@ const AddLogModal = ({project_id}) => {
   );
 }
 
+
 const EditProjectModal = ({project}) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [textProject, setTextProject] = useState(project.name);
-    const [textClient, setTextClient] = useState(project.client);
-    const [textLocation, setTextLocation] = useState(project.location);
-    const [textNotes, setTextNotes] = useState(project.notes);
-    
-    return(
-    <View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
 
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextProject(text)}
-                    value={textProject}
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextClient(text)}
-                    value={textClient}
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextLocation(text)}
-                    value={textLocation}
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextNotes(text)}
-                    value={textNotes}
-                />
-                <UpdateProject setModalVisible={setModalVisible} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
-                <Button 
-                    onPress={() => setModalVisible(false)}
-                    title="Done"
-                    color="#000000"
-                    accessibilityLabel="Gets rid of modal"/>
-           </View>
-        </View>
-      </Modal>
-      <Button 
-            onPress={() => setModalVisible(true)}
-            title="Edit Project"
-            color="#000000"
-            accessibilityLabel="Activates popup Modal for project detail entry"/>
-    </View>
-    )
+  const [textProject, setTextProject] = useState(project.name);
+  const [textClient, setTextClient] = useState(project.client);
+  const [textLocation, setTextLocation] = useState(project.location);
+  const [textNotes, setTextNotes] = useState(project.notes);
+
+  return (
+      <View>
+      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Project Metadata</PaperButton>
+        <Portal>
+          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
+            <Dialog.Title>New Log</Dialog.Title>
+            <Dialog.Content>
+              <View>
+                <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textClient} label="Client Name" mode="outlined" onChangeText={(text) => setTextClient(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textLocation} label="Location" mode="outlined" onChangeText={(text) => setTextLocation(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
+              <UpdateProject setModalVisible={setVisible} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
+  );
 }
-
 
 const showViews = 0
 //TODO: change this so that it only calulcates once, in the right place
