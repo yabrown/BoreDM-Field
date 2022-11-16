@@ -1,10 +1,11 @@
 import React, { useState} from 'react'
-import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Text, View, SafeAreaView} from "react-native";
+import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, Text, View, SafeAreaView} from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SelectLogList from '../models/SelectLogList';
 import Header from '../common/header';
 import { PORT } from '../port';
 import { Box, Flex, Spacer } from "@react-native-material/core";
+import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
@@ -20,6 +21,7 @@ const Title = (props: { name:string }) =>{
 const Project = ({navigation, route}: Props) => {
   return (
     <View style={styles.container}>
+      <Provider>
         <Flex fill flex-grow style={{width:"100%"}}>
           <Box>
             <Header/>
@@ -40,6 +42,7 @@ const Project = ({navigation, route}: Props) => {
             </Box>
           </Box>
         </Flex>
+      </Provider>
     </View>
   );
 }
@@ -49,25 +52,21 @@ const SubmitLog = ({log, setModalVisible}) => {
     const onPress = async () => {
         setModalVisible(false)
         try {
-            let fetched = await fetch(`${PORT}/add_log_to_project`, {
+            let fetched = await fetch(`${PORT}/add_boring_to_project`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({name: log.name, project_id: log.project_id, driller:log.driller, logger: log.logger, notes:log.notes})
             })
-            let json_text = await fetched.json()
-            console.log(json_text)
+            // let json_text = await fetched.json()
+            // console.log(json_text)
         } catch(error) {
                 console.error('Error:', error);
             }
     }
   
-    return (<Button
-        onPress={onPress}
-        title="Add Log"
-        color="#000000"
-        accessibilityLabel="Learn more about this purple button"/>);
+    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
   }
 
 // The component that deals with the adding a new project
@@ -95,61 +94,37 @@ const UpdateProject = ( {project, setModalVisible}) => {
   }
 
 const AddLogModal = ({project_id}) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [textLog, setTextLog] = useState("");
-    const [textDrilled, setTextDrilled] = useState("");
-    const [textLogged, setTextLogged] = useState("");
-    const [textNotes, setTextNotes] = useState("");
-    
-    return(
-    <View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
 
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setTextLog}
-                    placeholder = "Log Name"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setTextDrilled}
-                    placeholder = "Drilled By"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setTextLogged}
-                    placeholder = "Logged By"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setTextNotes}
-                    placeholder = "Log Notes"
-                />
-                <SubmitLog setModalVisible={setModalVisible} log={{project_id: project_id, name: textLog, driller: textDrilled, logger: textLogged, notes: textNotes}} />
-                <Button 
-                    onPress={() => setModalVisible(false)}
-                    title="Done"
-                    color="#000000"
-                    accessibilityLabel="Gets rid of modal"/>
-           </View>
-        </View>
-      </Modal>
-      <Button 
-            onPress={() => setModalVisible(true)}
-            title="+ Log"
-            color="#000000"
-            accessibilityLabel="Activates popup Modal for project detail entry"/>
-    </View>
-    )
+  const [textLog, setTextLog] = useState("");
+  const [textDrilled, setTextDrilled] = useState("");
+  const [textLogged, setTextLogged] = useState("");
+  const [textNotes, setTextNotes] = useState("");
+
+  return (
+      <View>
+      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Log</PaperButton>
+        <Portal>
+          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
+            <Dialog.Title>New Log</Dialog.Title>
+            <Dialog.Content>
+              <View>
+                <TextInput value={textLog} label="Log Name" mode="outlined" onChangeText={(text) => setTextLog(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textDrilled} label="Drilled by" mode="outlined" onChangeText={(text) => setTextDrilled(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textLogged} label="Logged by" mode="outlined" onChangeText={(text) => setTextLogged(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
+              <SubmitLog setModalVisible={setVisible} log={{project_id: project_id, name: textLog, driller: textDrilled, logger: textLogged, notes: textNotes}} />
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
+  );
 }
 
 const EditProjectModal = ({project}) => {
