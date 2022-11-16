@@ -1,10 +1,11 @@
 import React, { useState} from 'react'
-import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Text, View, SafeAreaView, ScrollView} from "react-native";
+import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, Text, View, SafeAreaView, ScrollView} from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SelectSampleList from '../models/SelectSampleList';
 import Header from '../common/header';
 import { PORT } from '../port'
 import { Box, Flex, Spacer } from "@react-native-material/core";
+import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
 
@@ -19,6 +20,7 @@ const Title = (props: { name:string }) =>{
 const Log = ({route, navigation}: Props) => {
   return (
     <View style={styles.container}>
+      <Provider>
         <Flex fill flex-grow style={{width:"100%"}}>
           <Box>
             <Header/>
@@ -39,129 +41,83 @@ const Log = ({route, navigation}: Props) => {
             </Box>
           </Box>
         </Flex>
+      </Provider>
     </View>
   );
 }
 
-// The button that deals with submitting a new Sample
-const SubmitSample = ({sample, setModalVisible}) => {
-    const onPress = async () => {
-        setModalVisible(false)
-        try {
-            let fetched = await fetch(`${PORT}/add_sample`, {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    log_id: sample.log_id, 
-                    start_depth: sample.start_depth, 
-                    end_depth: sample.end_depth,
-                    length: sample.length,
-                    blows_1: sample.blows_1,
-                    blows_2: sample.blows_2,
-                    blows_3:sample.blows_3,
-                    blows_4:sample.blows_4,
-                    description: sample.description,
-                    refusal_length: sample.refusal_length,
-                    sampler_type: sample.sampler_type
-                })
-            })
-            let json_text = await fetched.json()
-            console.log(json_text)
-        } catch(error) {
-                console.error('Error:', error);
-            }
-    }
-  
-    return (<Button
-        onPress={onPress}
-        title="Add Sample"
-        color="#000000"
-        accessibilityLabel="Learn more about this purple button"/>);
+// The component that deals with the adding a new project
+const SubmitSample = ({sample, setVisible}) => {
+  const onPress = async () => {
+    setVisible(false)
+      try {
+          let fetched = await fetch(`${PORT}/add_sample`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                                    log_id: sample.log_id, 
+                                    start_depth: sample.start_depth, 
+                                    end_depth: sample.end_depth,
+                                    length: sample.length,
+                                    blows_1: sample.blows_1,
+                                    blows_2: sample.blows_2,
+                                    blows_3:sample.blows_3,
+                                    blows_4:sample.blows_4,
+                                    description: sample.description,
+                                    refusal_length: sample.refusal_length,
+                                    sampler_type: sample.sampler_type
+                                })
+          })
+          let json_text = await fetched.json()
+          console.log(json_text)
+      } catch(error) {
+              console.error('Error:', error);
+          }
   }
+  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
+}
 
 const AddSampleModal = ({log_id}) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [textStartDepth, setTextStartDepth] = useState("");
-    const [textEndDepth, setTextEndDepth] = useState("");
-    const [textLength, setTextLength] = useState("");
-    const [textBlows1, setTextBlows1] = useState("");
-    const [textBlows2, setTextBlows2] = useState("");
-    const [textBlows3, setTextBlows3] = useState("");
-    const [textBlows4, setTextBlows4] = useState("");
-    const [textDescription, setTextDescription] = useState("");
-    const [textRefusalLength, setTextRefusalLength] = useState("");
-    const [textSamplerType, setSamplerType] = useState("");
-    
-    return(
-    <View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
 
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}>
-        
-        <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-                <ScrollView>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextStartDepth}
-                        placeholder = "Enter Start Depth"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextEndDepth}
-                        placeholder = "Enter End Depth"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextLength}
-                        placeholder = "Enter Length"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextBlows1}
-                        placeholder = "Enter Blows 1"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextBlows2}
-                        placeholder = "Enter Blows 2"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextBlows3}
-                        placeholder = "Enter Blows 3"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextBlows4}
-                        placeholder = "Enter Blows 4"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextDescription}
-                        placeholder = "Enter Description"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setTextRefusalLength}
-                        placeholder = "Enter Refusal Length"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setSamplerType}
-                        placeholder = "Enter Sampler Type"
-                    />
-                </ScrollView>
-                <SubmitSample sample={{
-                        log_id: log_id, 
+  const [textStartDepth, setTextStartDepth] = useState("");
+  const [textEndDepth, setTextEndDepth] = useState("");
+  const [textLength, setTextLength] = useState("");
+  const [textBlows1, setTextBlows1] = useState("");
+  const [textBlows2, setTextBlows2] = useState("");
+  const [textBlows3, setTextBlows3] = useState("");
+  const [textBlows4, setTextBlows4] = useState("");
+  const [textDescription, setTextDescription] = useState("");
+  const [textRefusalLength, setTextRefusalLength] = useState("");
+  const [textSamplerType, setSamplerType] = useState("");
+
+  return (
+      <View>
+      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Sample</PaperButton>
+        <Portal>
+          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
+            <Dialog.Title>New Project</Dialog.Title>
+            <Dialog.Content>
+              <View>
+                <TextInput value={textStartDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setTextStartDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textEndDepth} label="End Depth" mode="outlined" onChangeText={(text) => setTextEndDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textLength} label="Length" mode="outlined" onChangeText={(text) => setTextLength(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textBlows1} label="Blows - 1" mode="outlined" onChangeText={(text) => setTextBlows1(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textBlows2} label="Blows - 2" mode="outlined" onChangeText={(text) => setTextBlows2(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textBlows3} label="Blows - 3" mode="outlined" onChangeText={(text) => setTextBlows3(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textBlows4} label="Blows - 4" mode="outlined" onChangeText={(text) => setTextBlows4(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textDescription} label="Description" mode="outlined" onChangeText={(text) => setTextDescription(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textRefusalLength} label="Refusal Length" mode="outlined" onChangeText={(text) => setTextRefusalLength(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textSamplerType} label="Sampler Type" mode="outlined" onChangeText={(text) => setSamplerType(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
+              <SubmitSample sample={{log_id: log_id, 
                         start_depth: textStartDepth, 
                         end_depth: textEndDepth,
                         length: textLength,
@@ -171,25 +127,12 @@ const AddSampleModal = ({log_id}) => {
                         blows_4:textBlows4,
                         description:textDescription,
                         refusal_length:textRefusalLength,
-                        sampler_type:textSamplerType
-                    }} 
-                    setModalVisible={setModalVisible}
-                />
-                <Button 
-                    onPress={() => setModalVisible(false)}
-                    title="Done"
-                    color="#000000"
-                    accessibilityLabel="Gets rid of modal"/>
-           </View>
-        </View>
-      </Modal>
-      <Button 
-            onPress={() => setModalVisible(true)}
-            title="+Sample"
-            color="#000000"
-            accessibilityLabel="Activates popup Modal for project detail entry"/>
-    </View>
-    )
+                        sampler_type:textSamplerType}} setVisible={setVisible}/>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
+  );
 }
 
 // The component that deals with the adding a new project
@@ -283,8 +226,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: showViews,
     borderColor: 'red'
   },
