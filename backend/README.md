@@ -1,7 +1,3 @@
-# Frontend for BoreDM Field
+# Backend for BoreDM Field
 
-API:
-
-get_all_project_names() -- returns array of {"project_id":1,"name":"Test Project 0"}
-
-get_project(id) -- takes project_id, returns all fields of that project
+See API [here](https://docs.google.com/document/d/1M3AJzdV3FG0ga1QZmDErRly3kNOXLq0yvDFxKkJgc7E/edit#)
