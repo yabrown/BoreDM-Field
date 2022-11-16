@@ -148,6 +148,14 @@ async function get_all_projects() {
   return result;
 }
 
+// uses the client connection above to query for a list of projects from db
+// written by: Max and Louis
+async function get_all_samples() {
+  const result = await Sample.findAll({
+    // attributes: ['name']
+  });
+  return result;
+}
 
 // uses the client connection above to query for the projects with project_id=project_id from elephantsql
 // written by: Max and Louis
@@ -161,6 +169,13 @@ async function get_project(project_id) {
 async function add_project(project_name, client_name, location, notes) {
   const new_proj = await Project.create({ name:project_name, client:client_name, location:location, notes: notes});
   return new_proj.id;
+}
+
+// creates project in db based on params, returns integer project_id of project that was created
+// written by: Louis
+async function add_sample(log_id, start_depth, end_depth, length, blows_1, blows_2, blows_3, blows_4, description, refusal_length, sampler_type) {
+  const new_sample = await Project.create({ log_id:log_id, start_depth:start_depth, end_depth:end_depth, length:length, blows_1:blows_1, blows_2:blows_2, blows_3:blows_3, blows_4:blows_4, description:description, refusal_length:refusal_length, sampler_type:sampler_type});
+  return new_sample.log_id;
 }
 
 // updates project associated with project_id
@@ -209,6 +224,17 @@ async function update_log(log_id, name, driller, logger, notes, location__id) {
   return updated_log[1][0].id;
 }
 
+// updates log associated with sample_id
+// writteb by Louis
+async function update_sample(sample_id, start_depth, end_depth, length, blows_1, blows_2, blows_3, blows_4, description, refusal_length, sampler_type) {
+  const updated_sample = await Sample.update({ start_depth:start_depth, end_depth:end_depth, length:length, blows_1:blows_1, blows_2:blows_2, blows_3:blows_3, blows_4:blows_4, description:description, refusal_length:refusal_length, sampler_type:sampler_type}, {
+    where: { id: sample_id },
+    returning: true,
+    raw: true,
+  });
+  return updated_sample[1][0].id;
+}
+
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Max
 async function create_log(project_id, log_name, driller, logger, notes) {
@@ -227,5 +253,8 @@ module.exports = {
   get_all_log_names,
   get_log,
   create_log,
+  get_all_samples,
+  add_sample,
+  update_sample,
   client,
 }

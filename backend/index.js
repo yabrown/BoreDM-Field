@@ -20,6 +20,18 @@ app.get('/get_all_projects', async (req, res) => {
   }
 })
 
+// get request on the root directory, returns a list of samples in json format
+// written by: Max and Louis
+app.get('/get_all_samples', async (req, res) => {
+    console.log("doing default theing")
+  try {
+      const results = await db.get_all_samples();
+      res.json(results);
+  } catch (err) {
+      console.log(err);
+  }
+})
+
 // testing webpage, do not use. Hacky way to check functions in queries.js
 app.get('/testing', async (req, res) => {
   try {
@@ -39,6 +51,15 @@ app.post('/add_project', (req, res) => {
   }
 })
 
+app.post('/add_sample', (req, res) => {
+    try {
+        db.add_sample(req.body.log_id, req.body.start_depth, req.body.end_depth, req.body.length, req.body.blows_1, req.body.blows_2, req.body.blows_3, req.body.blows_4, req.body.description, req.body.refusal_length, req.body.sampler_type)
+        res.status(200).send("Project added");
+    } catch (err) {
+        console.log(err);
+    }
+  })
+
 app.post('/update_project', (req, res) => {
     try {
         db.update_project(req.body.project_id, req.body.project_name ,req.body.client_name, req.body.project_location, req.body.project_notes)
@@ -48,14 +69,23 @@ app.post('/update_project', (req, res) => {
     }
   })
 
-  app.post('/update_log', (req, res) => {
+app.post('/update_log', (req, res) => {
     try {
         db.update_log(req.body.log_id, req.body.log_name ,req.body.client_name, req.body.driller, req.body.logger, req.body.notes)
         res.status(200).send("Log added");
     } catch (err) {
         console.log(err);
     }
-  })
+})
+
+app.post('/update_sample', (req, res) => {
+    try {
+        db.update_sample(req.body.sample_id, req.body.start_depth, req.body.end_depth, req.body.length, req.body.blows_1, req.body.blows_2, req.body.blows_3, req.body.blows_4, req.body.description, req.body.refusal_length, req.body.sampler_type)
+        res.status(200).send("Sample updated");
+    } catch (err) {
+        console.log(err);
+    }
+})
 
 app.post('/add_boring_to_project', (req, res) => {
     console.log("matched correctly")
