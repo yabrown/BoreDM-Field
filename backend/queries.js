@@ -214,8 +214,8 @@ async function get_log(project_id, log_id){
 
 // updates log associated with log_id
 // writteb by; Max
-async function update_log(log_id, name, driller, logger, notes, location__id) {
-  const updated_log = await Log.update({ id:log_id, name:name, driller:driller, logger:logger, notes:notes, location:location__id}, {
+async function update_log(log_id, name, driller, logger, notes) {
+  const updated_log = await Log.update({ id:log_id, name:name, driller:driller, logger:logger, notes:notes}, {
     where: { id: log_id },
     returning: true,
     raw: true,
