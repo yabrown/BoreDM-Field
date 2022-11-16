@@ -6,24 +6,25 @@ import { PORT } from '../port'
 import { ListItem } from "@react-native-material/core";
 
 
-const SelectBoringButton = ({ name, navigate }) => {
+
+const SelectLogButton = ({ name, navigate }) => {
     return(
-      <ListItem title={name} onPress={() => navigate.navigate('Boring', {name})}/>
+      <ListItem title={name} onPress={() => navigate.navigate('Log', {name})}/>
     )
   }
 
-const SelectBoringList = ({ id, navigate }) => {
+const SelectLogList = ({ id, navigate }) => {
     
-  // the data state will eventually be filled with array of boring types
-  type boring = {
+  // the data state will eventually be filled with array of log types
+  type log = {
           name: string;
   };
   // useState is generic function, so can pass in the type
-  const [data, setData] = useState<boring[]>([{name: "default"}])
+  const [data, setData] = useState<log[]>([{name: "default"}])
   //const [data, setData] = useState<void>()
 
   useEffect(() => {
-      const GetBorings: () => void = async () => {
+      const GetLogs: () => void = async () => {
         console.log(id)
           try{
               const fetched = await fetch(`${PORT}:4000/get_log_names`, {
@@ -33,21 +34,21 @@ const SelectBoringList = ({ id, navigate }) => {
                 },
                 body: JSON.stringify({project_id: id})
             });
-              const borings_list = await fetched.json()
-              setData(borings_list)
+              const logs_list = await fetched.json()
+              setData(logs_list)
           } catch(error) {
               console.error(error)
           }
       }
-      GetBorings()
+      GetLogs()
   }, [])
 
   return(
       <View style={{height: 300}}>
         <Text> Project ID: {id}</Text>
           <ScrollView style={styles.scrollView}>
-              {data.map(boring => (
-                  <SelectBoringButton name={boring.name} key={uuid()} navigate={navigate}/>
+              {data.map(log => (
+                  <SelectLogButton name={log.name} key={uuid()} navigate={navigate}/>
               ))}
           </ScrollView>
       </View>
@@ -83,4 +84,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default SelectBoringList;
+export default SelectLogList;

@@ -6,22 +6,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PORT } from '../port';
 import { Box, Flex, Spacer } from "@react-native-material/core";
 
-
-interface project  {
-    id:         number
-    name:       string
-    client:     string
-    location:   string
-    notes:      string
-  }
-
-type RootStackParamList = {
-  Home: undefined;
-  Project: { project: project };
-};
-
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
-
 
 // The component that deals with the adding a new project
 const SubmitProject = ( props: {name: string, client: string, location: string, notes: string, setModalVisible}) => {

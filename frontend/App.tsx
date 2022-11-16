@@ -2,13 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './screens/home'
 import Project from './screens/project'
-interface project  {
-    id:         number
-    name:       string
-    client:     string
-    location:   string
-    notes:      string
-  }
+
 type RootStackParamList = {
     Home: undefined;
     Project: { project:project};

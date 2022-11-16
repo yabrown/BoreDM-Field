@@ -7,15 +7,6 @@ import { ListItem, Box, Divider} from "@react-native-material/core";
 import { Stack, HStack, VStack } from 'react-native-flex-layout';
 
 
-// the data state will eventually be filled with array of project types
-type project = {
-    id:         number
-    name:       string
-    client:     string
-    location:   string
-    notes:      string
-  }
-
 const SelectProjectButton = ({project: project, navigate }) => {
     return(
       <ListItem title={project.name} onPress={() => navigate.navigate('Project', {project})}/>

@@ -1,37 +1,58 @@
 import React, { useState} from 'react'
 import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Text, View, SafeAreaView} from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import SelectBoringList from '../models/SelectBoringList';
+import SelectSampleList from '../models/SelectSampleList';
 import Header from '../common/header';
 import { PORT } from '../port'
+import { Box, Flex, Spacer } from "@react-native-material/core";
 
-type RootStackParamList = {
-  Home: undefined;
-  Project: { notes: string };
-  Boring: { notes: string };
-};
-type Props = NativeStackScreenProps<RootStackParamList, 'Boring'>;
-const Project = ({route}: Props) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
+
+const Title = (props: { name:string }) =>{
+    return(
+        <View style={styles.titleView}>
+            <Text style={{fontWeight:'500', fontSize: 20, color: 'black'}}>{props.name}</Text>
+        </View>
+    )
+  }
+
+const Log = ({route, navigation}: Props) => {
   return (
     <View style={styles.container}>
-      <Header/>
-      <Text>{route.params.notes}</Text>
-      <AddBoringModal/>
-
+        <Flex fill flex-grow style={{width:"100%"}}>
+          <Box>
+            <Header/>
+          </Box>
+          <Box>
+            <Title name={route.params.log.name}/>
+          </Box>
+          <Box>
+          <SelectSampleList id={route.params.log.id} navigate={navigation}/>
+          </Box>
+          <Spacer />
+          <Box style={{ justifyContent: "center" }}>
+            <Box style={{ margin: 4 }}>
+              <AddSampleModal log_id={route.params.log.id}/>
+            </Box>
+            <Box style={{ margin: 4 }}>
+             
+            </Box>
+          </Box>
+        </Flex>
     </View>
   );
 }
 
-// The button that deals with submitting a new boring
-const SubmitBoring = (props) => {
+// The button that deals with submitting a new Sample
+const SubmitSample = ({sample, setModalVisible}) => {
     const onPress = async () => {
         try {
-            let fetched = await fetch(`${PORT}:4000/add_boring_to_project`, {
+            let fetched = await fetch(`${PORT}:4000/add_sample_to_log`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({boring_name: props.name})
+                body: JSON.stringify({sample, setModalVisible})
             })
             let json_text = await fetched.json()
             console.log(json_text)
@@ -47,9 +68,9 @@ const SubmitBoring = (props) => {
         accessibilityLabel="Learn more about this purple button"/>);
   }
 
-const AddBoringModal = () => {
+const AddSampleModal = ({log_id}) => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [textBoring, setTextBoring] = useState("");
+    const [textSample, setTextSample] = useState("");
     
     return(
     <View>
@@ -66,10 +87,10 @@ const AddBoringModal = () => {
             <View style={styles.modalView}>
                 <TextInput
                     style={styles.input}
-                    onChangeText={setTextBoring}
-                    placeholder = "Enter Boring Name"
+                    onChangeText={setTextSample}
+                    placeholder = "Enter Log Name"
                 />
-                <SubmitBoring name={textBoring}/>
+                <SubmitSample sample={textSample} setModalVisible={setModalVisible}/>
                 <Button 
                     onPress={() => setModalVisible(false)}
                     title="Done"
@@ -80,7 +101,7 @@ const AddBoringModal = () => {
       </Modal>
       <Button 
             onPress={() => setModalVisible(true)}
-            title="+Boring"
+            title="+Log"
             color="#000000"
             accessibilityLabel="Activates popup Modal for project detail entry"/>
     </View>
@@ -165,4 +186,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Project;
+export default Log;

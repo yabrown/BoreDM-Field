@@ -1,32 +1,11 @@
 import React, { useState} from 'react'
 import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Text, View, SafeAreaView} from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import SelectBoringList from '../models/SelectBoringList';
+import SelectLogList from '../models/SelectLogList';
 import Header from '../common/header';
 import { PORT } from '../port';
 import { Box, Flex, Spacer } from "@react-native-material/core";
 
-
-interface project  {
-    id:         number
-    name:       string
-    client:     string
-    location:   string
-    notes:      string
-  }
-
-  interface log  {
-    project_id: number
-    name:       string
-    driller: string
-    logger:  string
-    notes:      string
-  }
-
-type RootStackParamList = {
-  Home: undefined;
-  Project: { project: project };
-};
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
 
@@ -49,12 +28,12 @@ const Project = ({navigation, route}: Props) => {
             <Title name={route.params.project.name}/>
           </Box>
           <Box>
-          <SelectBoringList id={route.params.project.id} navigate={navigation}/>
+          <SelectLogList id={route.params.project.id} navigate={navigation}/>
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
             <Box style={{ margin: 4 }}>
-              <AddBoringModal project_id={route.params.project.id}/>
+              <AddLogModal project_id={route.params.project.id}/>
             </Box>
             <Box style={{ margin: 4 }}>
               <EditProjectModal project={route.params.project}/>
@@ -65,12 +44,12 @@ const Project = ({navigation, route}: Props) => {
   );
 }
 
-// The button that deals with submitting a new boring
-const SubmitBoring = ({log, setModalVisible}) => {
+// The button that deals with submitting a new Log
+const SubmitLog = ({log, setModalVisible}) => {
     const onPress = async () => {
         setModalVisible(false)
         try {
-            let fetched = await fetch(`${PORT}:4000/add_boring_to_project`, {
+            let fetched = await fetch(`${PORT}:4000/add_log_to_project`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +65,7 @@ const SubmitBoring = ({log, setModalVisible}) => {
   
     return (<Button
         onPress={onPress}
-        title="Add Boring"
+        title="Add Log"
         color="#000000"
         accessibilityLabel="Learn more about this purple button"/>);
   }
@@ -115,9 +94,9 @@ const UpdateProject = ( {project, setModalVisible}) => {
         accessibilityLabel="Learn more about this purple button"/>);
   }
 
-const AddBoringModal = ({project_id}) => {
+const AddLogModal = ({project_id}) => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [textBoring, setTextBoring] = useState("");
+    const [textLog, setTextLog] = useState("");
     const [textDrilled, setTextDrilled] = useState("");
     const [textLogged, setTextLogged] = useState("");
     const [textNotes, setTextNotes] = useState("");
@@ -137,7 +116,7 @@ const AddBoringModal = ({project_id}) => {
             <View style={styles.modalView}>
                 <TextInput
                     style={styles.input}
-                    onChangeText={setTextBoring}
+                    onChangeText={setTextLog}
                     placeholder = "Log Name"
                 />
                 <TextInput
@@ -155,7 +134,7 @@ const AddBoringModal = ({project_id}) => {
                     onChangeText={setTextNotes}
                     placeholder = "Log Notes"
                 />
-                <SubmitBoring setModalVisible={setModalVisible} log={{project_id: project_id, name: textBoring, driller: textDrilled, logger: textLogged, notes: textNotes}} />
+                <SubmitLog setModalVisible={setModalVisible} log={{project_id: project_id, name: textLog, driller: textDrilled, logger: textLogged, notes: textNotes}} />
                 <Button 
                     onPress={() => setModalVisible(false)}
                     title="Done"
@@ -166,7 +145,7 @@ const AddBoringModal = ({project_id}) => {
       </Modal>
       <Button 
             onPress={() => setModalVisible(true)}
-            title="+ Boring"
+            title="+ Log"
             color="#000000"
             accessibilityLabel="Activates popup Modal for project detail entry"/>
     </View>
