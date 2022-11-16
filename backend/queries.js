@@ -193,7 +193,6 @@ async function update_project(project_id, project_name, client_name, location, p
 // written by: Max
 async function get_all_logs(project_id){
   const log_list = await Log.findAll({
-    attributes: ['project_id', 'id', 'name'],
     where: {
       project_id: project_id
     }

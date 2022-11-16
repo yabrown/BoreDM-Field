@@ -35,7 +35,7 @@ const Log = ({route, navigation}: Props) => {
               <AddSampleModal log_id={route.params.log.id}/>
             </Box>
             <Box style={{ margin: 4 }}>
-             
+            <EditLogModal log={route.params.log}/>
             </Box>
           </Box>
         </Flex>
@@ -101,7 +101,89 @@ const AddSampleModal = ({log_id}) => {
       </Modal>
       <Button 
             onPress={() => setModalVisible(true)}
-            title="+Log"
+            title="+Sample"
+            color="#000000"
+            accessibilityLabel="Activates popup Modal for project detail entry"/>
+    </View>
+    )
+}
+
+// The component that deals with the adding a new project
+const UpdateLog = ( {log, setModalVisible}) => {
+    const onPress = async () => {
+        setModalVisible(false)
+        try {
+            let fetched = await fetch(`${PORT}:4000/update_log`, {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({log_id: log.id, log_name: log.name, driller: log.driller, logger: log.logger, notes: log.notes})
+            })
+            console.log("status:", fetched.status)
+        } catch(error) {
+                console.error('Error:', error);
+            }
+    }
+    return (<Button
+        onPress={onPress}
+        title="Update Log"
+        color="#000000"
+        accessibilityLabel="Learn more about this purple button"/>
+    );
+}
+
+const EditLogModal = ({log}) => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [textName, setTextName] = useState(log.name);
+    const [textLogger, setTextLogger] = useState(log.logger);
+    const [textDriller, setTextDriller] = useState(log.driller);
+    const [textNotes, setTextNotes] = useState(log.notes);
+    return(
+    <View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(text) => setTextName(text)}
+                    value={textName}
+                />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(text) => setTextLogger(text)}
+                    value={textLogger}
+                />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(text) => setTextDriller(text)}
+                    value={textDriller}
+                />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(text) => setTextNotes(text)}
+                    value={textNotes}
+                />
+                <UpdateLog setModalVisible={setModalVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
+                <Button 
+                    onPress={() => setModalVisible(false)}
+                    title="Done"
+                    color="#000000"
+                    accessibilityLabel="Gets rid of modal"/>
+           </View>
+        </View>
+      </Modal>
+      <Button 
+            onPress={() => setModalVisible(true)}
+            title="Edit Log"
             color="#000000"
             accessibilityLabel="Activates popup Modal for project detail entry"/>
     </View>

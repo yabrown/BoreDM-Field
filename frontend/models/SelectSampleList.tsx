@@ -7,49 +7,65 @@ import { ListItem } from "@react-native-material/core";
 
 
 
-const SelectLogButton = ({ log, navigate }) => {
+const SelectSampleButton = ({ sample, navigate }) => {
     return(
-      <ListItem title={log.name} onPress={() => {console.log(log);navigate.navigate('Log', {log})}}/>
+      <ListItem title={sample.description} onPress={()=>{console.log(sample.id)}}/>
     )
   }
 
-const SelectLogList = ({ id, navigate }) => {
-  let default_log: log = {project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default"}
+const SelectSampleList = ({ id, navigate }) => {
+    
+  // the data state will eventually be filled with array of log types
+  const default_sample: sample = {
+    log_id:         -1,
+    sample_id:      -1,
+    start_depth:    -1,
+    length:         -1,
+    blows_1:        -1,
+    blows_2:        -1,
+    blows_3:        -1,
+    blows_4:        -1,
+    description:    'default',
+    refusal_length: -1,
+    sampler_type:   'default',
+  }
   // useState is generic function, so can pass in the type
-  const [data, setData] = useState<log[]>([default_log])
+  const [data, setData] = useState<sample[]>([default_sample])
   //const [data, setData] = useState<void>()
 
   useEffect(() => {
-      const GetLogs: () => void = async () => {
+      const GetSamples: () => void = async () => {
         console.log(id)
           try{
-              const fetched = await fetch(`${PORT}/get_all_logs`, {
+              const fetched = await fetch(`${PORT}/get_all_samples`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({project_id: id})
+                body: JSON.stringify({log_id: id})
             });
-              const logs_list = await fetched.json()
-              setData(logs_list)
+              const samples_list = await fetched.json()
+              setData(samples_list)
           } catch(error) {
               console.error(error)
           }
       }
-      GetLogs()
+      GetSamples()
   }, [])
 
   return(
       <View style={{height: 300}}>
-        <Text> Project ID: {id}</Text>
+        <Text> Log ID: {id}</Text>
           <ScrollView style={styles.scrollView}>
-              {data.map(log => (
-                  <SelectLogButton log={log} key={uuid()} navigate={navigate}/>
+              {data.map(sample => (
+                  <SelectSampleButton sample={sample} key={uuid()} navigate={navigate}/>
               ))}
           </ScrollView>
       </View>
   )
 }
+
+
 
 const showViews = 0
 const styles = StyleSheet.create({
@@ -80,4 +96,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default SelectLogList;
+export default SelectSampleList;
