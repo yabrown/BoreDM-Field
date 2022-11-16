@@ -140,7 +140,7 @@ const UpdateLog = ( {log, setModalVisible}) => {
     const onPress = async () => {
         setModalVisible(false)
         try {
-            let fetched = await fetch(`${PORT}:4000/update_log`, {
+            let fetched = await fetch(`${PORT}/update_log`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
@@ -152,70 +152,98 @@ const UpdateLog = ( {log, setModalVisible}) => {
                 console.error('Error:', error);
             }
     }
-    return (<Button
-        onPress={onPress}
-        title="Update Log"
-        color="#000000"
-        accessibilityLabel="Learn more about this purple button"/>
-    );
+    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
 }
 
 const EditLogModal = ({log}) => {
-    const [modalVisible, setModalVisible] = useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
+
     const [textName, setTextName] = useState(log.name);
     const [textLogger, setTextLogger] = useState(log.logger);
     const [textDriller, setTextDriller] = useState(log.driller);
     const [textNotes, setTextNotes] = useState(log.notes);
-    return(
-    <View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
 
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextName(text)}
-                    value={textName}
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextLogger(text)}
-                    value={textLogger}
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextDriller(text)}
-                    value={textDriller}
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextNotes(text)}
-                    value={textNotes}
-                />
-                <UpdateLog setModalVisible={setModalVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
-                <Button 
-                    onPress={() => setModalVisible(false)}
-                    title="Done"
-                    color="#000000"
-                    accessibilityLabel="Gets rid of modal"/>
-           </View>
-        </View>
-      </Modal>
-      <Button 
-            onPress={() => setModalVisible(true)}
-            title="Edit Log"
-            color="#000000"
-            accessibilityLabel="Activates popup Modal for project detail entry"/>
-    </View>
-    )
-}
+  return (
+      <View>
+      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Log Metadata</PaperButton>
+        <Portal>
+          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
+            <Dialog.Title>Edit Log Metadata</Dialog.Title>
+            <Dialog.Content>
+              <View>
+                <TextInput value={textName} label="Project Name" mode="outlined" onChangeText={(text) => setTextName(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textLogger} label="Client Name" mode="outlined" onChangeText={(text) => setTextLogger(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textDriller} label="Location" mode="outlined" onChangeText={(text) => setTextDriller(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
+              <UpdateLog setModalVisible={setVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
+  );
+};
+// const EditLogModal = ({log}) => {
+//     const [modalVisible, setModalVisible] = useState(false);
+//     const [textName, setTextName] = useState(log.name);
+//     const [textLogger, setTextLogger] = useState(log.logger);
+//     const [textDriller, setTextDriller] = useState(log.driller);
+//     const [textNotes, setTextNotes] = useState(log.notes);
+//     return(
+//     <View>
+//       <Modal
+//         animationType="slide"
+//         transparent={true}
+//         visible={modalVisible}
+
+//         onRequestClose={() => {
+//           Alert.alert("Modal has been closed.");
+//           setModalVisible(!modalVisible);
+//         }}>
+//         <View style={styles.centeredView}>
+//             <View style={styles.modalView}>
+//                 <TextInput
+//                     style={styles.input}
+//                     onChangeText={(text) => setTextName(text)}
+//                     value={textName}
+//                 />
+//                 <TextInput
+//                     style={styles.input}
+//                     onChangeText={(text) => setTextLogger(text)}
+//                     value={textLogger}
+//                 />
+//                 <TextInput
+//                     style={styles.input}
+//                     onChangeText={(text) => setTextDriller(text)}
+//                     value={textDriller}
+//                 />
+//                 <TextInput
+//                     style={styles.input}
+//                     onChangeText={(text) => setTextNotes(text)}
+//                     value={textNotes}
+//                 />
+//                 <UpdateLog setModalVisible={setModalVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
+//                 <Button 
+//                     onPress={() => setModalVisible(false)}
+//                     title="Done"
+//                     color="#000000"
+//                     accessibilityLabel="Gets rid of modal"/>
+//            </View>
+//         </View>
+//       </Modal>
+//       <Button 
+//             onPress={() => setModalVisible(true)}
+//             title="Edit Log"
+//             color="#000000"
+//             accessibilityLabel="Activates popup Modal for project detail entry"/>
+//     </View>
+//     )
+// }
 
 
 const showViews = 0
