@@ -23,7 +23,7 @@ const SelectProjectList = ({ navigate }) => {
   useEffect(() => {
       const GetProjects: () => void = async () => {
           try{
-              const fetched = await fetch(`${PORT}:4000/get_all_projects`);
+              const fetched = await fetch(`${PORT}/get_all_projects`);
               const projects_list = await fetched.json()
               setData(projects_list)
           } catch(error) {

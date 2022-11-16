@@ -13,7 +13,7 @@ const SubmitProject = ( props: {name: string, client: string, location: string, 
   const onPress = async () => {
     props.setModalVisible(false)
       try {
-          let fetched = await fetch(`${PORT}:4000/add_project`, {
+          let fetched = await fetch(`${PORT}/add_project`, {
               method: 'POST', // or 'PUT'
               headers: {
                   'Content-Type': 'application/json',

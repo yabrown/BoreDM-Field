@@ -7,9 +7,9 @@ import { ListItem } from "@react-native-material/core";
 
 
 
-const SelectLogButton = ({ name, navigate }) => {
+const SelectLogButton = ({ log, navigate }) => {
     return(
-      <ListItem title={name} onPress={() => navigate.navigate('Log', {name})}/>
+      <ListItem title={log.name} onPress={() => navigate.navigate('Log', {log})}/>
     )
   }
 
@@ -27,7 +27,7 @@ const SelectLogList = ({ id, navigate }) => {
       const GetLogs: () => void = async () => {
         console.log(id)
           try{
-              const fetched = await fetch(`${PORT}:4000/get_log_names`, {
+              const fetched = await fetch(`${PORT}/get_all_logs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ const SelectLogList = ({ id, navigate }) => {
         <Text> Project ID: {id}</Text>
           <ScrollView style={styles.scrollView}>
               {data.map(log => (
-                  <SelectLogButton name={log.name} key={uuid()} navigate={navigate}/>
+                  <SelectLogButton log={log} key={uuid()} navigate={navigate}/>
               ))}
           </ScrollView>
       </View>

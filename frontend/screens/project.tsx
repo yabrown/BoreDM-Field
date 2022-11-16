@@ -49,7 +49,7 @@ const SubmitLog = ({log, setModalVisible}) => {
     const onPress = async () => {
         setModalVisible(false)
         try {
-            let fetched = await fetch(`${PORT}:4000/add_log_to_project`, {
+            let fetched = await fetch(`${PORT}/add_log_to_project`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ const UpdateProject = ( {project, setModalVisible}) => {
     const onPress = async () => {
         setModalVisible(false)
         try {
-            let fetched = await fetch(`${PORT}:4000/update_project`, {
+            let fetched = await fetch(`${PORT}/update_project`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
