@@ -34,6 +34,7 @@ interface project  {
     log_id:         number
     sample_id:      number
     start_depth:    number
+    end_depth:      number
     length:         number
     blows_1:        number
     blows_2:        number

@@ -20,6 +20,7 @@ const SelectSampleList = ({ id, navigate }) => {
     log_id:         -1,
     sample_id:      -1,
     start_depth:    -1,
+    end_depth:      -1,
     length:         -1,
     blows_1:        -1,
     blows_2:        -1,

@@ -152,7 +152,7 @@ async function get_all_projects() {
 // written by: Max and Louis
 async function get_all_samples(log_id) {
   const result = await Sample.findAll({
-    where: { id: log_id },
+    where: { log_id: log_id },
   });
   return result;
 }
@@ -174,7 +174,7 @@ async function add_project(project_name, client_name, location, notes) {
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Louis
 async function add_sample(log_id, start_depth, end_depth, length, blows_1, blows_2, blows_3, blows_4, description, refusal_length, sampler_type) {
-  const new_sample = await Project.create({ log_id:log_id, start_depth:start_depth, end_depth:end_depth, length:length, blows_1:blows_1, blows_2:blows_2, blows_3:blows_3, blows_4:blows_4, description:description, refusal_length:refusal_length, sampler_type:sampler_type});
+  const new_sample = await Sample.create({ log_id:log_id, start_depth:start_depth, end_depth:end_depth, length:length, blows_1:blows_1, blows_2:blows_2, blows_3:blows_3, blows_4:blows_4, description:description, refusal_length:refusal_length, sampler_type:sampler_type});
   return new_sample.log_id;
 }
 
