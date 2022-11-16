@@ -1,17 +1,18 @@
 import React, { useState} from 'react'
-import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Text, View, SafeAreaView } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Header from '../common/header';
 import SelectProjectList from '../models/SelectProjectList';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PORT } from '../port';
 import { Box, Flex, Spacer } from "@react-native-material/core";
+import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 // The component that deals with the adding a new project
-const SubmitProject = ( props: {name: string, client: string, location: string, notes: string, setModalVisible}) => {
+const SubmitProject = ( props: {name: string, client: string, location: string, notes: string, setvis: React.Dispatch<React.SetStateAction<boolean>>}) => {
   const onPress = async () => {
-    props.setModalVisible(false)
+    props.setvis(false)
       try {
           let fetched = await fetch(`${PORT}/add_project`, {
               method: 'POST', // or 'PUT'
@@ -26,16 +27,12 @@ const SubmitProject = ( props: {name: string, client: string, location: string, 
           }
   }
 
-  return (<Button
-      onPress={onPress}
-      title="Add Project"
-      color="#000000"
-      accessibilityLabel="Learn more about this purple button"/>);
+  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
 }
 
 //This returns a scrollable view containing the projectButton components
 
-// Returns text to go above changing view-- Ex: Project, Map, Mariner's Apartment 
+// Returns text to go above changing view-- Ex: Project, Map, Mariner's Apartment
 const Title = (props: { name:string }) =>{
   return(
       <View style={styles.titleView}>
@@ -44,70 +41,45 @@ const Title = (props: { name:string }) =>{
   )
 }
 
-
 const AddProjectModal = () => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [textProject, setTextProject] = useState("");
-    const [textClient, setTextClient] = useState("");
-    const [textLocation, setTextLocation] = useState("");
-    const [textNotes, setTextNotes] = useState("");
-    
-    return(
-    <View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
 
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextProject(text)}
-                    placeholder = "Enter Project Name"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextClient(text)}
-                    placeholder = "Enter Client Name"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextLocation(text)}
-                    placeholder = "Enter Location"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => setTextNotes(text)}
-                    placeholder = "Enter Notes"
-                />
-                <SubmitProject name={textProject} client={textClient} location={textLocation} notes={textNotes} setModalVisible={setModalVisible}/>
-                <Button 
-                    onPress={() => setModalVisible(false)}
-                    title="Done"
-                    color="#000000"
-                    accessibilityLabel="Gets rid of modal"/>
-           </View>
-        </View>
-      </Modal>
-      <Button 
-            onPress={() => setModalVisible(true)}
-            title="+ Project"
-            color="#000000"
-            accessibilityLabel="Activates popup Modal for project detail entry"
-      />
-    </View>
-    )
-}
+  const [textProject, setTextProject] = useState("");
+  const [textClient, setTextClient] = useState("");
+  const [textLocation, setTextLocation] = useState("");
+  const [textNotes, setTextNotes] = useState("");
+
+  return (
+      <View>
+      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Project</PaperButton>
+        <Portal>
+          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
+            <Dialog.Title>New Project</Dialog.Title>
+            <Dialog.Content>
+              <View>
+                <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textClient} label="Client Name" mode="outlined" onChangeText={(text) => setTextClient(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textLocation} label="Location" mode="outlined" onChangeText={(text) => setTextLocation(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
+              <SubmitProject name={textProject} client={textClient} location={textLocation} notes={textNotes} setvis={setVisible}/>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
+  );
+};
 
 const Home = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
+      <Provider>
         <Flex fill flex-grow style={{width:"100%"}}>
           <Box>
             <Header/>
@@ -119,10 +91,11 @@ const Home = ({ navigation }: Props) => {
             <SelectProjectList navigate={navigation}/>
           </Box>
           <Spacer />
-          <Box style={{ margin: 4 }}>
+          <Box style={{ margin: 6 }}>
             <AddProjectModal/>
           </Box>
         </Flex>
+      </Provider>
     </View>
   )
 }
@@ -142,7 +115,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   titleView: {
-    height: 30, 
+    height: 30,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
