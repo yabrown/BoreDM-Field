@@ -191,7 +191,7 @@ async function update_project(project_id, project_name, client_name, location, p
 
 // retrieves list of all log names for given project_id
 // written by: Max
-async function get_all_log_names(project_id){
+async function get_all_logs(project_id){
   const log_list = await Log.findAll({
     attributes: ['project_id', 'id', 'name'],
     where: {
@@ -250,7 +250,7 @@ module.exports = {
   add_project,
   update_project,
   update_log,
-  get_all_log_names,
+  get_all_logs,
   get_log,
   create_log,
   get_all_samples,
