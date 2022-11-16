@@ -22,14 +22,16 @@ const SelectProjectButton = ({project: project, navigate }) => {
     )
   }
 
-const SelectProjectList = ({ navigate }) => {
+const SelectProjectList = ({ navigate, dataChanged }) => {
     
   
   // useState is generic function, so can pass in the type
   const [data, setData] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
-  //const [data, setData] = useState<void>()
+  // const [data, setData] = useState<void>()
 
   useEffect(() => {
+    // fetch data again only if list is updated
+    if (dataChanged) {
       const GetProjects: () => void = async () => {
           try{
               const fetched = await fetch(`${PORT}:4000/get_all_projects`);
@@ -40,7 +42,9 @@ const SelectProjectList = ({ navigate }) => {
           }
       }
       GetProjects()
-  }, [])
+      dataChanged = false;
+    }
+}, [dataChanged])
 
   return(
       <View>

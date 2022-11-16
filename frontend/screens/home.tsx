@@ -1,10 +1,10 @@
-import React, { useState} from 'react'
-import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Text, View, SafeAreaView } from 'react-native';
+import React, { useEffect, useState} from 'react'
+import { Dimensions, Pressable, Alert, Modal, StyleSheet, TextInput, Text, View, SafeAreaView } from 'react-native';
 import Header from '../common/header';
 import SelectProjectList from '../models/SelectProjectList';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PORT } from '../port';
-import { Box, Flex, Spacer } from "@react-native-material/core";
+import { Box, Flex, Spacer, Button } from "@react-native-material/core";
 
 
 interface project  {
@@ -25,6 +25,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 // The component that deals with the adding a new project
 const SubmitProject = ( props: {name: string, client: string, location: string, notes: string, setModalVisible}) => {
+  
   const onPress = async () => {
     props.setModalVisible(false)
       try {
@@ -36,6 +37,9 @@ const SubmitProject = ( props: {name: string, client: string, location: string, 
               body: JSON.stringify({project_name: props.name, client_name: props.client, project_location: props.location, project_notes: props.notes})
           })
           console.log("status:", fetched.status)
+          // rerender entire page after adding a new project
+
+
       } catch(error) {
               console.error('Error:', error);
           }
@@ -131,7 +135,7 @@ const Home = ({ navigation }: Props) => {
             <Title name="Projects"/>
           </Box>
           <Box>
-            <SelectProjectList navigate={navigation}/>
+            <SelectProjectList navigate={navigation} dataChanged={true}/>
           </Box>
           <Spacer />
           <Box style={{ margin: 4 }}>
@@ -217,7 +221,7 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
-  }
+  },
 });
 
 export default Home;

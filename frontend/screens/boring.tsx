@@ -1,8 +1,9 @@
 import React, { useState} from 'react'
-import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, TextInput, Text, View, SafeAreaView} from "react-native";
+import { Dimensions, Pressable, Alert, Modal, StyleSheet, TextInput, Text, View, SafeAreaView} from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SelectBoringList from '../models/SelectBoringList';
 import Header from '../common/header';
+import { Button } from "@react-native-material/core"
 import { PORT } from '../port'
 
 type RootStackParamList = {
