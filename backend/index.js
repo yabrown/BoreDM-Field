@@ -22,10 +22,10 @@ app.get('/get_all_projects', async (req, res) => {
 
 // get request on the root directory, returns a list of samples in json format
 // written by: Max and Louis
-app.get('/get_all_samples', async (req, res) => {
+app.post('/get_all_samples', async (req, res) => {
     console.log("doing default theing")
   try {
-      const results = await db.get_all_samples();
+      const results = await db.get_all_samples(req.body.log_id);
       res.json(results);
   } catch (err) {
       console.log(err);
@@ -100,11 +100,11 @@ app.post('/add_boring_to_project', (req, res) => {
 
 // get request on the root directory, displays a list of projects in json format on the broswer
 // written by: Max and Louis
-app.post('/get_log_names', async (req, res) => {
+app.post('/get_all_logs', async (req, res) => {
     console.log("matched request to getlognames, id is ")
     console.log(req.body)
   try {
-      const results = await db.get_all_log_names(req.body.project_id);
+      const results = await db.get_all_logs(req.body.project_id);
       res.json(results);
   } catch (err) {
       console.log(err);
