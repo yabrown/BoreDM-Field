@@ -9,27 +9,6 @@ import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'reac
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-// The component that deals with the adding a new project
-const SubmitProject = ( props: {name: string, client: string, location: string, notes: string, setvis: React.Dispatch<React.SetStateAction<boolean>>}) => {
-  const onPress = async () => {
-    props.setvis(false)
-      try {
-          let fetched = await fetch(`${PORT}/add_project`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({project_name: props.name, client_name: props.client, project_location: props.location, project_notes: props.notes})
-          })
-          console.log("status:", fetched.status)
-      } catch(error) {
-              console.error('Error:', error);
-          }
-  }
-
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
-}
-
 //This returns a scrollable view containing the projectButton components
 
 // Returns text to go above changing view-- Ex: Project, Map, Mariner's Apartment
@@ -41,40 +20,6 @@ const Title = (props: { name:string }) =>{
   )
 }
 
-const AddProjectModal = () => {
-  const [visible, setVisible] = React.useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
-
-  const [textProject, setTextProject] = useState("");
-  const [textClient, setTextClient] = useState("");
-  const [textLocation, setTextLocation] = useState("");
-  const [textNotes, setTextNotes] = useState("");
-
-  return (
-      <View>
-      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Project</PaperButton>
-        <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title>New Project</Dialog.Title>
-            <Dialog.Content>
-              <View>
-                <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textClient} label="Client Name" mode="outlined" onChangeText={(text) => setTextClient(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textLocation} label="Location" mode="outlined" onChangeText={(text) => setTextLocation(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-              </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitProject name={textProject} client={textClient} location={textLocation} notes={textNotes} setvis={setVisible}/>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
-  );
-};
-
 const Home = ({ navigation }: Props) => {
 
   return (
@@ -85,15 +30,16 @@ const Home = ({ navigation }: Props) => {
             <Header/>
           </Box>
           <Box>
-            <Title name="Projects"/>
+            <Title name={"Projects"}/>
           </Box>
           <Box>
             <SelectProjectList navigate={navigation}/>
           </Box>
           <Spacer />
-          <Box style={{ margin: 6 }}>
-            <AddProjectModal/>
-          </Box>
+          <Box style={{ justifyContent: "center" }}>
+            <Box style={{ margin: 4 }}>
+            </Box>
+            </Box>
         </Flex>
       </Provider>
     </View>
@@ -175,7 +121,16 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
-  }
+  },
+  bottomView: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#EE5407',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute', //Here is the trick
+    bottom: 0, //Here is the trick
+  },
 });
 
 export default Home;
