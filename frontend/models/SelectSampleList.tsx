@@ -6,7 +6,7 @@ import { PORT } from '../port'
 import { ListItem } from "@react-native-material/core";
 import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
 
-const SelectSampleButton = ({ sample, navigate }) => {
+const SelectSampleButton = ({ sample}) => {
 
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
@@ -78,7 +78,7 @@ const SelectSampleList = ({ id, navigate }) => {
   // the data state will eventually be filled with array of log types
   const default_sample: sample = {
     log_id:         -1,
-    id:             -1,
+    sample_id:      -1,
     start_depth:    -1,
     end_depth:      -1,
     length:         -1,

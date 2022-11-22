@@ -135,49 +135,6 @@ const AddSampleModal = ({log_id}) => {
   );
 }
 
-// modal to update sample information based on clicking the sample in the list
-const EditSampleModal = ({sample}) => {
-  const [visible, setVisible] = React.useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
-
-  const [startDepth, setStartDepth] = useState(sample.start_depth);
-  const [endDepth, setEndDepth] = useState(sample.end_depth);
-  const [length, setLength] = useState(sample.length);
-  const [blows1, setBlows1] = useState(sample.blows_1);
-  const [blows2, setBlows2] = useState(sample.blows_2);
-  const [blows3, setBlows3] = useState(sample.blows_3);
-  const [blows4, setBlows4] = useState(sample.blows_4);
-  const [description, setDescription] = useState(sample.description);
-  const [refusalLength, setRefusalLength] = useState(sample.refusal_length);
-  const [samplerType, setSamplerType] = useState(sample.sampler_type);
-
-  return (
-    <Portal>
-      <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-        <Dialog.Title>Edit Sample Data</Dialog.Title>
-        <Dialog.Content>
-          <View>
-            <TextInput value={startDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={endDepth} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={length} label="Sample Length" mode="outlined" onChangeText={(text) => setLength(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={blows1} label="Blows 1" mode="outlined" onChangeText={(text) => setBlows1(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={blows2} label="Blows 2" mode="outlined" onChangeText={(text) => setBlows2(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={blows3} label="Blows 3" mode="outlined" onChangeText={(text) => setBlows3(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={blows4} label="Blows 4" mode="outlined" onChangeText={(text) => setBlows4(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={description} label="Description" mode="outlined" onChangeText={(text) => setDescription(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={refusalLength} label="Refusal Length" mode="outlined" onChangeText={(text) => setRefusalLength(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-            <TextInput value={samplerType} label="Sampler Type" mode="outlined" onChangeText={(text) => setSamplerType(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-          </View>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-          // <UpdateLog setModalVisible={setVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
-        </Dialog.Actions>
-      </Dialog>
-    </Portal>
-  );
-};
 
 // The component that deals with updating log data
 const UpdateLog = ( {log, setModalVisible}) => {
@@ -232,63 +189,6 @@ const EditLogModal = ({log}) => {
       </View>
   );
 };
-// const EditLogModal = ({log}) => {
-//     const [modalVisible, setModalVisible] = useState(false);
-//     const [textName, setTextName] = useState(log.name);
-//     const [textLogger, setTextLogger] = useState(log.logger);
-//     const [textDriller, setTextDriller] = useState(log.driller);
-//     const [textNotes, setTextNotes] = useState(log.notes);
-//     return(
-//     <View>
-//       <Modal
-//         animationType="slide"
-//         transparent={true}
-//         visible={modalVisible}
-
-//         onRequestClose={() => {
-//           Alert.alert("Modal has been closed.");
-//           setModalVisible(!modalVisible);
-//         }}>
-//         <View style={styles.centeredView}>
-//             <View style={styles.modalView}>
-//                 <TextInput
-//                     style={styles.input}
-//                     onChangeText={(text) => setTextName(text)}
-//                     value={textName}
-//                 />
-//                 <TextInput
-//                     style={styles.input}
-//                     onChangeText={(text) => setTextLogger(text)}
-//                     value={textLogger}
-//                 />
-//                 <TextInput
-//                     style={styles.input}
-//                     onChangeText={(text) => setTextDriller(text)}
-//                     value={textDriller}
-//                 />
-//                 <TextInput
-//                     style={styles.input}
-//                     onChangeText={(text) => setTextNotes(text)}
-//                     value={textNotes}
-//                 />
-//                 <UpdateLog setModalVisible={setModalVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
-//                 <Button
-//                     onPress={() => setModalVisible(false)}
-//                     title="Done"
-//                     color="#000000"
-//                     accessibilityLabel="Gets rid of modal"/>
-//            </View>
-//         </View>
-//       </Modal>
-//       <Button
-//             onPress={() => setModalVisible(true)}
-//             title="Edit Log"
-//             color="#000000"
-//             accessibilityLabel="Activates popup Modal for project detail entry"/>
-//     </View>
-//     )
-// }
-
 
 const showViews = 0
 //TODO: change this so that it only calulcates once, in the right place
