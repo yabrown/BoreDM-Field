@@ -29,7 +29,7 @@ const Log = ({route, navigation}: Props) => {
             <Title name={route.params.log.name}/>
           </Box>
           <Box>
-          <SelectSampleList id={route.params.log.id} navigate={navigation}/>
+            <SelectSampleList id={route.params.log.id} navigate={navigation}/>
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
@@ -37,7 +37,7 @@ const Log = ({route, navigation}: Props) => {
               <AddSampleModal log_id={route.params.log.id}/>
             </Box>
             <Box style={{ margin: 4 }}>
-            <EditLogModal log={route.params.log}/>
+              <EditLogModal log={route.params.log}/>
             </Box>
           </Box>
         </Flex>
@@ -57,8 +57,8 @@ const SubmitSample = ({sample, setVisible}) => {
                   'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                                    log_id: sample.log_id, 
-                                    start_depth: sample.start_depth, 
+                                    log_id: sample.log_id,
+                                    start_depth: sample.start_depth,
                                     end_depth: sample.end_depth,
                                     length: sample.length,
                                     blows_1: sample.blows_1,
@@ -117,8 +117,8 @@ const AddSampleModal = ({log_id}) => {
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitSample sample={{log_id: log_id, 
-                        start_depth: textStartDepth, 
+              <SubmitSample sample={{log_id: log_id,
+                        start_depth: textStartDepth,
                         end_depth: textEndDepth,
                         length: textLength,
                         blows_1: textBlows1,
@@ -135,7 +135,51 @@ const AddSampleModal = ({log_id}) => {
   );
 }
 
-// The component that deals with the adding a new project
+// modal to update sample information based on clicking the sample in the list
+const EditSampleModal = ({sample}) => {
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
+
+  const [startDepth, setStartDepth] = useState(sample.start_depth);
+  const [endDepth, setEndDepth] = useState(sample.end_depth);
+  const [length, setLength] = useState(sample.length);
+  const [blows1, setBlows1] = useState(sample.blows_1);
+  const [blows2, setBlows2] = useState(sample.blows_2);
+  const [blows3, setBlows3] = useState(sample.blows_3);
+  const [blows4, setBlows4] = useState(sample.blows_4);
+  const [description, setDescription] = useState(sample.description);
+  const [refusalLength, setRefusalLength] = useState(sample.refusal_length);
+  const [samplerType, setSamplerType] = useState(sample.sampler_type);
+
+  return (
+    <Portal>
+      <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
+        <Dialog.Title>Edit Sample Data</Dialog.Title>
+        <Dialog.Content>
+          <View>
+            <TextInput value={startDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={endDepth} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={length} label="Sample Length" mode="outlined" onChangeText={(text) => setLength(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={blows1} label="Blows 1" mode="outlined" onChangeText={(text) => setBlows1(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={blows2} label="Blows 2" mode="outlined" onChangeText={(text) => setBlows2(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={blows3} label="Blows 3" mode="outlined" onChangeText={(text) => setBlows3(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={blows4} label="Blows 4" mode="outlined" onChangeText={(text) => setBlows4(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={description} label="Description" mode="outlined" onChangeText={(text) => setDescription(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={refusalLength} label="Refusal Length" mode="outlined" onChangeText={(text) => setRefusalLength(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+            <TextInput value={samplerType} label="Sampler Type" mode="outlined" onChangeText={(text) => setSamplerType(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+          </View>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
+          // <UpdateLog setModalVisible={setVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
+};
+
+// The component that deals with updating log data
 const UpdateLog = ( {log, setModalVisible}) => {
     const onPress = async () => {
         setModalVisible(false)
@@ -160,10 +204,10 @@ const EditLogModal = ({log}) => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-    const [textName, setTextName] = useState(log.name);
-    const [textLogger, setTextLogger] = useState(log.logger);
-    const [textDriller, setTextDriller] = useState(log.driller);
-    const [textNotes, setTextNotes] = useState(log.notes);
+  const [textName, setTextName] = useState(log.name);
+  const [textLogger, setTextLogger] = useState(log.logger);
+  const [textDriller, setTextDriller] = useState(log.driller);
+  const [textNotes, setTextNotes] = useState(log.notes);
 
   return (
       <View>
@@ -173,9 +217,9 @@ const EditLogModal = ({log}) => {
             <Dialog.Title>Edit Log Metadata</Dialog.Title>
             <Dialog.Content>
               <View>
-                <TextInput value={textName} label="Project Name" mode="outlined" onChangeText={(text) => setTextName(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textLogger} label="Client Name" mode="outlined" onChangeText={(text) => setTextLogger(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textDriller} label="Location" mode="outlined" onChangeText={(text) => setTextDriller(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textName} label="Log Name" mode="outlined" onChangeText={(text) => setTextName(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textLogger} label="Logger" mode="outlined" onChangeText={(text) => setTextLogger(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textDriller} label="Driller" mode="outlined" onChangeText={(text) => setTextDriller(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
                 <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
               </View>
             </Dialog.Content>
@@ -228,7 +272,7 @@ const EditLogModal = ({log}) => {
 //                     value={textNotes}
 //                 />
 //                 <UpdateLog setModalVisible={setModalVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
-//                 <Button 
+//                 <Button
 //                     onPress={() => setModalVisible(false)}
 //                     title="Done"
 //                     color="#000000"
@@ -236,7 +280,7 @@ const EditLogModal = ({log}) => {
 //            </View>
 //         </View>
 //       </Modal>
-//       <Button 
+//       <Button
 //             onPress={() => setModalVisible(true)}
 //             title="Edit Log"
 //             color="#000000"
@@ -260,7 +304,7 @@ const styles = StyleSheet.create({
     borderColor: 'red'
   },
   titleView: {
-    height: 30, 
+    height: 30,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,

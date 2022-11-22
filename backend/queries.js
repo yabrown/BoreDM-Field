@@ -99,6 +99,16 @@ const Coordinate = sequelize.define("Coordinate", {
                                                   description: "Description of Sample 1",
                                                   refusal_length: 0,});
 
+                                                  const sample_3 = await Sample.create({  log_id : log_1.id,
+                                                                                                  start_depth: 12,
+                                                                                                  length: 6,
+                                                                                                  blows_1: 13,
+                                                                                                  blows_2: 22,
+                                                                                                  blows_3: 24,
+                                                                                                  blows_4: 31,
+                                                                                                  description: "Description of Sample 1",
+                                                                                                  refusal_length: 0,});
+
 
   const project_2 = await Project.create({ name: "Robert", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
@@ -153,6 +163,7 @@ async function get_all_projects() {
 async function get_all_samples(log_id) {
   const result = await Sample.findAll({
     where: { log_id: log_id },
+    order: ['start_depth'],
   });
   return result;
 }
