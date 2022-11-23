@@ -3,8 +3,25 @@ import { StyleSheet } from "react-native";
 import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 import { PORT } from '../port'
-import { ListItem } from "@react-native-material/core";
-import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
+import { ListItem, HStack } from "@react-native-material/core";
+import { Button as PaperButton, Dialog, Portal, Provider, TextInput, List, Button } from 'react-native-paper';
+
+const USCSButton = ({ uscs, buttonUSCS, setFunction }) => (  
+  <View style={{ width: 140, margin: "4px" }}>
+    <Button
+      buttonColor={uscs===buttonUSCS ? 'lightgrey' : 'white'}
+      textColor='black'
+      mode='outlined' 
+      onPress={
+        () => {
+          setFunction(buttonUSCS);
+        }
+      }
+    >
+      { buttonUSCS }
+    </Button>
+  </View>
+);
 
 const SelectClassificationButton = ({ classification }) => {
 
@@ -12,9 +29,10 @@ const SelectClassificationButton = ({ classification }) => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
+  console.log(classification.uscs);
   const [startDepth, setStartDepth] = useState(classification.start_depth);
   const [endDepth, setEndDepth] = useState(classification.end_depth);
-  // const [uscs, setUscs] = useState(classification.uscs);
+  const [uscs, setUSCS] = useState(classification.uscs);
   // const [color, setColor] = useState(classification.color);
   // const [moisture, setMoisure] = useState(classification.moisure);
   // const [density, setDensity] = useState(classification.density);
@@ -30,11 +48,43 @@ const SelectClassificationButton = ({ classification }) => {
             <View>
               <TextInput value={startDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
               <TextInput value={endDepth} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+
+              <List.AccordionGroup>
+                <List.Accordion title="USCS" id="1" theme={{colors: {background: 'white', primary: 'black'}}}>
+                  <HStack m={4} spacing={6} style={{ flexWrap: "wrap" }}>
+                    <USCSButton buttonUSCS="CH" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="CL" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="CL-ML" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GC" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GC-GM" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GM" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GP" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GP-GC" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GP-GM" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GW" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GW-GC" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="GW-GM" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="ML" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SC" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SC-SM" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SM" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SP" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SP-SC" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SP-SM" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SW" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SW-SC" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="SW-SM" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="OH" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="OL" setFunction={setUSCS} uscs={uscs}/>
+                    <USCSButton buttonUSCS="PT" setFunction={setUSCS} uscs={uscs}/>
+                  </HStack>
+                </List.Accordion>
+              </List.AccordionGroup>
             </View>
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-            <UpdateClassification setModalVisible={setVisible} classification={{id: classification.id, start_depth: startDepth, end_depth: endDepth }}/>
+            <UpdateClassification setModalVisible={setVisible} classification={{log_id: classification.log_id, start_depth: startDepth, end_depth: endDepth, uscs: uscs }}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>

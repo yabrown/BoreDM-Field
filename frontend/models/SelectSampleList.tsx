@@ -6,7 +6,7 @@ import { PORT } from '../port'
 import { ListItem } from "@react-native-material/core";
 import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
 
-const SelectSampleButton = ({ sample}) => {
+const SelectSampleButton = ({ sample }) => {
 
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
