@@ -32,6 +32,18 @@ app.post('/get_all_samples', async (req, res) => {
   }
 })
 
+// get request on the root directory, returns a list of samples in json format
+// written by: Max and Louis
+app.post('/get_all_classifications', async (req, res) => {
+    console.log("doing default theing")
+  try {
+      const results = await db.get_all_classifications(req.body.log_id);
+      res.json(results);
+  } catch (err) {
+      console.log(err);
+  }
+})
+
 // testing webpage, do not use. Hacky way to check functions in queries.js
 app.get('/testing', async (req, res) => {
   try {

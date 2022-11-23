@@ -211,6 +211,17 @@ async function get_all_logs(project_id){
   return log_list;
 }
 
+// retrieves list of all classification names for given log_id
+// written by: Max
+async function get_all_classifications(log_id){
+  const classification_list = await Classification.findAll({
+    where: {
+      log_id: log_id
+    }
+  });
+  return classification_list;
+}
+
 // retrieves information about a specific log given project_id, log_id
 // written by: Max
 async function get_log(project_id, log_id){
@@ -256,6 +267,7 @@ async function create_log(project_id, log_name, driller, logger, notes) {
 // written by: Max and Louis
 module.exports = {
   get_all_projects,
+  get_all_classifications,
   get_project,
   add_project,
   update_project,
