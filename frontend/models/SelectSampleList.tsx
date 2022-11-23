@@ -115,8 +115,8 @@ const SelectSampleList = ({ id, navigate }) => {
   }, [])
 
   return(
-      <View style={{height: 300}}>
-        <Text> Log ID: {id}</Text>
+      <View style={{margin: "10px"}}>
+        <Text> Samples (Log ID: {id})</Text>
           <ScrollView style={styles.scrollView}>
               {data.map(sample => (
                   <SelectSampleButton sample={sample} key={uuid()} navigate={navigate}/>

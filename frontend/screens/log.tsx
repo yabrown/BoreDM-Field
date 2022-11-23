@@ -2,6 +2,7 @@ import React, { useState} from 'react'
 import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, Text, View, SafeAreaView, ScrollView} from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SelectSampleList from '../models/SelectSampleList';
+import SelectClassificationList from '../models/SelectClassificationList';
 import Header from '../common/header';
 import { PORT } from '../port'
 import { Box, Flex, Spacer } from "@react-native-material/core";
@@ -30,6 +31,7 @@ const Log = ({route, navigation}: Props) => {
           </Box>
           <Box>
             <SelectSampleList id={route.params.log.id} navigate={navigation}/>
+            <SelectClassificationList id={route.params.log.id} navigate={navigation}/>
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
