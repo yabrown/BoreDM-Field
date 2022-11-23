@@ -4,10 +4,10 @@ import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 import { PORT } from '../port'
 import { ListItem, HStack } from "@react-native-material/core";
-import { Button as PaperButton, Dialog, Portal, Provider, TextInput, List, Button } from 'react-native-paper';
+import { Button as PaperButton, Dialog, Portal, TextInput, List, Button } from 'react-native-paper';
 
 const SelectButton = ({ current, buttonOption, setFunction, color, highlightedColor="lightgrey" }) => (  
-  <View style={{ minWidth: 140, margin: "4px" }}>
+  <View style={{ minWidth: 140, margin: 4 }}>
     <Button
       style={{borderColor: color }}
       buttonColor={current===buttonOption ? highlightedColor : color}
@@ -201,7 +201,7 @@ const SelectClassificationList = ({ id, navigate }) => {
   }, [])
 
   return(
-      <View style={{margin: "10px"}}>
+      <View style={{margin: "10%"}}>
         <Text> Classifications (Log ID: {id})</Text>
           <ScrollView style={styles.scrollView}>
               {data.map(classification => (

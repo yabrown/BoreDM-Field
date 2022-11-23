@@ -5,7 +5,7 @@ import SelectLogList from '../models/SelectLogList';
 import Header from '../common/header';
 import { PORT } from '../port';
 import { Box, Flex, Spacer } from "@react-native-material/core";
-import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
+import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
@@ -21,7 +21,6 @@ const Title = (props: { name:string }) =>{
 const Project = ({navigation, route}: Props) => {
   return (
     <View style={styles.container}>
-      <Provider>
         <Flex fill flex-grow style={{width:"100%"}}>
           <Box>
             <Header/>
@@ -42,7 +41,6 @@ const Project = ({navigation, route}: Props) => {
             </Box>
           </Box>
         </Flex>
-      </Provider>
     </View>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState} from 'react'
+import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, Text, View, SafeAreaView, ScrollView} from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SelectSampleList from '../models/SelectSampleList';
@@ -6,7 +7,6 @@ import SelectClassificationList from '../models/SelectClassificationList';
 import Header from '../common/header';
 import { PORT } from '../port'
 import { Box, Flex, Spacer } from "@react-native-material/core";
-import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
 
@@ -21,7 +21,6 @@ const Title = (props: { name:string }) =>{
 const Log = ({route, navigation}: Props) => {
   return (
     <View style={styles.container}>
-      <Provider>
         <Flex fill flex-grow style={{width:"100%"}}>
           <Box>
             <Header/>
@@ -43,7 +42,6 @@ const Log = ({route, navigation}: Props) => {
             </Box>
           </Box>
         </Flex>
-      </Provider>
     </View>
   );
 }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import { StyleSheet } from "react-native";
 import { TouchableHighlight, View, Text, ScrollView } from "react-native";
 import { v4 as uuid } from 'uuid';
 import { PORT } from '../port'
 import { ListItem } from "@react-native-material/core";
-import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
 
 const SelectSampleButton = ({ sample }) => {
 
@@ -115,7 +115,7 @@ const SelectSampleList = ({ id, navigate }) => {
   }, [])
 
   return(
-      <View style={{margin: "10px"}}>
+      <View style={{margin: 10}}>
         <Text> Samples (Log ID: {id})</Text>
           <ScrollView style={styles.scrollView}>
               {data.map(sample => (
