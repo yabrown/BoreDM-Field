@@ -99,6 +99,15 @@ app.post('/update_sample', (req, res) => {
     }
 })
 
+app.post('/update_classification', (req, res) => {
+    try {
+        db.update_classification(req.body.log_id, req.body.start_depth, req.body.end_depth, req.body.uscs, req.body.color, req.body.moisture, req.body.density, req.body.hardness)
+        res.status(200).send("Classification updated");
+    } catch (err) {
+        console.log(err);
+    }
+})
+
 app.post('/add_boring_to_project', (req, res) => {
     console.log("matched correctly")
     try {

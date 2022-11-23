@@ -246,7 +246,7 @@ async function update_log(log_id, name, driller, logger, notes) {
 }
 
 // updates log associated with sample_id
-// writteb by Louis
+// written by Louis
 async function update_sample(sample_id, start_depth, end_depth, length, blows_1, blows_2, blows_3, blows_4, description, refusal_length, sampler_type) {
   const updated_sample = await Sample.update({ start_depth:start_depth, end_depth:end_depth, length:length, blows_1:blows_1, blows_2:blows_2, blows_3:blows_3, blows_4:blows_4, description:description, refusal_length:refusal_length, sampler_type:sampler_type}, {
     where: { id: sample_id },
@@ -254,6 +254,17 @@ async function update_sample(sample_id, start_depth, end_depth, length, blows_1,
     raw: true,
   });
   return updated_sample[1][0].id;
+}
+
+// updates classification associated with log_id
+// written by Louis
+async function update_classification(log_id, start_depth, end_depth, uscs, color, moisture, density, hardness) {
+  const updated_classification = await Classification.update({ start_depth:start_depth, end_depth:end_depth, uscs:uscs, color:color, moisture:moisture, density:density, hardness:hardness}, {
+    where: { log_id: log_id },
+    returning: true,
+    raw: true,
+  });
+  return updated_classification[1][0].id;
 }
 
 // creates project in db based on params, returns integer project_id of project that was created
@@ -278,5 +289,6 @@ module.exports = {
   get_all_samples,
   add_sample,
   update_sample,
+  update_classification,
   client,
 }
