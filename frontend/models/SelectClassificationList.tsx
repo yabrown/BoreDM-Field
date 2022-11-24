@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet } from "react-native";
-import { TouchableHighlight, View, Text, ScrollView } from "react-native";
+import { HStack, ListItem } from "@react-native-material/core";
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import { v4 as uuid } from 'uuid';
-import { PORT } from '../port'
-import { ListItem, HStack } from "@react-native-material/core";
-import { Button as PaperButton, Dialog, Portal, TextInput, List, Button } from 'react-native-paper';
+import { PORT } from '../port';
 
 const SelectButton = ({ current, buttonOption, setFunction, color, highlightedColor="lightgrey" }) => (  
   <View style={{ minWidth: 140, margin: 4 }}>
@@ -47,8 +46,8 @@ const SelectClassificationButton = ({ classification }) => {
           <Dialog.Title>Edit Classification Data</Dialog.Title>
           <Dialog.Content>
             <View>
-              <TextInput value={startDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-              <TextInput value={endDepth} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+              <TextInput value={startDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={endDepth} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <List.Accordion title="USCS" id="1" theme={{colors: {background: 'white', primary: 'black'}}}>
                 <HStack m={4} spacing={6} style={{ flexWrap: "wrap" }}>
                   <SelectButton buttonOption="CH" setFunction={setUSCS} current={uscs} color="white"/>

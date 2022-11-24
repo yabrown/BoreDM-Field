@@ -1,11 +1,11 @@
-import React, { useState} from 'react'
-import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, Text, View, SafeAreaView} from "react-native";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import SelectLogList from '../models/SelectLogList';
-import Header from '../common/header';
-import { PORT } from '../port';
 import { Box, Flex, Spacer } from "@react-native-material/core";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import React, { useState } from 'react';
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
+import Header from '../common/header';
+import SelectLogList from '../models/SelectLogList';
+import { PORT } from '../port';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
@@ -18,7 +18,38 @@ const Title = (props: { name:string }) =>{
   )
 }
 
-const Project = ({navigation, route}: Props) => {
+const Project = ({ navigation, route }: Props) => {
+
+  let default_log: log = {project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default"}
+  const [logsList, setLogsList] = useState<log[]>([default_log])
+  const [currProject, setProject] = useState(route.params.project);
+
+  const refreshProject = async () => {
+    try {
+        const fetched = await fetch(`${PORT}/projects/${currProject.id}`);
+        const updated_project = await fetched.json()
+        setProject(updated_project)
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+  const getLogs = async () => {
+      try{
+          const fetched = await fetch(`${PORT}/get_all_logs`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({project_id: currProject.id})
+        });
+          const logs_list = await fetched.json()
+          setLogsList(logs_list)
+      } catch(error) {
+          console.error(error)
+      }
+  }
+
   return (
     <View style={styles.container}>
         <Flex fill flex-grow style={{width:"100%"}}>
@@ -26,18 +57,18 @@ const Project = ({navigation, route}: Props) => {
             <Header/>
           </Box>
           <Box>
-            <Title name={route.params.project.name}/>
+            <Title name={currProject.name}/>
           </Box>
           <Box>
-          <SelectLogList id={route.params.project.id} navigate={navigation}/>
+          <SelectLogList id={currProject.id} navigate={navigation} logsList={logsList} getLogs={getLogs}/>
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
             <Box style={{ margin: 4 }}>
-              <AddLogModal project_id={route.params.project.id}/>
+              <AddLogModal project_id={currProject.id} getLogs={getLogs}/>
             </Box>
             <Box style={{ margin: 4 }}>
-              <EditProjectModal project={route.params.project}/>
+              <EditProjectModal project={currProject} updateProject={refreshProject} />
             </Box>
           </Box>
         </Flex>
@@ -46,29 +77,31 @@ const Project = ({navigation, route}: Props) => {
 }
 
 // The button that deals with submitting a new Log
-const SubmitLog = ({log, setModalVisible}) => {
+const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
     const onPress = async () => {
         setModalVisible(false)
         try {
-            let fetched = await fetch(`${PORT}/add_boring_to_project`, {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({name: log.name, project_id: log.project_id, driller:log.driller, logger: log.logger, notes:log.notes})
-            })
-            // let json_text = await fetched.json()
-            // console.log(json_text)
-        } catch(error) {
-                console.error('Error:', error);
-            }
+          let fetched = await fetch(`${PORT}/add_boring_to_project`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ ...log, project_id: log.project_id })
+          })
+          let status = await fetched.status
+          console.log(status)
+      } catch(error) {
+              console.error('Error:', error);
+          }
+        getLogs();
+        setLogText({ name: "", drilled: "", logged: "", notes: "" })
     }
   
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
   }
 
 // The component that deals with the adding a new project
-const UpdateProject = ( {project, setModalVisible}) => {
+const UpdateProject = ({ project, setModalVisible, updateProject }) => {
     const onPress = async () => {
         setModalVisible(false)
         try {
@@ -80,6 +113,7 @@ const UpdateProject = ( {project, setModalVisible}) => {
                 body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
             })
             console.log("status:", fetched.status)
+            updateProject();
         } catch(error) {
                 console.error('Error:', error);
             }
@@ -87,15 +121,12 @@ const UpdateProject = ( {project, setModalVisible}) => {
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
   }
 
-const AddLogModal = ({project_id}) => {
-  const [visible, setVisible] = React.useState(false);
+const AddLogModal = ({ project_id, getLogs }) => {
+  const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  const [textLog, setTextLog] = useState("");
-  const [textDrilled, setTextDrilled] = useState("");
-  const [textLogged, setTextLogged] = useState("");
-  const [textNotes, setTextNotes] = useState("");
+  const [logText, setLogText] = useState({ name: "", drilled: "", logged: "", notes: "" })
 
   return (
       <View>
@@ -105,15 +136,15 @@ const AddLogModal = ({project_id}) => {
             <Dialog.Title>New Log</Dialog.Title>
             <Dialog.Content>
               <View>
-                <TextInput value={textLog} label="Log Name" mode="outlined" onChangeText={(text) => setTextLog(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textDrilled} label="Drilled by" mode="outlined" onChangeText={(text) => setTextDrilled(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textLogged} label="Logged by" mode="outlined" onChangeText={(text) => setTextLogged(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={logText.name} label="Log Name" mode="outlined" onChangeText={(text) => setLogText({...logText, name: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={logText.drilled} label="Drilled by" mode="outlined" onChangeText={(text) => setLogText({...logText, drilled: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={logText.logged} label="Logged by" mode="outlined" onChangeText={(text) => setLogText({...logText, logged: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={logText.notes} label="Notes" mode="outlined" onChangeText={(text) => setLogText({...logText, notes: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               </View>
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitLog setModalVisible={setVisible} log={{project_id: project_id, name: textLog, driller: textDrilled, logger: textLogged, notes: textNotes}} />
+              <SubmitLog setModalVisible={setVisible} getLogs={getLogs} log={{ project_id: project_id, name: logText.name, driller: logText.drilled, logger: logText.logged, notes: logText.notes }} setLogText={setLogText} />
             </Dialog.Actions>
           </Dialog>
         </Portal>
@@ -122,8 +153,8 @@ const AddLogModal = ({project_id}) => {
 }
 
 
-const EditProjectModal = ({project}) => {
-  const [visible, setVisible] = React.useState(false);
+const EditProjectModal = ({ project, updateProject }) => {
+  const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
@@ -140,15 +171,15 @@ const EditProjectModal = ({project}) => {
             <Dialog.Title>New Log</Dialog.Title>
             <Dialog.Content>
               <View>
-                <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textClient} label="Client Name" mode="outlined" onChangeText={(text) => setTextClient(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textLocation} label="Location" mode="outlined" onChangeText={(text) => setTextLocation(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textClient} label="Client Name" mode="outlined" onChangeText={(text) => setTextClient(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textLocation} label="Location" mode="outlined" onChangeText={(text) => setTextLocation(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               </View>
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <UpdateProject setModalVisible={setVisible} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
+              <UpdateProject setModalVisible={setVisible} updateProject={updateProject} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
             </Dialog.Actions>
           </Dialog>
         </Portal>

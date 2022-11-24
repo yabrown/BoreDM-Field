@@ -1,13 +1,13 @@
-import { Provider as PaperProvider} from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from './screens/home'
-import Project from './screens/project'
-import Log from './screens/log'
+import { Provider as PaperProvider } from 'react-native-paper';
+import Home from './screens/home';
+import Log from './screens/log';
+import Project from './screens/project';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-const default_project = {id: -1, name:"default", client:"default",location:"default",notes:"default"} as project
+// const default_project = {id: -1, name:"default", client:"default",location:"default",notes:"default"} as project
 export default function App() {
     return (
         <PaperProvider>

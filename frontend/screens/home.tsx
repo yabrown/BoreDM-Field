@@ -1,26 +1,29 @@
-import React, { useState} from 'react'
-import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
+import { Box, Flex, Spacer } from "@react-native-material/core";
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import SelectProjectList from '../models/SelectProjectList';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PORT } from '../port';
-import { Box, Flex, Spacer } from "@react-native-material/core";
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
+type SubmitProps = { project: { name: string, client: string, location: string, notes: string }, setvis: React.Dispatch<React.SetStateAction<boolean>>, onUpdate: () => void}
+
 // The component that deals with the adding a new project
-const SubmitProject = ( props: {name: string, client: string, location: string, notes: string, setvis: React.Dispatch<React.SetStateAction<boolean>>}) => {
+const SubmitProject = ( { project, setvis, onUpdate } : SubmitProps ) => {
   const onPress = async () => {
-    props.setvis(false)
+    setvis(false)
       try {
           let fetched = await fetch(`${PORT}/add_project`, {
               method: 'POST', // or 'PUT'
               headers: {
                   'Content-Type': 'application/json',
               },
-              body: JSON.stringify({project_name: props.name, client_name: props.client, project_location: props.location, project_notes: props.notes})
+              body: JSON.stringify({project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
           })
+          onUpdate();
           console.log("status:", fetched.status)
       } catch(error) {
               console.error('Error:', error);
@@ -41,15 +44,12 @@ const Title = (props: { name:string }) =>{
   )
 }
 
-const AddProjectModal = () => {
-  const [visible, setVisible] = React.useState(false);
+const AddProjectModal = ({ onUpdate }) => {
+  const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  const [textProject, setTextProject] = useState("");
-  const [textClient, setTextClient] = useState("");
-  const [textLocation, setTextLocation] = useState("");
-  const [textNotes, setTextNotes] = useState("");
+  const [textFields, setTextFields] = useState({name: "", client: "", location: "", notes: ""});
 
   return (
       <View>
@@ -59,15 +59,15 @@ const AddProjectModal = () => {
             <Dialog.Title>New Project</Dialog.Title>
             <Dialog.Content>
               <View>
-                <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textClient} label="Client Name" mode="outlined" onChangeText={(text) => setTextClient(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textLocation} label="Location" mode="outlined" onChangeText={(text) => setTextLocation(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textFields.name} label={"Project Name"} mode={"outlined"} onChangeText={(projectText) => setTextFields({ ...textFields, name: projectText })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textFields.client} label="Client Name" mode="outlined" onChangeText={(clientText) => setTextFields({ ...textFields, client: clientText })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textFields.location} label="Location" mode="outlined" onChangeText={(textLocation) => setTextFields({ ...textFields, location: textLocation })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textFields.notes} label="Notes" mode="outlined" onChangeText={(notesText) => setTextFields({ ...textFields, notes: notesText })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               </View>
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitProject name={textProject} client={textClient} location={textLocation} notes={textNotes} setvis={setVisible}/>
+              <SubmitProject project={textFields} setvis={setVisible} onUpdate={onUpdate}/>
             </Dialog.Actions>
           </Dialog>
         </Portal>
@@ -76,6 +76,18 @@ const AddProjectModal = () => {
 };
 
 const Home = ({ navigation }: Props) => {
+
+  const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
+
+  const getProjectsList: () => void = async () => {
+            try{
+                const fetched = await fetch(`${PORT}/get_all_projects`);
+                const projects_list = await fetched.json()
+                setProjectsList(projects_list)
+            } catch(error) {
+                console.error(error)
+            }
+        }
 
   return (
     <View style={styles.container}>
@@ -87,11 +99,11 @@ const Home = ({ navigation }: Props) => {
             <Title name="Projects"/>
           </Box>
           <Box>
-            <SelectProjectList navigate={navigation}/>
+            <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
           </Box>
           <Spacer />
           <Box style={{ margin: 6 }}>
-            <AddProjectModal/>
+            <AddProjectModal onUpdate={getProjectsList}/>
           </Box>
         </Flex>
     </View>
@@ -173,6 +185,10 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+  },
+  textInput: {
+    backgroundColor: 'white', 
+    marginBottom:4
   }
 });
 

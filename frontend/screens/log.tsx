@@ -1,12 +1,12 @@
-import React, { useState} from 'react'
-import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
-import { Dimensions, Pressable, Alert, Modal, Button, StyleSheet, Text, View, SafeAreaView, ScrollView} from "react-native";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import SelectSampleList from '../models/SelectSampleList';
-import SelectClassificationList from '../models/SelectClassificationList';
-import Header from '../common/header';
-import { PORT } from '../port'
 import { Box, Flex, Spacer } from "@react-native-material/core";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import React, { useState } from 'react';
+import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
+import Header from '../common/header';
+import SelectClassificationList from '../models/SelectClassificationList';
+import SelectSampleList from '../models/SelectSampleList';
+import { PORT } from '../port';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
 
@@ -18,10 +18,46 @@ const Title = (props: { name:string }) =>{
     )
   }
 
-const Log = ({route, navigation}: Props) => {
+const Log = ({ route, navigation }: Props) => {
+
+  const [currentLog, setLog] = useState(route.params.log);
+
+  const default_sample: sample = {
+    log_id:         NaN,
+    sample_id:      NaN,
+    start_depth:    NaN,
+    end_depth:      NaN,
+    length:         NaN,
+    blows_1:        NaN,
+    blows_2:        NaN,
+    blows_3:        NaN,
+    blows_4:        NaN,
+    description:    '',
+    refusal_length: NaN,
+    sampler_type:   '',
+  }
+
+  const [samplesList, setSamplesList] = useState([default_sample])
+
+  const refreshSamples: () => Promise<void> = async () => {
+    try{
+      const fetched = await fetch(`${PORT}/get_all_samples`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({log_id: route.params.log.id})
+    });
+      const samples_list = await fetched.json()
+      setSamplesList(samples_list)
+  } catch(error) {
+      console.error(error)
+  }
+  }
+
   return (
     <View style={styles.container}>
-        <Flex fill flex-grow style={{width:"100%"}}>
+        <Flex fill flex-grow style={{ width:"100%" }}>
           <Box>
             <Header/>
           </Box>
@@ -29,16 +65,16 @@ const Log = ({route, navigation}: Props) => {
             <Title name={route.params.log.name}/>
           </Box>
           <Box>
-            <SelectSampleList id={route.params.log.id} navigate={navigation}/>
-            <SelectClassificationList id={route.params.log.id} navigate={navigation}/>
+            <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
+            <SelectClassificationList id={currentLog.id} navigate={navigation}/>
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
             <Box style={{ margin: 4 }}>
-              <AddSampleModal log_id={route.params.log.id}/>
+              <AddSampleModal log_id={currentLog.id} refreshSamples={refreshSamples}/>
             </Box>
             <Box style={{ margin: 4 }}>
-              <EditLogModal log={route.params.log}/>
+              <EditLogModal log={currentLog}/>
             </Box>
           </Box>
         </Flex>
@@ -47,7 +83,7 @@ const Log = ({route, navigation}: Props) => {
 }
 
 // The component that deals with the adding a new project
-const SubmitSample = ({sample, setVisible}) => {
+const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
   const onPress = async () => {
     setVisible(false)
       try {
@@ -56,44 +92,25 @@ const SubmitSample = ({sample, setVisible}) => {
               headers: {
                   'Content-Type': 'application/json',
               },
-              body: JSON.stringify({
-                                    log_id: sample.log_id,
-                                    start_depth: sample.start_depth,
-                                    end_depth: sample.end_depth,
-                                    length: sample.length,
-                                    blows_1: sample.blows_1,
-                                    blows_2: sample.blows_2,
-                                    blows_3:sample.blows_3,
-                                    blows_4:sample.blows_4,
-                                    description: sample.description,
-                                    refusal_length: sample.refusal_length,
-                                    sampler_type: sample.sampler_type
-                                })
+              body: JSON.stringify({...sample})
           })
           let json_text = await fetched.json()
           console.log(json_text)
       } catch(error) {
               console.error('Error:', error);
           }
+      refreshSamples();
   }
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
 }
 
-const AddSampleModal = ({log_id}) => {
+const AddSampleModal = ({ log_id, refreshSamples }) => {
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  const [textStartDepth, setTextStartDepth] = useState("");
-  const [textEndDepth, setTextEndDepth] = useState("");
-  const [textLength, setTextLength] = useState("");
-  const [textBlows1, setTextBlows1] = useState("");
-  const [textBlows2, setTextBlows2] = useState("");
-  const [textBlows3, setTextBlows3] = useState("");
-  const [textBlows4, setTextBlows4] = useState("");
-  const [textDescription, setTextDescription] = useState("");
-  const [textRefusalLength, setTextRefusalLength] = useState("");
-  const [textSamplerType, setSamplerType] = useState("");
+  const emptySample: sample = { sample_id: -1, log_id: log_id, start_depth: NaN, end_depth: NaN, length: NaN, blows_1: NaN, blows_2: NaN, blows_3: NaN, blows_4: NaN, description: "", refusal_length: NaN, sampler_type: "" }
+  const [currSample, setSample] = useState(emptySample)
 
   return (
       <View>
@@ -103,31 +120,21 @@ const AddSampleModal = ({log_id}) => {
             <Dialog.Title>New Project</Dialog.Title>
             <Dialog.Content>
               <View>
-                <TextInput value={textStartDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setTextStartDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textEndDepth} label="End Depth" mode="outlined" onChangeText={(text) => setTextEndDepth(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textLength} label="Length" mode="outlined" onChangeText={(text) => setTextLength(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textBlows1} label="Blows - 1" mode="outlined" onChangeText={(text) => setTextBlows1(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textBlows2} label="Blows - 2" mode="outlined" onChangeText={(text) => setTextBlows2(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textBlows3} label="Blows - 3" mode="outlined" onChangeText={(text) => setTextBlows3(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textBlows4} label="Blows - 4" mode="outlined" onChangeText={(text) => setTextBlows4(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textDescription} label="Description" mode="outlined" onChangeText={(text) => setTextDescription(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textRefusalLength} label="Refusal Length" mode="outlined" onChangeText={(text) => setTextRefusalLength(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textSamplerType} label="Sampler Type" mode="outlined" onChangeText={(text) => setSamplerType(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+              <TextInput value={isNaN(currSample.start_depth) ? "": String(currSample.start_depth)} label="Start Depth" mode="outlined" onChangeText={(text) => setSample({ ...currSample, start_depth: Number(text) })} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(currSample.end_depth) ? "": String(currSample.end_depth)} label="End Depth" mode="outlined" onChangeText={(text) => setSample({ ...currSample, end_depth: Number(text) })} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(currSample.length) ? "": String(currSample.length)} label="Sample Length" mode="outlined" onChangeText={(text) => setSample({ ...currSample, length: Number(text) })} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(currSample.blows_1) ? "": String(currSample.blows_1)} label="Blows 1" mode="outlined" onChangeText={(text) => setSample({ ...currSample, blows_1: Number(text) })} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(currSample.blows_2) ? "": String(currSample.blows_2)} label="Blows 2" mode="outlined" onChangeText={(text) => setSample({...currSample, blows_2: Number(text)})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(currSample.blows_3) ? "": String(currSample.blows_3)} label="Blows 3" mode="outlined" onChangeText={(text) => setSample({...currSample, blows_3: Number(text)})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(currSample.blows_4) ? "": String(currSample.blows_4)} label="Blows 4" mode="outlined" onChangeText={(text) => setSample({...currSample, blows_4: Number(text)})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={currSample.description} label="Description" mode="outlined" onChangeText={(text) => setSample({...currSample, description: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(currSample.refusal_length) ? "": String(currSample.refusal_length)} label="Refusal Length" mode="outlined" onChangeText={(text) => setSample({...currSample, refusal_length: Number(text)})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={currSample.sampler_type} label="Sampler Type" mode="outlined" onChangeText={(text) => setSample({...currSample, sampler_type: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               </View>
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitSample sample={{log_id: log_id,
-                        start_depth: textStartDepth,
-                        end_depth: textEndDepth,
-                        length: textLength,
-                        blows_1: textBlows1,
-                        blows_2: textBlows2,
-                        blows_3:textBlows3,
-                        blows_4:textBlows4,
-                        description:textDescription,
-                        refusal_length:textRefusalLength,
-                        sampler_type:textSamplerType}} setVisible={setVisible}/>
+              <SubmitSample sample={currSample} setVisible={setVisible} refreshSamples={refreshSamples}/>
             </Dialog.Actions>
           </Dialog>
         </Portal>
@@ -174,10 +181,10 @@ const EditLogModal = ({log}) => {
             <Dialog.Title>Edit Log Metadata</Dialog.Title>
             <Dialog.Content>
               <View>
-                <TextInput value={textName} label="Log Name" mode="outlined" onChangeText={(text) => setTextName(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textLogger} label="Logger" mode="outlined" onChangeText={(text) => setTextLogger(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textDriller} label="Driller" mode="outlined" onChangeText={(text) => setTextDriller(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
-                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom:4}}/>
+                <TextInput value={textName} label="Log Name" mode="outlined" onChangeText={(text) => setTextName(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textLogger} label="Logger" mode="outlined" onChangeText={(text) => setTextLogger(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textDriller} label="Driller" mode="outlined" onChangeText={(text) => setTextDriller(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               </View>
             </Dialog.Content>
             <Dialog.Actions>
