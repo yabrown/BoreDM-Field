@@ -18,7 +18,7 @@ const Title = (props: { name:string }) =>{
     )
   }
 
-const Log = ({ route, navigation }: Props) => {
+const Log = ({ route }: Props) => {
 
   const [currentLog, setLog] = useState(route.params.log);
 
@@ -66,7 +66,7 @@ const Log = ({ route, navigation }: Props) => {
           </Box>
           <Box>
             <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
-            <SelectClassificationList id={currentLog.id} navigate={navigation}/>
+            <SelectClassificationList id={currentLog.id}/>
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
@@ -94,12 +94,12 @@ const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
               },
               body: JSON.stringify({...sample})
           })
-          let json_text = await fetched.json()
-          console.log(json_text)
+          let status = await fetched.status
+          console.log('status:', status);
+          refreshSamples();
       } catch(error) {
               console.error('Error:', error);
           }
-      refreshSamples();
   }
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
 }

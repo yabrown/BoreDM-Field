@@ -162,7 +162,7 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
 }
 
-const SelectClassificationList = ({ id, navigate }) => {
+const SelectClassificationList = ({ id }) => {
 
   // the data state will eventually be filled with array of log types
   const default_classification: classification = {
@@ -204,7 +204,7 @@ const SelectClassificationList = ({ id, navigate }) => {
         <Text> Classifications (Log ID: {id})</Text>
           <ScrollView style={styles.scrollView}>
               {data.map(classification => (
-                  <SelectClassificationButton classification={classification} key={uuid()} navigate={navigate}/>
+                  <SelectClassificationButton classification={classification} key={uuid()}/>
               ))}
           </ScrollView>
       </View>

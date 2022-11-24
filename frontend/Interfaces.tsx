@@ -63,3 +63,14 @@ interface project  {
     Project: { project: project };
     Log:     {log: log}
   };
+
+  interface classification {
+      log_id:         number
+      start_depth:    number
+      end_depth:      number,
+      uscs:           string,
+      color:          string,
+      moisture:       string,
+      density:        string,
+      hardness:       string,
+    };

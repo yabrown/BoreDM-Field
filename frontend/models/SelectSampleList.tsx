@@ -13,40 +13,6 @@ const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refresh
 
   const [currSample, setSample] = useState(sample)
 
-  // const default_sample: sample = {
-  //   log_id:         -1,
-  //   sample_id:      -1,
-  //   start_depth:    NaN,
-  //   end_depth:      NaN,
-  //   length:         NaN,
-  //   blows_1:        NaN,
-  //   blows_2:        NaN,
-  //   blows_3:        NaN,
-  //   blows_4:        NaN,
-  //   description:    '',
-  //   refusal_length: NaN,
-  //   sampler_type:   '',
-  // }
-  // // useState is generic function, so can pass in the type
-  // const [data, setData] = useState<sample[]>([default_sample])
-
-  // const getSamples: () => void = async () => {
-  //   console.log(id)
-  //     try{
-  //         const fetched = await fetch(`${PORT}/get_all_samples`, {
-  //           method: 'POST',
-  //           headers: {
-  //               'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({log_id: id})
-  //       });
-  //         const samples_list = await fetched.json()
-  //         setData(samples_list)
-  //     } catch(error) {
-  //         console.error(error)
-  //     }
-  // }
-
   return(
     <View>
     <ListItem title={'Sample Starting at ' + sample.start_depth + "'"} onPress={showDialog}/>
