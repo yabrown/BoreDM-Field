@@ -69,7 +69,7 @@ const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refresh
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-            <UpdateSample setModalVisible={setVisible} refreshSamples={refreshSamples} sample={{id: currSample.sample_id, start_depth: currSample.start_depth, end_depth: currSample.end_depth, length: length, blows_1: currSample.blows_1, blows_2: currSample.blows_2, blows_3: currSample.blows_3, blows_4: currSample.blows_4, description: currSample.description, refusal_length: currSample.refusal_length, sampler_type: currSample.sampler_type}}/>
+            <UpdateSample setModalVisible={setVisible} refreshSamples={refreshSamples} sample={sample}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -93,7 +93,7 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
         } catch(error) {
                 console.error('Error:', error);
             }
-        refreshSamples()
+        refreshSamples();
     }
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
 }
@@ -104,7 +104,7 @@ const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
   //const [data, setData] = useState<void>()
 
   useEffect(() => {
-      refreshSamples()
+      refreshSamples();
   }, [])
 
   return(
