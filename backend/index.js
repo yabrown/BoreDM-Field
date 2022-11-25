@@ -1,8 +1,9 @@
 const cors = require('cors');
 const express = require('express');
 const db = require('./queries')
+const env = require('./env')
 
-const PORT = process.env.port || 4000;
+const PORT = env.PORT || 4000;
 const app = express();
 
 app.use(cors({origin: '*'}))

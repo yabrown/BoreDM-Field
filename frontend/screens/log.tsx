@@ -6,7 +6,7 @@ import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-p
 import Header from '../common/header';
 import SelectClassificationList from '../models/SelectClassificationList';
 import SelectSampleList from '../models/SelectSampleList';
-import { PORT } from '../port';
+import { PORT } from '../env';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
 

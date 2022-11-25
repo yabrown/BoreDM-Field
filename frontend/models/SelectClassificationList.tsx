@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import { v4 as uuid } from 'uuid';
-import { PORT } from '../port';
+import { PORT } from '../env';
 
 const SelectButton = ({ current, buttonOption, setFunction, color, highlightedColor="lightgrey" }) => (  
   <View style={{ minWidth: 140, margin: 4 }}>

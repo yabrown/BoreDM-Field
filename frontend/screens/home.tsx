@@ -1,11 +1,12 @@
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+// import { google } from 'googleapis';
 import React, { useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
+import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
-import { PORT } from '../port';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -79,7 +80,7 @@ const Home = ({ navigation }: Props) => {
 
   const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
 
-  const getProjectsList: () => void = async () => {
+  const getProjectsList: () => Promise<void> = async () => {
             try{
                 const fetched = await fetch(`${PORT}/get_all_projects`);
                 const projects_list = await fetched.json()
@@ -108,7 +109,7 @@ const Home = ({ navigation }: Props) => {
         </Flex>
     </View>
   )
-}
+    }
 
 const showViews = 0
 //TODO: change this so that it only calulcates once, in the right place

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import { v4 as uuid } from 'uuid';
-import { PORT } from '../port';
+import { PORT } from '../env';
 
 const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refreshSamples: () => Promise<void>}) => {
 

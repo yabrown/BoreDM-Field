@@ -3,9 +3,9 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
+import { PORT } from '../env';
 import Header from '../common/header';
 import SelectLogList from '../models/SelectLogList';
-import { PORT } from '../port';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
