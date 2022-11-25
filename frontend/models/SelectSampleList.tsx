@@ -119,7 +119,7 @@ const SelectSampleList = ({ id, navigate }) => {
         <Text> Log ID: {id}</Text>
           <ScrollView style={styles.scrollView}>
               {data.map(sample => (
-                  <SelectSampleButton sample={sample} key={uuid()} navigate={navigate}/>
+                  <SelectSampleButton sample={sample} key={uuid()}/>
               ))}
           </ScrollView>
       </View>

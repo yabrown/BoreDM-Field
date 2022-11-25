@@ -34,7 +34,7 @@ const SelectProjectList = ({ navigate }) => {
   }, [])
 
   return(
-      <View>
+      <View style={{height: 300}}>
           <ScrollView style={styles.scrollView}>
               {data.map(project => (
                   <SelectProjectButton project = {project} key={uuid()} navigate={navigate}/>

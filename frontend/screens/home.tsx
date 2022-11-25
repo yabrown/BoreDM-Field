@@ -6,6 +6,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PORT } from '../port';
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import { Button as PaperButton, Dialog, Portal, Provider, TextInput } from 'react-native-paper';
+import { Tab } from '@mui/material';
+import {TabPanel, TabContext, TabList} from '@mui/lab';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -77,23 +79,40 @@ const AddProjectModal = () => {
 
 const Home = ({ navigation }: Props) => {
 
+    const [value, setValue] = React.useState('1');
+
+    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+        setValue(newValue);
+    };
+
   return (
     <View style={styles.container}>
       <Provider>
         <Flex fill flex-grow style={{width:"100%"}}>
-          <Box>
-            <Header/>
-          </Box>
-          <Box>
-            <Title name="Projects"/>
-          </Box>
-          <Box>
-            <SelectProjectList navigate={navigation}/>
-          </Box>
-          <Spacer />
-          <Box style={{ margin: 6 }}>
-            <AddProjectModal/>
-          </Box>
+            <Box>
+                <Header/>
+            </Box>
+            <TabContext value={value}>
+                    <TabList onChange={handleChange} aria-label="lab API tabs example">
+                        <Tab label="Item One" value="1" />
+                        <Tab label="Item Two" value="2" />
+                    </TabList>
+        
+                <TabPanel value="1" style={{backgroundColor: "blue"}}>
+                    <Box>
+                        <SelectProjectList navigate={navigation}/>
+                    </Box>
+                    <Spacer />
+                    <Box style={{ backgroundColor: "blue" }}>
+                        <AddProjectModal/>
+                    </Box>
+                </TabPanel>
+                <TabPanel value="2">
+                    Item Two
+                </TabPanel>
+            </TabContext>
+
+
         </Flex>
       </Provider>
     </View>
