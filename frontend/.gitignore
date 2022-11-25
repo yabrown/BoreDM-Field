@@ -12,7 +12,7 @@ npm-debug.*
 *.orig.*
 web-build/
 
-env.ts
+# env.ts
 
 # macOS
 .DS_Store
