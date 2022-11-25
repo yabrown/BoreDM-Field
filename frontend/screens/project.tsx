@@ -18,7 +18,7 @@ const Title = (props: { name:string }) =>{
   )
 }
 
-const Project = ({ navigation, route }: Props) => {
+const Project = ({ navigation, route}: Props) => {
 
   let default_log: log = {project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default"}
   const [logsList, setLogsList] = useState<log[]>([default_log])
@@ -68,7 +68,7 @@ const Project = ({ navigation, route }: Props) => {
               <AddLogModal project_id={currProject.id} getLogs={getLogs}/>
             </Box>
             <Box style={{ margin: 4 }}>
-              <EditProjectModal project={currProject} updateProject={refreshProject} />
+              <EditProjectModal project={currProject} updateProject={refreshProject} navigation={navigation} updateProjectList={route.params.onUpdate}/>
             </Box>
           </Box>
         </Flex>
@@ -121,6 +121,28 @@ const UpdateProject = ({ project, setModalVisible, updateProject }) => {
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
   }
 
+  // The component that deals with the adding a new project
+const DeleteProject = ({ project, setModalVisible, navigation, updateProjectList }) => {
+  const onPress = async () => {
+      setModalVisible(false)
+      try {
+          let fetched = await fetch(`${PORT}/delete_project`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({project_id: project.id})
+          })
+          console.log("status:", fetched.status)
+          updateProjectList()
+          navigation.navigate('Home')
+      } catch(error) {
+              console.error('Error:', error);
+          }
+  }
+  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
+}
+
 const AddLogModal = ({ project_id, getLogs }) => {
   const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
@@ -153,7 +175,7 @@ const AddLogModal = ({ project_id, getLogs }) => {
 }
 
 
-const EditProjectModal = ({ project, updateProject }) => {
+const EditProjectModal = ({ project, updateProject, updateProjectList, navigation }) => {
   const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
@@ -180,6 +202,7 @@ const EditProjectModal = ({ project, updateProject }) => {
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
               <UpdateProject setModalVisible={setVisible} updateProject={updateProject} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
+              <DeleteProject setModalVisible={setVisible} project={{id: project.id}} navigation={navigation} updateProjectList={updateProjectList}/>
             </Dialog.Actions>
           </Dialog>
         </Portal>

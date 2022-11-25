@@ -60,7 +60,7 @@ interface project  {
 
   type RootStackParamList = {
     Home: undefined;
-    Project: { project: project };
+    Project: { project: project, onUpdate};
     Log:     {log: log}
   };
 

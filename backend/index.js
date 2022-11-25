@@ -74,6 +74,15 @@ app.post('/add_sample', (req, res) => {
     }
   })
 
+  app.post('/delete_project', (req, res) => {
+    try {
+      db.delete_project(req.body.project_id)
+        res.status(200).send("Project deleted");
+    } catch (err) {
+        console.log(err);
+    }
+  })
+
 app.post('/update_project', (req, res) => {
     try {
         db.update_project(req.body.project_id, req.body.project_name ,req.body.client_name, req.body.project_location, req.body.project_notes)

@@ -200,6 +200,17 @@ async function update_project(project_id, project_name, client_name, location, p
   return updated_proj[1][0].id;
 }
 
+// updates project associated with project_id
+// written by; Ari
+async function delete_project(project_id) {
+  const updated_proj = await Project.destroy({
+    where: { id: project_id },
+    returning: true,
+    raw: true,
+  });
+  return;
+}
+
 // retrieves list of all log names for given project_id
 // written by: Max
 async function get_all_logs(project_id){
@@ -282,6 +293,7 @@ module.exports = {
   get_project,
   add_project,
   update_project,
+  delete_project,
   update_log,
   get_all_logs,
   get_log,
