@@ -9,7 +9,7 @@ import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
 import { Tab } from '@mui/material';
 import {TabPanel, TabContext, TabList} from '@mui/lab';
-//import MapView from 'react-native-maps'
+import MapView from 'react-native-maps'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -124,7 +124,7 @@ const Home = ({ navigation }: Props) => {
         </TabPanel>
 
         <TabPanel value="2">
-          Insert map here.
+          Insert simple 'MapView' object here. Details: https://github.com/react-native-maps/react-native-maps
         </TabPanel>
         </TabContext>
 
