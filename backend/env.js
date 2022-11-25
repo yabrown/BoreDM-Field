@@ -1,3 +1,3 @@
-import { Platform } from "react-native"
+const PORT = 4000;
 
-export const PORT = 'http://' + (Platform.OS === 'android' ? '10.0.2.2' : 'localhost:4000')
+module.exports = { PORT }
