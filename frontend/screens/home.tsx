@@ -7,9 +7,9 @@ import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-p
 import Header from '../common/header';
 import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
-import { Tab } from '@mui/material';
-import {TabPanel, TabContext, TabList} from '@mui/lab';
-import MapView from 'react-native-maps'
+// import { Tab } from '@mui/material';
+// import {TabPanel, TabContext, TabList} from '@mui/lab';
+// import MapView from 'react-native-maps'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -107,13 +107,13 @@ const Home = ({ navigation }: Props) => {
         <Box>
           <Header/>
         </Box>
-        <TabContext value={tabValue}>
+        {/* <TabContext value={tabValue}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
             <Tab label="Projects" value="1" />
             <Tab label="Map" value="2" />
-          </TabList>
+          </TabList> */}
 
-        <TabPanel value="1">
+        {/* <TabPanel value="1"> */}
           <Box>
             <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
           </Box>
@@ -121,12 +121,12 @@ const Home = ({ navigation }: Props) => {
           <Box style={{ margin: 6 }}>
             <AddProjectModal onUpdate={getProjectsList}/>
           </Box>
-        </TabPanel>
+        {/* </TabPanel> */}
 
-        <TabPanel value="2">
-          Insert simple 'MapView' object here. Details: https://github.com/react-native-maps/react-native-maps
-        </TabPanel>
-        </TabContext>
+        {/* <TabPanel value="2"> */}
+          {/* <Text>Insert simple 'MapView' object here. Details: https://github.com/react-native-maps/react-native-maps</Text> */}
+        {/* </TabPanel> */}
+        {/* </TabContext> */}
 
         </Flex>
     </View>
