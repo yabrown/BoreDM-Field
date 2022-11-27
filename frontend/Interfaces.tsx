@@ -61,7 +61,7 @@ interface project  {
   type RootStackParamList = {
     Home: undefined;
     Project: { project: project };
-    Log:     {log: log}
+    Log:     { log: log }
   };
 
   interface classification {
