@@ -13,11 +13,6 @@ const SelectProjectList = ({ navigate: navigation, projects, onUpdate }) => {
     
   
   // useState is generic function, so can pass in the type
-  
-  // move this to GCD
-  useEffect(() => {
-      onUpdate()
-  }, [])
 
   return(
       <View>

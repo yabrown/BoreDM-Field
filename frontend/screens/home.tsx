@@ -1,15 +1,16 @@
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 // import { google } from 'googleapis';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
-// import { Tab } from '@mui/material';
-// import {TabPanel, TabContext, TabList} from '@mui/lab';
-// import MapView from 'react-native-maps'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import MapView from 'react-native-maps'
+import PagerView from 'react-native-pager-view';
+import Project from "./project";
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -79,26 +80,47 @@ const AddProjectModal = ({ onUpdate }) => {
   );
 };
 
+const Tab = createMaterialTopTabNavigator();
+const Child = () => {
+  console.log("rendered map")
+  return(
+    <Text> Child </Text>
+  )
+}
+
+
 
 const Home = ({ navigation }: Props) => {
 
   const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
 
-  const getProjectsList: () => Promise<void> = async () => {
-            try{
-                const fetched = await fetch(`${PORT}/get_all_projects`);
-                const projects_list = await fetched.json()
-                setProjectsList(projects_list)
-            } catch(error) {
-                console.error(error)
-            }
-        }
+  const getProjectsList: () => void = async () => {
+    try{
+        const fetched = await fetch(`${PORT}/get_all_projects`);
+        const projects_list = await fetched.json()
+        setProjectsList(projects_list)
+    } catch(error) {
+        console.error(error)
+    }
+  }
 
-    const [tabValue, setTabValue] = React.useState('1');
+  useEffect(() => {
+    getProjectsList();
+  }, []);
 
-    const handleChange = (event: React.SyntheticEvent, newTabValue: string) => {
-        setTabValue(newTabValue);
-    };
+  const ProjectsTabView = () => {
+    return(
+      <View style={{backgroundColor: 'white'}}>
+      <Box>
+            <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
+      </Box>
+      <Spacer />
+      <Box style={{ margin: 6 }}>
+      <AddProjectModal onUpdate={getProjectsList}/>
+      </Box>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -107,27 +129,28 @@ const Home = ({ navigation }: Props) => {
         <Box>
           <Header/>
         </Box>
-        {/* <TabContext value={tabValue}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Projects" value="1" />
-            <Tab label="Map" value="2" />
-          </TabList> */}
+        <Tab.Navigator
+          initialRouteName="Projects"
+          screenOptions={{
+            tabBarActiveTintColor: '#000000',
+            tabBarLabelStyle: { fontSize: 12 },
+            tabBarStyle: { backgroundColor: 'white' },
+            tabBarIndicatorStyle: { backgroundColor: 'black' },
+            lazy: true
+          }}
+          sceneContainerStyle= {{backgroundColor: 'white'}}
+         >
+      <Tab.Screen 
+        name="Projects"
+        component = {ProjectsTabView} />
 
-        {/* <TabPanel value="1"> */}
-          <Box>
-            <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
-          </Box>
-          <Spacer />
-          <Box style={{ margin: 6 }}>
-            <AddProjectModal onUpdate={getProjectsList}/>
-          </Box>
-        {/* </TabPanel> */}
-
-        {/* <TabPanel value="2"> */}
-          {/* <Text>Insert simple 'MapView' object here. Details: https://github.com/react-native-maps/react-native-maps</Text> */}
-        {/* </TabPanel> */}
-        {/* </TabContext> */}
-
+      <Tab.Screen
+        name="Maps"
+        component={Child}
+        options={{ tabBarLabel: 'Map' }}
+      />
+      </Tab.Navigator>
+      
         </Flex>
     </View>
   )
