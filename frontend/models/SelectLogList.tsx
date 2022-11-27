@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { v4 as uuid } from 'uuid';
 
-const SelectLogButton = ({ log, navigate, updateLogList }) => {
+const SelectLogButton = ({ log, navigate }) => {
     return(
-      <ListItem title={log.name} onPress={() => { navigate.navigate('Log', {log, updateLogList}) }}/>
+      <ListItem title={log.name} onPress={() => { navigate.navigate('Log', { log }) }}/>
     )
   }
 
@@ -22,7 +22,7 @@ const SelectLogList = ({ id, navigate, getLogs, logsList }) => {
         <Text> Project ID: {id}</Text>
           <ScrollView style={styles.scrollView}>
               {logsList.map(log => (
-                  <SelectLogButton log={log} updateLogList={getLogs} key={uuid()} navigate={navigate}/>
+                  <SelectLogButton log={log} key={uuid()} navigate={navigate}/>
               ))}
           </ScrollView>
       </View>

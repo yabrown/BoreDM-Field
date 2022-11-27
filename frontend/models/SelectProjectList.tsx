@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from "react-native";
 import { v4 as uuid } from 'uuid';
 
-const SelectProjectButton = ({ navigation, project, onUpdate  }) => {
+const SelectProjectButton = ({ navigation, project }) => {
     return(
-      <ListItem title={project.name} onPress={() => navigation.navigate('Project', { project, onUpdate })}/>
+      <ListItem title={project.name} onPress={() => navigation.navigate('Project', { project })}/>
     )
   }
 
@@ -23,7 +23,7 @@ const SelectProjectList = ({ navigate: navigation, projects, onUpdate }) => {
       <View>
           <ScrollView style={styles.scrollView}>
               {projects.map(project => (
-                  <SelectProjectButton project={project} key={uuid()} navigation={navigation} onUpdate={onUpdate}/>
+                  <SelectProjectButton project={project} key={uuid()} navigation={navigation}/>
               ))}
           </ScrollView>
       </View>
