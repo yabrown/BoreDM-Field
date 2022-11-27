@@ -83,6 +83,15 @@ app.post('/add_sample', (req, res) => {
     }
   })
 
+  app.post('/delete_log', (req, res) => {
+    try {
+      db.delete_log(req.body.log_id)
+        res.status(200).send("Log deleted");
+    } catch (err) {
+        console.log(err);
+    }
+  })
+
 app.post('/update_project', (req, res) => {
     try {
         db.update_project(req.body.project_id, req.body.project_name ,req.body.client_name, req.body.project_location, req.body.project_notes)
@@ -105,6 +114,24 @@ app.post('/update_sample', (req, res) => {
     try {
         db.update_sample(req.body.sample_id, req.body.start_depth, req.body.end_depth, req.body.length, req.body.blows_1, req.body.blows_2, req.body.blows_3, req.body.blows_4, req.body.description, req.body.refusal_length, req.body.sampler_type)
         res.status(200).send("Sample updated");
+    } catch (err) {
+        console.log(err);
+    }
+})
+
+app.post('/delete_sample', (req, res) => {
+    try {
+        db.delete_sample(req.body.sample_id)
+        res.status(200).send("Sample deleted");
+    } catch (err) {
+        console.log(err);
+    }
+})
+
+app.post('/delete_classification', (req, res) => {
+    try {
+        db.delete_classification(req.body.classification_id)
+        res.status(200).send("Classification deleted");
     } catch (err) {
         console.log(err);
     }

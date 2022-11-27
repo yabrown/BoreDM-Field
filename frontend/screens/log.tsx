@@ -18,7 +18,7 @@ const Title = (props: { name:string }) =>{
     )
   }
 
-const Log = ({ route }: Props) => {
+const Log = ({ route, navigation }: Props) => {
 
   const [currentLog, setLog] = useState(route.params.log);
 
@@ -37,7 +37,19 @@ const Log = ({ route }: Props) => {
     sampler_type:   '',
   }
 
+  const default_classification: classification = {
+    log_id:         NaN,
+    start_depth:    NaN,
+    end_depth:      NaN,
+    uscs:    '',
+    color:   '',
+    moisture:   '',
+    density:   '',
+    hardness:   '',
+  }
+
   const [samplesList, setSamplesList] = useState([default_sample])
+  const [classificationsList, setClassificationsList] = useState([default_classification])
 
   const refreshSamples: () => Promise<void> = async () => {
     try{
@@ -48,8 +60,24 @@ const Log = ({ route }: Props) => {
         },
         body: JSON.stringify({log_id: route.params.log.id})
     });
-      const samples_list = await fetched.json()
-      setSamplesList(samples_list)
+      const new_samples_list = await fetched.json()
+      setSamplesList(new_samples_list)
+  } catch(error) {
+      console.error(error)
+  }
+  }
+
+  const refreshClassifications: () => Promise<void> = async () => {
+    try{
+      const fetched = await fetch(`${PORT}/get_all_classifications`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({log_id: route.params.log.id})
+    });
+      const new_classifications_list = await fetched.json()
+      setClassificationsList(new_classifications_list)
   } catch(error) {
       console.error(error)
   }
@@ -66,7 +94,7 @@ const Log = ({ route }: Props) => {
           </Box>
           <Box>
             <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
-            <SelectClassificationList id={currentLog.id}/>
+            <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
@@ -74,7 +102,7 @@ const Log = ({ route }: Props) => {
               <AddSampleModal log_id={currentLog.id} refreshSamples={refreshSamples}/>
             </Box>
             <Box style={{ margin: 4 }}>
-              <EditLogModal log={currentLog}/>
+              <EditLogModal log={currentLog} navigation={navigation} updateLogList={route.params.updateLogList}/>
             </Box>
           </Box>
         </Flex>
@@ -142,6 +170,28 @@ const AddSampleModal = ({ log_id, refreshSamples }) => {
   );
 }
 
+// The component that deals with the adding a new project
+const DeleteLog = ({ log, setModalVisible, navigation, updateLogList }) => {
+  const onPress = async () => {
+      setModalVisible(false)
+      try {
+          let fetched = await fetch(`${PORT}/delete_log`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({log_id: log.id})
+          })
+          console.log("status:", fetched.status)
+          updateLogList()
+          navigation.navigate('Project')
+      } catch(error) {
+            console.log("Problem")
+              console.error('Error:', error);
+          }
+  }
+  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
+}
 
 // The component that deals with updating log data
 const UpdateLog = ( {log, setModalVisible}) => {
@@ -163,7 +213,7 @@ const UpdateLog = ( {log, setModalVisible}) => {
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
 }
 
-const EditLogModal = ({log}) => {
+const EditLogModal = ({log, updateLogList, navigation}) => {
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
@@ -190,6 +240,7 @@ const EditLogModal = ({log}) => {
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
               <UpdateLog setModalVisible={setVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
+              <DeleteLog setModalVisible={setVisible} log={{id: log.id}} navigation={navigation} updateLogList={updateLogList}/>
             </Dialog.Actions>
           </Dialog>
         </Portal>

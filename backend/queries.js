@@ -200,11 +200,44 @@ async function update_project(project_id, project_name, client_name, location, p
   return updated_proj[1][0].id;
 }
 
-// updates project associated with project_id
+// deletes project associated with project_id
 // written by; Ari
 async function delete_project(project_id) {
   const updated_proj = await Project.destroy({
     where: { id: project_id },
+    returning: true,
+    raw: true,
+  });
+  return;
+}
+
+// deletes log associated with log_id
+// written by; Ari
+async function delete_log(log_id) {
+  const updated_proj = await Log.destroy({
+    where: { id: log_id },
+    returning: true,
+    raw: true,
+  });
+  return;
+}
+
+// deletes sample associated with sample_id
+// written by; Ari
+async function delete_sample(sample_id) {
+  const updated_proj = await Sample.destroy({
+    where: { id: sample_id },
+    returning: true,
+    raw: true,
+  });
+  return;
+}
+
+// deletes sample associated with sample_id
+// written by; Ari
+async function delete_classification(classification_id) {
+  const updated_proj = await Classification.destroy({
+    where: { id: classification_id },
     returning: true,
     raw: true,
   });
@@ -269,9 +302,9 @@ async function update_sample(sample_id, start_depth, end_depth, length, blows_1,
 
 // updates classification associated with log_id
 // written by Louis
-async function update_classification(log_id, start_depth, end_depth, uscs, color, moisture, density, hardness) {
+async function update_classification(classification_id, start_depth, end_depth, uscs, color, moisture, density, hardness) {
   const updated_classification = await Classification.update({ start_depth:start_depth, end_depth:end_depth, uscs:uscs, color:color, moisture:moisture, density:density, hardness:hardness}, {
-    where: { log_id: log_id },
+    where: { id: classification_id },
     returning: true,
     raw: true,
   });
@@ -294,6 +327,8 @@ module.exports = {
   add_project,
   update_project,
   delete_project,
+  delete_log,
+  delete_classification,
   update_log,
   get_all_logs,
   get_log,
@@ -301,6 +336,7 @@ module.exports = {
   get_all_samples,
   add_sample,
   update_sample,
+  delete_sample,
   update_classification,
   client,
 }

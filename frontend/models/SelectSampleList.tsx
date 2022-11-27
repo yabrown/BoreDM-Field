@@ -36,6 +36,7 @@ const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refresh
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
             <UpdateSample setModalVisible={setVisible} refreshSamples={refreshSamples} sample={sample}/>
+            <DeleteSample setModalVisible={setVisible} sample={sample} refreshSamples={refreshSamples}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -62,6 +63,29 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
         refreshSamples();
     }
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
+}
+
+// The component that deals with the adding a new project
+const DeleteSample = ({ sample, setModalVisible, refreshSamples }) => {
+  const onPress = async () => {
+      setModalVisible(false)
+      try {
+        console.log(sample)
+          let fetched = await fetch(`${PORT}/delete_sample`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({sample_id: sample.id})
+          })
+          console.log("status:", fetched.status)
+          refreshSamples()
+      } catch(error) {
+            console.log("Problem")
+              console.error('Error:', error);
+          }
+  }
+  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
 }
 
 const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
