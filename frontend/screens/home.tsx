@@ -61,7 +61,7 @@ const AddProjectModal = ({ onUpdate }) => {
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Project</PaperButton>
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title>New Project</Dialog.Title>
+            <Dialog.Title style={{color: 'black'}}>New Project</Dialog.Title>
             <Dialog.Content>
               <View>
                 <TextInput value={textFields.name} label={"Project Name"} mode={"outlined"} onChangeText={(projectText) => setTextFields({ ...textFields, name: projectText })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
@@ -140,7 +140,7 @@ const Home = ({ navigation }: Props) => {
           }}
           sceneContainerStyle= {{backgroundColor: 'white'}}
          >
-      <Tab.Screen 
+      <Tab.Screen
         name="Projects"
         component = {ProjectsTabView} />
 
@@ -150,7 +150,7 @@ const Home = ({ navigation }: Props) => {
         options={{ tabBarLabel: 'Map' }}
       />
       </Tab.Navigator>
-      
+
         </Flex>
     </View>
   )
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   textInput: {
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
     marginBottom:4
   }
 });

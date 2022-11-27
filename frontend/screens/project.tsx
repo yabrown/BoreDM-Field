@@ -96,7 +96,7 @@ const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
         getLogs();
         setLogText({ name: "", drilled: "", logged: "", notes: "" })
     }
-  
+
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
   }
 
@@ -155,10 +155,10 @@ const AddLogModal = ({ project_id, getLogs }) => {
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Log</PaperButton>
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title>New Log</Dialog.Title>
+            <Dialog.Title style={{color: 'black'}}>New Log</Dialog.Title>
             <Dialog.Content>
               <View>
-                <TextInput value={logText.name} label="Log Name" mode="outlined" onChangeText={(text) => setLogText({...logText, name: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                <TextInput value={logText.name} label="Log Name" mode="outlined" onChangeText={(text) => setLogText({...logText, name: text})} style={{ backgroundColor: 'white', marginBottom: 4}} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                 <TextInput value={logText.drilled} label="Drilled by" mode="outlined" onChangeText={(text) => setLogText({...logText, drilled: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                 <TextInput value={logText.logged} label="Logged by" mode="outlined" onChangeText={(text) => setLogText({...logText, logged: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                 <TextInput value={logText.notes} label="Notes" mode="outlined" onChangeText={(text) => setLogText({...logText, notes: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
@@ -190,7 +190,7 @@ const EditProjectModal = ({ project, updateProject, updateProjectList, navigatio
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Project Metadata</PaperButton>
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title>New Log</Dialog.Title>
+            <Dialog.Title style={{color: 'black'}}>New Log</Dialog.Title>
             <Dialog.Content>
               <View>
                 <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   titleView: {
-    height: 30, 
+    height: 30,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
