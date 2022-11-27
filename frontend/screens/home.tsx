@@ -6,6 +6,7 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import { PORT } from '../env';
+// import {useAuth0, Auth0Provider} from 'react-native-auth0';
 import SelectProjectList from '../models/SelectProjectList';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -77,6 +78,7 @@ const AddProjectModal = ({ onUpdate }) => {
 };
 
 const Home = ({ navigation }: Props) => {
+
 
   const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
 

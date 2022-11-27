@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^1.12.0",
     "@expo/webpack-config": "^0.17.0",
     "@googleapis/docs": "^2.0.0",
     "@googlemaps/js-api-loader": "^1.15.1",
@@ -29,6 +30,7 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-native": "0.70.5",
+    "react-native-auth0": "^2.16.0",
     "react-native-paper": "^5.0.0-rc.10",
     "react-native-safe-area-context": "4.4.1",
     "react-native-screens": "~3.18.0",
@@ -41,6 +43,7 @@
     "@types/jest": "^29.2.3",
     "@types/react": "~18.0.14",
     "@types/react-native": "^0.69.15",
+    "@types/react-native-auth0": "^2.13.1",
     "@types/react-native-vector-icons": "^6.4.12",
     "@types/react-navigation": "^3.4.0",
     "@types/uuid": "^8.3.4",

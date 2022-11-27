@@ -6,13 +6,21 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import Home from './screens/home';
 import Log from './screens/log';
 import Project from './screens/project';
+import { Auth0Provider } from "react-native-auth0";
+import { LoginButton } from './buttons/login-button';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 WebBrowser.maybeCompleteAuthSession(); 
 
 export default function App() {
+    const [user, setUser] = React.useState(null);
 
     return (
+        <Auth0Provider
+        domain={'dev-akt6eqmmnrxlsyyx.us.auth0.com'}
+        clientId={'bQDe0499YLa8b0ZLBWm0VoVKftdgxOat'}
+        redirectUri={'http://localhost:19006'}>
+            <LoginButton setUser={setUser}></LoginButton>
         <PaperProvider>
             <NavigationContainer>
                 <Stack.Navigator initialRouteName='Home'>
@@ -22,5 +30,6 @@ export default function App() {
                 </Stack.Navigator>
             </NavigationContainer>
         </PaperProvider>
+        </Auth0Provider>
     ); 
     }
