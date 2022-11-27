@@ -23,7 +23,7 @@ const SelectButton = ({ current, buttonOption, setFunction, color, highlightedCo
   </View>
 );
 
-const SelectClassificationButton = ({ classification }) => {
+const SelectClassificationButton = ({ classification, refreshClassifications }) => {
 
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
@@ -135,12 +135,35 @@ const SelectClassificationButton = ({ classification }) => {
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
             <UpdateClassification setModalVisible={setVisible} classification={{log_id: classification.log_id, start_depth: startDepth, end_depth: endDepth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }}/>
+            <DeleteClassification setModalVisible={setVisible} classification={classification} refreshClassifications={refreshClassifications}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
     </View>
   );
 };
+
+// The component that deals with the adding a new project
+const DeleteClassification = ({ classification, setModalVisible, refreshClassifications }) => {
+  const onPress = async () => {
+      setModalVisible(false)
+      try {
+          let fetched = await fetch(`${PORT}/delete_classification`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({classification_id: classification.id})
+          })
+          console.log("status:", fetched.status)
+          refreshClassifications()
+      } catch(error) {
+            console.log("Problem")
+              console.error('Error:', error);
+          }
+  }
+  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
+}
 
 // The component that deals with updating a Classification
 const UpdateClassification = ( {classification, setModalVisible}) => {
@@ -162,49 +185,18 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
 }
 
-const SelectClassificationList = ({ id }) => {
-
-  // the data state will eventually be filled with array of log types
-  const default_classification: classification = {
-    log_id:         -1,
-    start_depth:    -1,
-    end_depth:      -1,
-    uscs:           "default",
-    color:          "default",
-    moisture:       "default",
-    density:        "default",
-    hardness:       "default",
-  }
-  // useState is generic function, so can pass in the type
-  const [data, setData] = useState<classification[]>([default_classification])
-  //const [data, setData] = useState<void>()
+const SelectClassificationList = ({ id, classifications_list, refreshClassifications }) => {
 
   useEffect(() => {
-      const GetClassifications: () => void = async () => {
-        console.log(id)
-          try{
-              const fetched = await fetch(`${PORT}/get_all_classifications`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({log_id: id})
-            });
-              const classifications_list = await fetched.json()
-              setData(classifications_list)
-          } catch(error) {
-              console.error(error)
-          }
-      }
-      GetClassifications()
+      refreshClassifications()
   }, [])
 
   return(
       <View style={{margin: "10%"}}>
         <Text> Classifications (Log ID: {id})</Text>
           <ScrollView style={styles.scrollView}>
-              {data.map(classification => (
-                  <SelectClassificationButton classification={classification} key={uuid()}/>
+              {classifications_list.map(classification => (
+                  <SelectClassificationButton classification={classification} key={uuid()} refreshClassifications={refreshClassifications}/>
               ))}
           </ScrollView>
       </View>

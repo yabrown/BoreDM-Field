@@ -7,6 +7,9 @@ import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-p
 import Header from '../common/header';
 import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
+import { Tab } from '@mui/material';
+import {TabPanel, TabContext, TabList} from '@mui/lab';
+import MapView from 'react-native-maps'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -76,6 +79,7 @@ const AddProjectModal = ({ onUpdate }) => {
   );
 };
 
+
 const Home = ({ navigation }: Props) => {
 
   const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
@@ -90,15 +94,26 @@ const Home = ({ navigation }: Props) => {
             }
         }
 
+    const [tabValue, setTabValue] = React.useState('1');
+
+    const handleChange = (event: React.SyntheticEvent, newTabValue: string) => {
+        setTabValue(newTabValue);
+    };
+
   return (
     <View style={styles.container}>
         <Flex fill flex-grow style={{width:"100%"}}>
-          <Box>
-            <Header/>
-          </Box>
-          <Box>
-            <Title name="Projects"/>
-          </Box>
+
+        <Box>
+          <Header/>
+        </Box>
+        <TabContext value={tabValue}>
+          <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <Tab label="Projects" value="1" />
+            <Tab label="Map" value="2" />
+          </TabList>
+
+        <TabPanel value="1">
           <Box>
             <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
           </Box>
@@ -106,10 +121,19 @@ const Home = ({ navigation }: Props) => {
           <Box style={{ margin: 6 }}>
             <AddProjectModal onUpdate={getProjectsList}/>
           </Box>
+        </TabPanel>
+
+        <TabPanel value="2">
+          Insert simple 'MapView' object here. Details: https://github.com/react-native-maps/react-native-maps
+        </TabPanel>
+        </TabContext>
+
         </Flex>
     </View>
   )
     }
+
+
 
 const showViews = 0
 //TODO: change this so that it only calulcates once, in the right place
