@@ -336,6 +336,36 @@ async function create_log(project_id, log_name, driller, logger, notes) {
   return new_log.id;
 }
 
+// checks to see if username already exists
+// written by: Max
+// (Danny, see this)
+// async function get_hashed_password(username) {
+//   const user = await User.findAll({
+//     where: {
+//       username: username
+//     }
+//   });
+//   if (user.length == 0) {
+//     throw "Username does not exist!";
+//   }
+//   return user.password;
+// }
+//
+// async function get_hashed_password(username, password) {
+//   const user = await User.findAll({
+//     where: {
+//       username: username
+//     }
+//   });
+//   if (user.length == 0) {
+//     throw "Username does not exist!";
+//   }
+//   if (user.password == password) {
+//     return True;
+//   }
+//   return False;
+// }
+
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
@@ -351,6 +381,7 @@ module.exports = {
   get_all_logs,
   get_log,
   create_log,
+  // get_hashed_password, (Danny, see this)
   get_all_samples,
   add_sample,
   update_sample,
