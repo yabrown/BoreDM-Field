@@ -100,7 +100,7 @@ app.post('/get_all_classifications', verifyToken, async (req, res) => {
 
 app.post('/add_project', verifyToken, (req, res) => {
   try {
-    db.add_project(req.body.project_name, req.body.client_name, req.body.project_location, req.body.project_notes)
+    db.add_project(req.body.username, req.body.project_name, req.body.client_name, req.body.project_location, req.body.project_notes)
       res.status(200).json({ validToken: true });
   } catch (err) {
       console.log(err);

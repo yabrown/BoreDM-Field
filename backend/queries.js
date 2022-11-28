@@ -205,8 +205,8 @@ async function get_project(project_id) {
 
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Max
-async function add_project(project_name, client_name, location, notes) {
-  const new_proj = await Project.create({ name:project_name, client:client_name, location:location, notes: notes});
+async function add_project(username, project_name, client_name, location, notes) {
+  const new_proj = await Project.create({ username, name:project_name, client:client_name, location:location, notes: notes});
   return new_proj.id;
 }
 
