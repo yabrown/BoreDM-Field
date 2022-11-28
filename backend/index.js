@@ -44,13 +44,19 @@ const verifyToken = (req, res, next) => {
 app.post('/register', async (req, res) => {
     try {
         const username = req.body.username;
-
-        // TODO: if username exists return err
-
         const password = req.body.password;
+        const name = req.body.name;
+
         const hashedPass = await bcrypt.hash(password, 10);
 
-        // TODO: store username and hashed pass in the db
+        const results = await db.register(username, hashedPass, name);
+
+        if (results) {
+          res.status(200).send("User registered");
+        }
+        else {
+          res.status(409).send("Error: Username already exists");
+        }
 
     } catch (err) {
         res.status(500).send();
