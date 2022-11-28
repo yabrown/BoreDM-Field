@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useContext } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import { UserContext } from '../contexts/UserContext';
+
 import InputField from '../common/InputField';
 import CustomButton from '../common/CustomButton';
 
@@ -16,6 +18,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const RegisterScreen = ({navigation}) => {
+
+  const default_user: user = {name: 'Robert', username: 'testuser1'}
+  const {user, setUser} = useContext(UserContext);
 
   return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
@@ -87,7 +92,7 @@ const RegisterScreen = ({navigation}) => {
           inputType="password"
         />
 
-        <CustomButton label={'Register'} onPress={() => {}} />
+        <CustomButton label={'Register'} onPress={() => {setUser && setUser(default_user)}} />
 
         <View
           style={{

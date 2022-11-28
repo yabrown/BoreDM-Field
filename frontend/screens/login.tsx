@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   SafeAreaView,
   View,
@@ -12,8 +12,14 @@ import InputField from '../common/InputField';
 import CustomButton from '../common/CustomButton';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { UserContext } from '../contexts/UserContext';
 
 const LoginScreen = ({navigation}) => {
+
+  const default_user: user = {name: 'Robert', username: 'testuser1'}
+  const {user, setUser} = useContext(UserContext);
+  
+
   return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
       <View style={{paddingHorizontal: 25}}>
@@ -58,7 +64,7 @@ const LoginScreen = ({navigation}) => {
           inputType="password"
         />
         
-        <CustomButton label={"Login"} onPress={() => {}} />
+        <CustomButton label={"Login"} onPress={() => {setUser && setUser(default_user)}} />
 
         <View
           style={{

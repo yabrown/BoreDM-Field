@@ -98,20 +98,25 @@ const Map = () => {
   }
   const [location, setLocation] = useState<Location.LocationObject>(default_location);
   const [errorMsg, setErrorMsg] = useState('');
-  useEffect(() => {
-    (async () => {
-      
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
+  
+  // useEffect(() => {
+  //   const fun = async () => {
+  //     try {
+  //       let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       setErrorMsg('Permission to access location was denied');
+  //       return;
+  //     }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      console.log(location)
-    })();
-  }, []);
+  //       let location = await Location.getCurrentPositionAsync({});
+  //       setLocation(location);
+  //       console.log(location)
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   } 
+  //   fun();
+  // }, []);
 
   return(
     <View style={{
