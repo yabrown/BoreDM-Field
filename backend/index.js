@@ -2,13 +2,58 @@ const cors = require('cors');
 const express = require('express');
 const db = require('./queries')
 const env = require('./env')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
-const PORT = env.PORT || 4000;
+const { PORT, ACCESS_TOKEN_SECRET } = env;
 const app = express();
 
 app.use(cors({origin: '*'}))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+app.post('/register', async (req, res) => {
+    try {
+        const username = req.body.username;
+
+        // TODO: if username exists return err
+
+        const password = req.body.password;
+        const hashedPass = await bcrypt.hash(password, 10);
+
+        // TODO: store username and hashed pass in the db
+
+    } catch (err) {
+        res.status(500).send();
+        console.error(err);
+    }
+})
+
+app.post('/login', async (req, res) => {
+    try {
+        const username = req.body.username;
+
+        // TODO: if username not in database return unsuccesful
+
+        const textPassword = req.body.password;
+
+        // TODO: get stored hash from the db
+        const storedHash = null;
+
+        const doesMatch = bcrypt.compare(textPassword, storedHash);
+
+        if (!doesMatch) res.status(403).send();
+
+        const token = jwt.sign({ username }, ACCESS_TOKEN_SECRET);
+
+        res.status(200);
+        res.json({ token });
+
+    } catch (err) {
+        res.status(500).send();
+        console.error(err);
+    }
+})
 
 // get request on the root directory, displays a list of projects in json format on the broswer
 // written by: Max and Louis
