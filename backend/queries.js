@@ -364,6 +364,24 @@ async function login(username, hashed_password) {
   return False;
 }
 
+async function register(username, hashed_password, name) {
+  try {
+    const user = await User.findAll({
+      where: {
+        username: username
+      }
+    });
+    if (user.length == 0) {
+      const new_user = await User.create({ username: username, password: hashed_password, name: name });
+      return True;
+    }
+    return False;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
 module.exports = {
@@ -386,4 +404,6 @@ module.exports = {
   delete_sample,
   update_classification,
   client,
+  register,
+
 }
