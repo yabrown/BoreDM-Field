@@ -75,6 +75,7 @@ const User  = sequelize.define("User", {
     allowNull: false 
   },
   password: DataTypes.STRING,
+  name: DataTypes.STRING,
 })
 
 // Written by: Louis
@@ -348,20 +349,21 @@ async function create_log(project_id, log_name, driller, logger, notes) {
 // checks to see if username already exists
 // written by: Max
 // (Danny, see this)
-async function login(username, hashed_password) {
-  const user = await User.findAll({
-    where: {
-      username: username
+async function login(username) {
+  try {
+    const user = await User.findOne({
+      where: {
+        username: username
+      }
+    });
+  
+    if (!user || user.length === 0) {
+      return null;
     }
-  });
-
-  if (user.length == 0) {
-    return False;
+    return user.password;
+  } catch (err) {
+    console.error(err);
   }
-  if (user.password == hashed_password) {
-    return True;
-  }
-  return False;
 }
 
 async function register(username, hashed_password, name) {
@@ -371,11 +373,11 @@ async function register(username, hashed_password, name) {
         username: username
       }
     });
-    if (user.length == 0) {
+    if (user.length === 0) {
       const new_user = await User.create({ username: username, password: hashed_password, name: name });
-      return True;
+      return true;
     }
-    return False;
+    return false;
   } catch (err) {
     console.error(err);
   }
