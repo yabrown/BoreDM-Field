@@ -1,7 +1,7 @@
-var conString = "postgres://iuskfbrh:6tDvSAVRHoYJm7TqtLjlXeb2o-mjH6sz@batyr.db.elephantsql.com/iuskfbrh";
-
-var pg = require('pg')
+var pg = require('pg');
+var env = require('./env');
 var client = new pg.Client(conString);
+var conString = env.POSTGRES_URL;
 
 const { Sequelize, Model, DataTypes, DATE, FLOAT } = require("sequelize");
 const sequelize = new Sequelize(conString, {
@@ -78,7 +78,7 @@ const User  = sequelize.define("User", {
 })
 
 // Written by: Louis
-(async () => {
+const initializeDefault = async () => {
   await sequelize.sync({ force: true });
 
   const project_1 = await Project.create({  name: "Kuba",
@@ -142,7 +142,9 @@ const User  = sequelize.define("User", {
       description: "Description of Sample 2",
       refusal_length: 4,
       sampler_type: "SPS"});
-})();
+}
+
+initializeDefault();
 
 
 // creates a persistent connection to the elephantsql db. if persistence is undesirable (and we instead
@@ -173,10 +175,14 @@ client.connect(function(err) {
 // (Danny, see this)
 // written by: Max
 async function get_all_projects(username) {
-  const result = await Project.findAll({
-    where: {username: username},
-  });
-  return result;
+  try{
+    const result = await Project.findAll({
+      where: {username: username},
+    });
+    return result;
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 // uses the client connection above to query for a list of projects from db

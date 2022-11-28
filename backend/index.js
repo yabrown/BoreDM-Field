@@ -3,7 +3,7 @@ const express = require('express');
 const db = require('./queries')
 const env = require('./env')
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 const { PORT, ACCESS_TOKEN_SECRET } = env;
 const app = express();
@@ -11,6 +11,35 @@ const app = express();
 app.use(cors({origin: '*'}))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+
+const verifyToken = (req, res, next) => {
+    
+    try {
+        const bearer = req.headers['authorization'];
+
+        if (bearer === undefined) {
+            throw jwt.JsonWebTokenError("No JWT Token Provided");
+        }
+    else {
+        const token = bearer.split(" ")[1];
+        console.log(token);
+        const verified_token = jwt.verify(token, ACCESS_TOKEN_SECRET) 
+        // , (verified_token, err) => {
+        //     if (err) {
+        //         throw jwt.JsonWebTokenError(err);
+        //     }
+        //     else console.log(verified_token);
+        // })
+        console.log(verified_token);
+        req.username = verified_token.username;
+        next();
+    }
+    } catch (err) {
+        console.log(err);
+        next();
+    }
+}
 
 app.post('/register', async (req, res) => {
     try {
@@ -64,28 +93,61 @@ app.post('/login', async (req, res) => {
     }
 })
 
+app.post('/test', async (req, res) => {
+    try {
+
+        // TODO: get stored hash from the db
+        // const storedHash = null;
+        //
+        // const doesMatch = bcrypt.compare(textPassword, storedHash);
+        //
+        // if (!doesMatch) res.status(403).send();
+        //
+        const token = jwt.sign({ username: 'testuser1' }, ACCESS_TOKEN_SECRET, { expiresIn: '5s'});
+        
+        res.status(200);
+        res.json({authorization: `Bearer ${token}`});
+
+        // TODO: Hash password
+        // const hashedPassword = textPassword
+
+        // const results = await db.login(username, hashedPassword);
+        // if (results) {
+        //   console.log("Succesfully logged in");
+        //   res.json(results);
+        // }
+        // else {
+        //   res.status(403).send();
+        // }
+
+    } catch (err) {
+        res.status(500).send();
+        console.error(err);
+    }
+})
+
 // get request on the root directory, displays a list of projects in json format on the broswer
 // written by: Max and Louis
-app.get('/get_all_projects', async (req, res) => {
-    // console.log("doing default theing")
-  try {
-      const results = await db.get_all_projects();
-      res.json(results);
-  } catch (err) {
-      console.log(err);
-  }
-})
+// app.get('/get_all_projects', async (req, res) => {
+//     // console.log("doing default theing")
+//   try {
+//       const results = await db.get_all_projects();
+//       res.json(results);
+//   } catch (err) {
+//       console.log(err);
+//   }
+// })
 
 // get request on the root directory, displays a list of projects in json format on the broswer
 // (Danny, see this)
 // written by: Max and Louis
-app.get('/get_all_projects', async (req, res) => {
-    // console.log("doing default theing")
+app.get('/get_all_projects', verifyToken, async (req, res) => {
   try {
-      const results = await db.get_all_projects(req.username);
+      const results = await db.get_all_projects('testuser1');
+      console.log(results);
       res.json(results);
   } catch (err) {
-      console.log(err);
+    console.log(err);
   }
 })
 
@@ -248,7 +310,5 @@ app.get('/projects/:project_id', async (req, res) => {
       console.log(err);
   }
 })
-
-
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
