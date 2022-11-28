@@ -67,6 +67,19 @@ app.get('/get_all_projects', async (req, res) => {
   }
 })
 
+// get request on the root directory, displays a list of projects in json format on the broswer
+// (Danny, see this)
+// written by: Max and Louis
+// app.get('/get_all_projects', async (req, res) => {
+//     // console.log("doing default theing")
+//   try {
+//       const results = await db.get_all_projects(req.username);
+//       res.json(results);
+//   } catch (err) {
+//       console.log(err);
+//   }
+// })
+
 // get request on the root directory, returns a list of samples in json format
 // written by: Max and Louis
 app.post('/get_all_samples', async (req, res) => {

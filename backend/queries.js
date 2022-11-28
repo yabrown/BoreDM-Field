@@ -13,9 +13,10 @@ const sequelize = new Sequelize(conString, {
 logging: true
 });
 
-// Written by: Louis
+// Written by: Louis and Max
 const Project = sequelize.define("Project", {
   name: DataTypes.TEXT,
+  // username: DataTypes.STRING, (Danny, see this)
   location: DataTypes.TEXT,
   client: DataTypes.TEXT,
   notes: DataTypes.TEXT,
@@ -66,11 +67,18 @@ const Coordinate = sequelize.define("Coordinate", {
   longitude: DataTypes.FLOAT,
 });
 
+// Written by: Max (Danny, see this)
+// const User  = sequelize.define("User", {
+//   username: DataTypes.STRING,
+//   password: DataTypes.STRING,
+// })
+
 // Written by: Louis
 (async () => {
   await sequelize.sync({ force: true });
 
   const project_1 = await Project.create({  name: "Kuba",
+                                            // username: "testuser1", (Danny, see this)
                                             location: "Princeton, NJ",
                                             client: "Alicki",
                                             notes: "Test Project 1"});
@@ -109,7 +117,7 @@ const Coordinate = sequelize.define("Coordinate", {
                                                                                                   description: "Description of Sample 1",
                                                                                                   refusal_length: 0,});
 
-
+  // (Danny, see this) replace line below with this one. const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const project_2 = await Project.create({ name: "Robert", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
   const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
@@ -157,6 +165,16 @@ async function get_all_projects() {
   });
   return result;
 }
+
+// uses the client connection above to query for a list of projects from db
+// (Danny, see this)
+// written by: Max
+// async function get_all_projects(username) {
+//   const result = await Project.findAll({
+//     where: {username: username},
+//   });
+//   return result;
+// }
 
 // uses the client connection above to query for a list of projects from db
 // written by: Max and Louis
