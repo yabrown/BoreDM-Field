@@ -336,7 +336,7 @@ async function create_log(project_id, log_name, driller, logger, notes) {
   return new_log.id;
 }
 
-// checks to see if username already exists
+// checks whether username/password combo eists in db
 // written by: Max
 // (Danny, see this)
 async function login(username, hashed_password) {
@@ -354,6 +354,24 @@ async function login(username, hashed_password) {
   }
   return False;
 }
+
+
+// registers user
+// written by: Max
+async function register(username, hashed_password) {
+  const user = await User.findAll({
+    where: {
+      username: username
+    }
+  });
+  if (user.length == 0) {
+    const new_user = await User.create({ username: username, password: hashed_password });
+    return True;
+  }
+  return False;
+}
+
+
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
