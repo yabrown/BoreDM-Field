@@ -8,7 +8,8 @@ import Header from '../common/header';
 import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import MapView from 'react-native-maps'
+import MapView, {Marker} from 'react-native-maps'
+import * as Location from 'expo-location';
 import PagerView from 'react-native-pager-view';
 import Project from "./project";
 
@@ -81,11 +82,60 @@ const AddProjectModal = ({ onUpdate }) => {
 };
 
 const Tab = createMaterialTopTabNavigator();
-const Child = () => {
-  console.log("rendered map")
+const Map = () => {
+  
+  const default_location= {
+  "coords": {
+    "accuracy": 16.548999786376953, 
+    "altitude": -20.100000381469727, 
+    "altitudeAccuracy": 1, 
+    "heading": 0, 
+    "latitude": 40.6240629, 
+    "longitude": -73.9631628, 
+    "speed": 0}, 
+  "mocked": false, 
+   "timestamp": 1669592647218
+  }
+  const [location, setLocation] = useState(default_location);
+  const [errorMsg, setErrorMsg] = useState('');
+  useEffect(() => {
+    (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      console.log(location)
+    })();
+  }, []);
+
   return(
-    <Text> Child </Text>
-  )
+    <View style={{
+      ...StyleSheet.absoluteFillObject,
+      height: '75%', // you can customize this
+      width: '100%',  // you can customize this
+      alignItems: "center"
+    }}>
+
+    <MapView style={{ ...StyleSheet.absoluteFillObject }}
+
+      initialRegion={{
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}
+      showsMyLocationButton={true}
+      >
+        <Marker coordinate={{latitude: location.coords.latitude,
+        longitude: location.coords.longitude}} draggable={true}/>
+      </MapView>
+    </View>
+)
 }
 
 
@@ -142,11 +192,12 @@ const Home = ({ navigation }: Props) => {
          >
       <Tab.Screen
         name="Projects"
-        component = {ProjectsTabView} />
+        component = {ProjectsTabView} 
+        options={{ tabBarLabel: 'Projects' }}/>
 
       <Tab.Screen
         name="Maps"
-        component={Child}
+        component={Map}
         options={{ tabBarLabel: 'Map' }}
       />
       </Tab.Navigator>
