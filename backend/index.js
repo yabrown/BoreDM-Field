@@ -32,22 +32,31 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     try {
         const username = req.body.username;
-
-        // TODO: if username not in database return unsuccesful
-
         const textPassword = req.body.password;
 
         // TODO: get stored hash from the db
-        const storedHash = null;
+        // const storedHash = null;
+        //
+        // const doesMatch = bcrypt.compare(textPassword, storedHash);
+        //
+        // if (!doesMatch) res.status(403).send();
+        //
+        // const token = jwt.sign({ username }, ACCESS_TOKEN_SECRET);
+        //
+        // res.status(200);
+        // res.json({ token });
 
-        const doesMatch = bcrypt.compare(textPassword, storedHash);
+        // TODO: Hash password
+        const hashedPassword = textPassword
 
-        if (!doesMatch) res.status(403).send();
-
-        const token = jwt.sign({ username }, ACCESS_TOKEN_SECRET);
-
-        res.status(200);
-        res.json({ token });
+        const results = await db.login(username, hashedPassword);
+        if (results) {
+          console.log("Succesfully logged in");
+          res.json(results);
+        }
+        else {
+          res.status(403).send();
+        }
 
     } catch (err) {
         res.status(500).send();
