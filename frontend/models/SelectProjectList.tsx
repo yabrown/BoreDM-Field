@@ -4,9 +4,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { v4 as uuid } from 'uuid';
 
 const SelectProjectButton = ({ navigation, project, onUpdate  }) => {
-  return(
-    <ListItem title={project.name} onPress={() => navigation.navigate('Project', { project, onUpdate })}/>
-  )
+  return (<ListItem title={project.name} onPress={() => navigation.navigate('Project', { project, onUpdate })}/>)
 }
 
 const SelectProjectList = ({ navigate: navigation, projects, onUpdate }) => {

@@ -15,7 +15,7 @@ const LoginStack = createNativeStackNavigator<LoginStackParamList>();
 
 export default function App() {
 
-    // const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
     
 
@@ -24,15 +24,18 @@ export default function App() {
             <NavigationContainer>
 
                 {isLoggedIn ? 
+
                 <HomeStack.Navigator initialRouteName='Home'>
                     <HomeStack.Screen name='Home' component={Home} options={{title: 'BoreDM Home'}} />
                     <HomeStack.Screen name='Project' component={Project} options={{title: 'Project Details'}} initialParams={{}} />
                     <HomeStack.Screen name='Log' component={Log} options={{title: 'Log Details'}} initialParams={{}} />
                 </HomeStack.Navigator> :
-                <LoginStack.Navigator>
+
+                <LoginStack.Navigator screenOptions={{headerShown: false}} initialRouteName='Login'>
                     <LoginStack.Screen name='Login' component={Login} options={{title: 'Login to BoreDM'}} />
                     <LoginStack.Screen name='Register' component={Register} options={{title: 'Register for BoreDM'}} />
                 </LoginStack.Navigator>}
+
             </NavigationContainer>
         </PaperProvider>
     ); 

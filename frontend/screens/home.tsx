@@ -85,18 +85,18 @@ const Tab = createMaterialTopTabNavigator();
 const Map = () => {
   
   const default_location= {
-  "coords": {
-    "accuracy": 16.548999786376953, 
-    "altitude": -20.100000381469727, 
-    "altitudeAccuracy": 1, 
-    "heading": 0, 
-    "latitude": 40.6240629, 
-    "longitude": -73.9631628, 
-    "speed": 0}, 
-  "mocked": false, 
-   "timestamp": 1669592647218
+  coords: {
+    accuracy: 16.548999786376953, 
+    altitude: -20.100000381469727, 
+    altitudeAccuracy: 1, 
+    heading: 0, 
+    latitude: 40.6240629, 
+    longitude: -73.9631628, 
+    speed: 0},
+  mocked: false, 
+   timestamp: 1669592647218
   }
-  const [location, setLocation] = useState(default_location);
+  const [location, setLocation] = useState<Location.LocationObject>(default_location);
   const [errorMsg, setErrorMsg] = useState('');
   useEffect(() => {
     (async () => {
