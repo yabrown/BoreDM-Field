@@ -71,6 +71,7 @@ const Coordinate = sequelize.define("Coordinate", {
 // const User  = sequelize.define("User", {
 //   username: DataTypes.STRING,
 //   password: DataTypes.STRING,
+//   name: Datatypes.STRING,
 // })
 
 // Written by: Louis
@@ -358,14 +359,14 @@ async function login(username, hashed_password) {
 
 // registers user
 // written by: Max
-async function register(username, hashed_password) {
+async function register(username, hashed_password, name) {
   const user = await User.findAll({
     where: {
       username: username
     }
   });
   if (user.length == 0) {
-    const new_user = await User.create({ username: username, password: hashed_password });
+    const new_user = await User.create({ username: username, password: hashed_password, name: name });
     return True;
   }
   return False;
