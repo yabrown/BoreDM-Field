@@ -64,6 +64,11 @@ interface project  {
     Log:     {log: log, updateLogList}
   };
 
+  type LoginStackParamList = {
+    Login: undefined;
+    Register: undefined;
+  };
+
   interface classification {
       log_id:         number
       start_depth:    number
