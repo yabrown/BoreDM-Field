@@ -120,7 +120,7 @@ const Map = (logs, navigate) => {
   return(
     <View style={{
       ...StyleSheet.absoluteFillObject,
-      height: '75%', // you can customize this
+      height: '100%', // you can customize this
       width: '100%',  // you can customize this
       alignItems: "center"
     }}>
@@ -211,29 +211,34 @@ const Home = ({ navigation }: Props) => {
         <Box>
           <Header/>
         </Box>
-        <Tab.Navigator
-          initialRouteName="Projects"
-          screenOptions={{
-            tabBarActiveTintColor: '#000000',
-            tabBarLabelStyle: { fontSize: 12 },
-            tabBarStyle: { backgroundColor: 'white' },
-            tabBarIndicatorStyle: { backgroundColor: 'black' },
-            lazy: true
-          }}
-          sceneContainerStyle= {{backgroundColor: 'white'}}
-         >
-      <Tab.Screen
-        name="Projects"
-        component = {ProjectsComponent} 
-        options={{ tabBarLabel: 'Projects' }}/>
+        <Box style={{minHeight: "70%"}}>
+          <Tab.Navigator
+            initialRouteName="Projects"
+            screenOptions={{
+              tabBarActiveTintColor: '#000000',
+              tabBarLabelStyle: { fontSize: 12 },
+              tabBarStyle: { backgroundColor: 'white' },
+              tabBarIndicatorStyle: { backgroundColor: 'black' },
+              lazy: true
+            }}
+            sceneContainerStyle= {{backgroundColor: 'white'}}
+          >
+            <Tab.Screen
+              name="Projects"
+              component = {ProjectsComponent} 
+              options={{ tabBarLabel: 'Projects' }}/>
 
-      <Tab.Screen
-        name="Maps"
-        component={MapComponent}  //Had to use intermediary because can't put props directly in component-- probably a type issue
-        options={{ tabBarLabel: 'Map' }}
-      />
-      </Tab.Navigator>
-
+            <Tab.Screen
+              name="Maps"
+              component={MapComponent}  //Had to use intermediary because can't put props directly in component-- probably a type issue
+              options={{ tabBarLabel: 'Map' }}
+            />
+          </Tab.Navigator>
+        </Box>
+        <Spacer />
+        <Box style={{ margin: 6 }}>
+          <AddProjectModal onUpdate={getProjectsList}/>
+        </Box>
       </Flex>
     </View>
   )
