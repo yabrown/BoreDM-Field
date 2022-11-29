@@ -341,8 +341,8 @@ async function update_classification(classification_id, start_depth, end_depth, 
 
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Max
-async function create_log(project_id, log_name, driller, logger, notes) {
-  const new_log = await Log.create({ project_id: project_id, name:log_name, driller: driller, logger:logger, notes:notes });
+async function create_log(project_id, log_name, driller, logger, notes, latitude, longitude) {
+  const new_log = await Log.create({ project_id: project_id, name:log_name, driller: driller, logger:logger, notes:notes, latitude:latitude, longitude:longitude });
   return new_log.id;
 }
 

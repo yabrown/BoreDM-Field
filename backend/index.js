@@ -223,7 +223,7 @@ app.post('/add_boring_to_project', (req, res) => {
     console.log("matched correctly")
     try {
         console.log("add_boring_to_project: req.body: ", req.body);
-        db.create_log(req.body.project_id, req.body.name, req.body.driller,req.body.logger,req.body.notes,);
+        db.create_log(req.body.project_id, req.body.name, req.body.driller,req.body.logger,req.body.notes,req.body.latitude,req.body.longitude);
         res.status(200).send();
     } catch (err) {
         console.log(err);
