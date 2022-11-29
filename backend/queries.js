@@ -29,7 +29,8 @@ const Log = sequelize.define("Log", {
   driller: DataTypes.TEXT,
   logger: DataTypes.TEXT,
   notes: DataTypes.TEXT,
-  location: DataTypes.INTEGER,
+  latitude: DataTypes.FLOAT, 
+  longitude: DataTypes.FLOAT
   // date: DataTypes.DATE,
 });
 
@@ -89,7 +90,8 @@ const Coordinate = sequelize.define("Coordinate", {
                                     driller: "Danny",
                                     logger: "Ari",
                                     notes: "Nice",
-                                    location: home_1.id});
+                                    latitude: 40.349961, 
+                                    longitude: -74.652069});
   const classification_1 = await Classification.create({  log_id : log_1.id,
                                                           start_depth: 0,
                                                           end_depth: 10,
@@ -121,7 +123,7 @@ const Coordinate = sequelize.define("Coordinate", {
   // (Danny, see this) replace line below with this one. const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const project_2 = await Project.create({ name: "Robert", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
-  const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
+  const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", latitude: 40.349955, longitude: -74.652800});
   const classification_2 = await Classification.create({  log_id : log_2.id,
     start_depth: 10,
     end_depth: 14,
@@ -267,8 +269,15 @@ async function delete_classification(classification_id) {
 // written by: Max
 async function get_all_logs(project_id){
   const log_list = await Log.findAll({
+  });
+  return log_list;
+}
+
+// retrieves list of all log names for given project_id
+// written by: Max
+async function get_all_logs_absolute(){
+  const log_list = await Log.findAll({
     where: {
-      project_id: project_id
     }
   });
   return log_list;
@@ -387,6 +396,7 @@ module.exports = {
   delete_classification,
   update_log,
   get_all_logs,
+  get_all_logs_absolute,
   get_log,
   create_log,
   login,

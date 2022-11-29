@@ -8,7 +8,7 @@ import Header from '../common/header';
 import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import MapView, {Marker} from 'react-native-maps'
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'
 import * as Location from 'expo-location';
 import PagerView from 'react-native-pager-view';
 import Project from "./project";
@@ -82,7 +82,7 @@ const AddProjectModal = ({ onUpdate }) => {
 };
 
 const Tab = createMaterialTopTabNavigator();
-const Map = () => {
+const Map = (logs, navigate) => {
   
   const default_location= {
   coords: {
@@ -98,8 +98,9 @@ const Map = () => {
   }
   const [location, setLocation] = useState<Location.LocationObject>(default_location);
   const [errorMsg, setErrorMsg] = useState('');
-  useEffect(() => {
-    (async () => {
+
+  
+    /*(async () => {
       
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -107,11 +108,14 @@ const Map = () => {
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      console.log(location)
-    })();
-  }, []);
+      let currLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currLocation);
+      console.log(currLocation)
+    })();*/
+  
+    const MarkerToLogScreen = (marker) => {
+
+    }
 
   return(
     <View style={{
@@ -124,25 +128,33 @@ const Map = () => {
     <MapView style={{ ...StyleSheet.absoluteFillObject }}
 
       initialRegion={{
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: logs[0].latitude,
+        longitude: logs[0].longitude,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       }}
       showsMyLocationButton={true}
-      >
-        <Marker coordinate={{latitude: location.coords.latitude,
-        longitude: location.coords.longitude}} draggable={true}/>
+      provider={PROVIDER_GOOGLE}>
+        {/* This is what shows up on the map-- a list of markers, each corresponding to a log, with it's key and coordinates*/}
+        {logs.map(log=>
+          (<Marker coordinate={{latitude: log.latitude,
+          longitude: log.longitude}} key={log.id}
+          onPress={e => navigate.navigate('Log', {log})}
+          />))}
+
       </MapView>
+      
     </View>
 )
-}
+    }
 
 
 
 const Home = ({ navigation }: Props) => {
 
   const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
+  //Important: the default log includes a coordinate set, w
+  const [logs, setLogs] = useState([{project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default", latitude: 40.6240629, longitude: -73.9631628}]);
 
   const getProjectsList: () => void = async () => {
     try{
@@ -154,11 +166,36 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
+  const getAllLogs = async () => {
+    try{
+        const fetched = await fetch(`${PORT}/get_all_logs_absolute`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          }
+      });
+        const logs = await fetched.json()
+        setLogs(logs)
+        console.log("got all logs for markers")
+    } catch(error) {
+        console.error(error)
+    }
+  }
+
+  // This is what shows up in the 'Map' tab screen. 
+  // This only exists because for some reason I can't put Map(logs) directly in the component field of Tab.screen-- 
+  // probably just some esoteric type issue
+  const MapComponent = () => {
+    return Map(logs, navigation)
+  }
+
   useEffect(() => {
     getProjectsList();
+    getAllLogs()
   }, []);
 
-  const ProjectsTabView = () => {
+  // This is what shows up in the 'Projects' tab screen.
+  const ProjectsComponent = () => {
     return(
       <View style={{backgroundColor: 'white'}}>
         <Box>
@@ -185,21 +222,17 @@ const Home = ({ navigation }: Props) => {
           }}
           sceneContainerStyle= {{backgroundColor: 'white'}}
          >
-        <Tab.Screen
-          name="Projects"
-          component = {ProjectsTabView} 
-          options={{ tabBarLabel: 'Projects' }}/>
+      <Tab.Screen
+        name="Projects"
+        component = {ProjectsComponent} 
+        options={{ tabBarLabel: 'Projects' }}/>
 
-        <Tab.Screen
-          name="Maps"
-          component={Map}
-          options={{ tabBarLabel: 'Map' }}
-        />
-        </Tab.Navigator>
-        <Spacer />
-        <Box style={{ margin: 6 }}>
-          <AddProjectModal onUpdate={getProjectsList}/>
-        </Box>
+      <Tab.Screen
+        name="Maps"
+        component={MapComponent}  //Had to use intermediary because can't put props directly in component-- probably a type issue
+        options={{ tabBarLabel: 'Map' }}
+      />
+      </Tab.Navigator>
 
       </Flex>
     </View>
