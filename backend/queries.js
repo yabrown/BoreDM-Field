@@ -269,6 +269,9 @@ async function delete_classification(classification_id) {
 // written by: Max
 async function get_all_logs(project_id){
   const log_list = await Log.findAll({
+    where: {
+      project_id: project_id
+    }
   });
   return log_list;
 }
@@ -277,8 +280,6 @@ async function get_all_logs(project_id){
 // written by: Max
 async function get_all_logs_absolute(){
   const log_list = await Log.findAll({
-    where: {
-    }
   });
   return log_list;
 }
