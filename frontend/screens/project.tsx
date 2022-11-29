@@ -6,6 +6,8 @@ import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-p
 import { PORT } from '../env';
 import Header from '../common/header';
 import SelectLogList from '../models/SelectLogList';
+import * as Location from 'expo-location';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
@@ -21,7 +23,9 @@ const Title = (props: { name:string }) =>{
 const Project = ({ navigation, route}: Props) => {
 
   let default_log: log = {project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default"}
-  const [logsList, setLogsList] = useState<log[]>([default_log])
+  const [logsList, setLogsList] = useState<log[]>([default_log]);
+  const [latitude, setLat] = useState(10);
+  const [longitude, setLon] = useState(10);
   const [currProject, setProject] = useState(route.params.project);
 
   const refreshProject = async () => {
@@ -32,7 +36,7 @@ const Project = ({ navigation, route}: Props) => {
     } catch(error) {
         console.error(error)
     }
-}
+  }
 
   const getLogs = async () => {
       try{
@@ -50,6 +54,27 @@ const Project = ({ navigation, route}: Props) => {
       }
   }
 
+  const getLatLon = async () => {
+    if(latitude == 10 && longitude == 10) {
+      try{
+        (async () => {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            console.log('Permission to access location was denied');
+            return;
+          }
+          let currLocation = await Location.getCurrentPositionAsync({});
+          console.log("Retrieved location")
+          setLat(currLocation.coords.latitude);
+          setLon(currLocation.coords.longitude);
+        })();
+      } catch(error) {
+          console.error(error)
+      }
+    }
+  }
+  getLatLon();
+
   return (
     <View style={styles.container}>
         <Flex fill flex-grow style={{width:"100%"}}>
@@ -65,7 +90,7 @@ const Project = ({ navigation, route}: Props) => {
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
             <Box style={{ margin: 4 }}>
-              <AddLogModal project_id={currProject.id} getLogs={getLogs}/>
+              <AddLogModal project_id={currProject.id} getLogs={getLogs} getLatLon={getLatLon} setLat={setLat} setLon={setLon} lat={latitude} lon={longitude}/>
             </Box>
             <Box style={{ margin: 4 }}>
               <EditProjectModal project={currProject} updateProject={refreshProject} navigation={navigation} updateProjectList={route.params.onUpdate}/>
@@ -143,13 +168,50 @@ const DeleteProject = ({ project, setModalVisible, navigation, updateProjectList
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
 }
 
-const AddLogModal = ({ project_id, getLogs }) => {
+const Map = ({getLatLon, latitude, longitude, setLat, setLon}) => {
+  
+  getLatLon();
+
+  return(
+    <View style={{
+      ...StyleSheet.absoluteFillObject,
+      height: '100%', // you can customize this
+      width: '100%',  // you can customize this
+      alignItems: "center",
+      }}>
+
+      <MapView
+        style={{ ...StyleSheet.absoluteFillObject }}
+        initialRegion={{
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        showsMyLocationButton={true}
+        provider = {PROVIDER_GOOGLE}
+        mapType = {"hybrid"}
+      >
+        <Marker
+          coordinate={{latitude: latitude, longitude: longitude}}
+          draggable
+          onDragEnd={
+            (async (e) => {
+            setLat(e.nativeEvent.coordinate.latitude);
+            setLon(e.nativeEvent.coordinate.longitude);
+          })}
+        />
+      </MapView>
+    </View>
+)
+}
+
+const AddLogModal = ({ project_id, getLogs, getLatLon, lat, lon, setLat, setLon }) => {
   const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
   const [logText, setLogText] = useState({ name: "", drilled: "", logged: "", notes: "" })
-
   return (
       <View>
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Log</PaperButton>
@@ -163,10 +225,13 @@ const AddLogModal = ({ project_id, getLogs }) => {
                 <TextInput value={logText.logged} label="Logged by" mode="outlined" onChangeText={(text) => setLogText({...logText, logged: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                 <TextInput value={logText.notes} label="Notes" mode="outlined" onChangeText={(text) => setLogText({...logText, notes: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               </View>
+              <View style={{marginTop: "2%", minHeight: "50%"}}>
+                <Map getLatLon={getLatLon} latitude={lat} longitude={lon} setLat={setLat} setLon={setLon}></Map>
+              </View>
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitLog setModalVisible={setVisible} getLogs={getLogs} log={{ project_id: project_id, name: logText.name, driller: logText.drilled, logger: logText.logged, notes: logText.notes }} setLogText={setLogText} />
+              <SubmitLog setModalVisible={setVisible} getLogs={getLogs} log={{ project_id: project_id, name: logText.name, driller: logText.drilled, logger: logText.logged, notes: logText.notes, latitude: lat, longitude: lon }} setLogText={setLogText} />
             </Dialog.Actions>
           </Dialog>
         </Portal>

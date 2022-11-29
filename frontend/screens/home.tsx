@@ -10,8 +10,6 @@ import SelectProjectList from '../models/SelectProjectList';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'
 import * as Location from 'expo-location';
-import PagerView from 'react-native-pager-view';
-import Project from "./project";
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -99,24 +97,6 @@ const Map = (logs, navigate) => {
   const [location, setLocation] = useState<Location.LocationObject>(default_location);
   const [errorMsg, setErrorMsg] = useState('');
 
-  
-    /*(async () => {
-      
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
-
-      let currLocation = await Location.getCurrentPositionAsync({});
-      setLocation(currLocation);
-      console.log(currLocation)
-    })();*/
-  
-    const MarkerToLogScreen = (marker) => {
-
-    }
-
   return(
     <View style={{
       ...StyleSheet.absoluteFillObject,
@@ -148,7 +128,7 @@ const Map = (logs, navigate) => {
       
     </View>
 )
-    }
+}
 
 
 

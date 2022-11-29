@@ -96,6 +96,7 @@ const Log = ({ route, navigation }: Props) => {
             <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
             <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
           </Box>
+          <LogGraphic classifications_list={classificationsList}></LogGraphic>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
             <Box style={{ margin: 4 }}>
@@ -108,6 +109,48 @@ const Log = ({ route, navigation }: Props) => {
         </Flex>
     </View>
   );
+}
+
+const LogGraphic = ({classifications_list}) => {
+  console.log(classifications_list)
+
+  const styles = StyleSheet.create({
+    classification_col: {
+      flexDirection: 'column',
+      maxWidth: '15%',
+      flex: 1,
+    },
+    ruler_col: {
+      flexDirection: 'column',
+      maxWidth: '5%',
+    },
+    ruler_box: {
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+    },
+    classification_box: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    }
+  })
+
+  return (
+    <View style={{flexDirection: 'row', flex: 1, paddingLeft: '10%'}}>
+      <View style={[styles.ruler_col, {flex: 1}]}>
+        <View style={[styles.ruler_box, {flex: 1}]} ><Text>0'</Text></View>
+        <View style={[styles.ruler_box, {flex: 1}]} ><Text>5'</Text></View>
+        <View style={[styles.ruler_box, {flex: 1}]} ><Text>10'</Text></View>
+        <View style={[styles.ruler_box, {flex: 1}]} ><Text>15'</Text></View>
+        <View style={[styles.ruler_box, {flex: 1}]} ><Text>20'</Text></View>
+        <View style={[styles.ruler_box, {flex: 1}]} ><Text>25'</Text></View>
+      </View>
+      <View style={[styles.classification_col, {flex: 1}]}>
+        <View style={[styles.classification_box, {flex: 1, backgroundColor: "#F0F0F0" }]} ><Text>CL</Text></View>
+        <View style={[styles.classification_box, {flex: 2, backgroundColor: "#A6A6A6" }]} ><Text>ML</Text></View>
+        <View style={[styles.classification_box, {flex: 3, backgroundColor: "#D1D1D1" }]} ><Text>CL-ML</Text></View>
+      </View>
+    </View>
+  )
 }
 
 // The component that deals with the adding a new project
