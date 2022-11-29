@@ -134,7 +134,9 @@ const Map = (logs, navigate) => {
         longitudeDelta: 0.0421,
       }}
       showsMyLocationButton={true}
-      provider={PROVIDER_GOOGLE}>
+      provider = {PROVIDER_GOOGLE}
+      mapType = {"hybrid"}
+    >
         {/* This is what shows up on the map-- a list of markers, each corresponding to a log, with it's key and coordinates*/}
         {logs.map(log=>
           (<Marker coordinate={{latitude: log.latitude,
