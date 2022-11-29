@@ -161,21 +161,16 @@ const Home = ({ navigation }: Props) => {
   const ProjectsTabView = () => {
     return(
       <View style={{backgroundColor: 'white'}}>
-      <Box>
-            <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
-      </Box>
-      <Spacer />
-      <Box style={{ margin: 6 }}>
-      <AddProjectModal onUpdate={getProjectsList}/>
-      </Box>
+        <Box>
+          <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
+        </Box>
       </View>
     )
   }
 
   return (
     <View style={styles.container}>
-        <Flex fill flex-grow style={{width:"100%"}}>
-
+      <Flex fill flex-grow style={{width:"100%"}}>
         <Box>
           <Header/>
         </Box>
@@ -190,19 +185,23 @@ const Home = ({ navigation }: Props) => {
           }}
           sceneContainerStyle= {{backgroundColor: 'white'}}
          >
-      <Tab.Screen
-        name="Projects"
-        component = {ProjectsTabView} 
-        options={{ tabBarLabel: 'Projects' }}/>
+        <Tab.Screen
+          name="Projects"
+          component = {ProjectsTabView} 
+          options={{ tabBarLabel: 'Projects' }}/>
 
-      <Tab.Screen
-        name="Maps"
-        component={Map}
-        options={{ tabBarLabel: 'Map' }}
-      />
-      </Tab.Navigator>
+        <Tab.Screen
+          name="Maps"
+          component={Map}
+          options={{ tabBarLabel: 'Map' }}
+        />
+        </Tab.Navigator>
+        <Spacer />
+        <Box style={{ margin: 6 }}>
+          <AddProjectModal onUpdate={getProjectsList}/>
+        </Box>
 
-        </Flex>
+      </Flex>
     </View>
   )
     }
