@@ -39,9 +39,9 @@ const Log = ({ route, navigation }: Props) => {
 
   const default_classification: classification = {
     log_id:         NaN,
-    start_depth:    NaN,
-    end_depth:      NaN,
-    uscs:    '',
+    start_depth:    0,
+    end_depth:      0,
+    uscs:    'NONE',
     color:   '',
     moisture:   '',
     density:   '',
@@ -112,7 +112,6 @@ const Log = ({ route, navigation }: Props) => {
 }
 
 const LogGraphic = ({classifications_list}) => {
-  console.log(classifications_list)
 
   const styles = StyleSheet.create({
     classification_col: {
@@ -134,20 +133,114 @@ const LogGraphic = ({classifications_list}) => {
     }
   })
 
+  const uscs_colormap = {
+    'NONE': { box: 'white', text: 'white'},
+    'CH': { box: '#F4F4F4', text: 'black'},
+    'CL': { box: '#EBEBEB', text: 'black'},
+    'CL-ML': { box: '#DFDFDF', text: 'black'},
+    'GC': { box: '#D1D1D1', text: 'black'},
+    'GC-GM': { box: '#C7C7C7', text: 'black'},
+    'GM': { box: '#DFDFDF', text: 'black'},
+    'GP': { box: '#BBBBBB', text: 'black'},
+    'GP-GC': { box: '#AFAFAF', text: 'black'},
+    'GP-GM': { box: '#A5A5A5', text: 'black'},
+    'GW': { box: '#9C9C9C', text: 'black'},
+    'GW-GC': { box: '#939393', text: 'black'},
+    'GW-GM': { box: '#8B8B8B', text: 'black'},
+    'ML': { box: '#838383', text: 'black'},
+    'SC': { box: '#6D6D6D', text: 'black'},
+    'SC-SM': { box: '#676767', text: 'white'},
+    'SM': { box: '#5F5F5F', text: 'white'},
+    'SP': { box: '#595959', text: 'white'},
+    'SP-SC': { box: '#505050', text: 'white'},
+    'SP-SM': { box: '#444444', text: 'white'},
+    'SW': { box: '#3B3B3B', text: 'white'},
+    'SW-SC': { box: '#2F2F2F', text: 'white'},
+    'SW-SM': { box: '#252525', text: 'white'},
+    'OH': { box: '#1B1B1B', text: 'white'},
+    'OL': { box: '#0F0F0F', text: 'white'},
+    'PT': { box: '#000000', text: 'white'},
+  }
+
+
+  let make_uscs_box = function (classification: classification) {    
+    const length = classification.end_depth - classification.start_depth;
+    const boxColor = uscs_colormap[classification.uscs]['box'];
+    const textColor = uscs_colormap[classification.uscs]['text'];
+    return <View style={[styles.classification_box, {flex: length, backgroundColor: boxColor }]} ><Text style={{color: textColor}}>{classification.uscs}</Text></View>
+  };
+
+  function compareDepths(classification_a: classification, classification_b: classification) {
+    return classification_a.start_depth - classification_b.start_depth;
+  }
+
+  let make_uscs_boxes = function (classifications: classification[]) {
+    if(classifications.length == 0) return <Text>No Data</Text>;
+
+    const classificationsCopy  = [...classifications]; 
+    
+    classificationsCopy.sort(compareDepths);
+
+    for(let i = 0; i < classificationsCopy.length; i++) {
+      let classification = classificationsCopy[i];
+
+      if(i == 0) {
+        // insert blank box when first classification starts deeper than 0'
+        if(classification.start_depth != 0) {
+          let emptyClassification = {"color": "white", "createdAt": "", "density": "", "end_depth": classification.start_depth, "hardness": "", "id": 3, "log_id": 2, "moisture": "", "start_depth": 0, "updatedAt": "2022-11-30T07:32:13.127Z", "uscs": "NONE"}
+          classificationsCopy.splice(0, 0, emptyClassification);
+        }
+      }
+      // insert blank box when there's a gap between this classification and the next one
+      if(i < classificationsCopy.length - 1) {
+        if(classification.end_depth < classificationsCopy[i+1].start_depth) {
+          let emptyClassification = {"color": "white", "createdAt": "", "density": "", "end_depth": classificationsCopy[i+1].start_depth, "hardness": "", "id": 3, "log_id": 2, "moisture": "", "start_depth": classification.end_depth, "updatedAt": "2022-11-30T07:32:13.127Z", "uscs": "NONE"}
+          classificationsCopy.splice(i+1, 0, emptyClassification);
+        }
+      }
+    }
+
+    // insert blank box at end to make final depth a multiple of 5
+    let bottom = classificationsCopy[classificationsCopy.length - 1].end_depth;
+    if(bottom % 5 != 0) {
+      let diff = 5 - bottom % 5
+      let emptyClassification = {"color": "white", "createdAt": "", "density": "", "end_depth": bottom + diff, "hardness": "", "id": 3, "log_id": 2, "moisture": "", "start_depth": bottom, "updatedAt": "2022-11-30T07:32:13.127Z", "uscs": "NONE"}
+      classificationsCopy.splice(classificationsCopy.length, 0, emptyClassification);
+    }
+    const uscs_boxes = classificationsCopy.map((classification) =>
+      make_uscs_box(classification)
+    );
+
+    return uscs_boxes
+  }
+
+  let make_ruler_boxes = function (classifications: classification[]) {
+    if(classifications.length == 0) return;
+
+    classifications.sort(compareDepths);
+
+    const bottom = classifications[classifications.length - 1].end_depth;
+    const numboxes = Math.ceil(bottom/5);
+
+    var depths = new Array(numboxes);
+    for (var i = 0; i < depths.length; i++) {
+      depths[i] = i * 5;
+    }
+    
+    const ruler_boxes = depths.map((depth) =>
+      <View style={[styles.ruler_box, {flex: 1}]} ><Text>{depth}'</Text></View>
+    );
+
+    return ruler_boxes
+  }
+
   return (
     <View style={{flexDirection: 'row', flex: 1, paddingLeft: '10%'}}>
       <View style={[styles.ruler_col, {flex: 1}]}>
-        <View style={[styles.ruler_box, {flex: 1}]} ><Text>0'</Text></View>
-        <View style={[styles.ruler_box, {flex: 1}]} ><Text>5'</Text></View>
-        <View style={[styles.ruler_box, {flex: 1}]} ><Text>10'</Text></View>
-        <View style={[styles.ruler_box, {flex: 1}]} ><Text>15'</Text></View>
-        <View style={[styles.ruler_box, {flex: 1}]} ><Text>20'</Text></View>
-        <View style={[styles.ruler_box, {flex: 1}]} ><Text>25'</Text></View>
+        {make_ruler_boxes(classifications_list)}
       </View>
       <View style={[styles.classification_col, {flex: 1}]}>
-        <View style={[styles.classification_box, {flex: 1, backgroundColor: "#F0F0F0" }]} ><Text>CL</Text></View>
-        <View style={[styles.classification_box, {flex: 2, backgroundColor: "#A6A6A6" }]} ><Text>ML</Text></View>
-        <View style={[styles.classification_box, {flex: 3, backgroundColor: "#D1D1D1" }]} ><Text>CL-ML</Text></View>
+        {make_uscs_boxes(classifications_list)}
       </View>
     </View>
   )
