@@ -44,8 +44,8 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Classification Data</Dialog.Title>
-          <Dialog.Content>
-            <View>
+          <Dialog.Content style={{ maxHeight: '80%'}}>
+            <ScrollView>
               <TextInput value={startDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <TextInput value={endDepth} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <List.Accordion title="USCS" id="1" theme={{colors: {background: 'white', primary: 'black'}}}>
@@ -130,7 +130,7 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
                   <SelectButton buttonOption="Hard" setFunction={setHardness} current={hardness} color="white"/>
                 </HStack>
               </List.Accordion>
-            </View>
+            </ScrollView>
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
