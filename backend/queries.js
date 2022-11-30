@@ -91,7 +91,6 @@ const User  = sequelize.define("User", {
         hashed_password: '$2b$10$m9JiPgo3J0F1RgAMqZ/vxOYdwrHdTbmuQ1M06ThyoFn6KoXvjA1Pu',
         name: 'Robert'
       })
-      await sequelize.sync({ force: true });
     
       const project_1 = await Project.create({  name: "Kuba",
                                                 username: "testuser1",
