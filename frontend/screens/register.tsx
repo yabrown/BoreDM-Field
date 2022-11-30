@@ -57,6 +57,8 @@ const RegisterScreen = ({navigation}) => {
             />
           }
           setText={(text) => {setCredentials({...credentials, name: text})}}
+          autoCorrect={false}
+          autoCapitalize="words"
         />
 
         <InputField
@@ -71,6 +73,8 @@ const RegisterScreen = ({navigation}) => {
           }
           keyboardType="email-address"
           setText={(text) => {setCredentials({...credentials, username: text})}}
+          autoCorrect={false}
+          autoCapitalize="none"
         />
 
         <InputField

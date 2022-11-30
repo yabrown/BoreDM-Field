@@ -56,6 +56,8 @@ const LoginScreen = ({navigation}) => {
           }
           keyboardType="default"
           setText={(text: string) => setCredentials({...credentials, username: text})}
+          autoCorrect={false}
+          autoCapitalize="none"
         />
 
         <InputField
@@ -79,14 +81,14 @@ const LoginScreen = ({navigation}) => {
                 headers: {
                   'Content-Type': 'application/json',
               },
-            body: JSON.stringify({ username: credentials.username.toLocaleLowerCase().trim(), password: credentials.password })});
+            body: JSON.stringify({ username: credentials.username.toLowerCase().trim(), password: credentials.password })});
 
             if (fetched.ok) {
               const token = await fetched.json();
               await saveToken(token.token);
               if (setIsLoggedIn) setIsLoggedIn(true);
             }
-            if (fetched.status === 401) {
+            else if (fetched.status === 401) {
               Alert.alert("Login Error", "Your username or password is incorrect. Please try again.")
             }
           }

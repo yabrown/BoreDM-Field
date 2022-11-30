@@ -22,21 +22,29 @@ type SubmitProps = { project: { name: string, client: string, location: string, 
 
 // The component that deals with the adding a new project
 const SubmitProject = ( { project, setvis, onUpdate } : SubmitProps ) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   const onPress = async () => {
     setvis(false)
       try {
-          let fetched = await fetch(`${PORT}/add_project`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
-          })
-          onUpdate();
-          console.log("status:", fetched.status)
-      } catch(error) {
-              console.error('Error:', error);
-          }
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/add_project`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
+        })
+        onUpdate();
+        console.log("status:", fetched.status)
+
+        if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        } 
+        
+    } catch(error) {
+            console.error('Error:', error);
+        }
   }
 
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
@@ -163,11 +171,8 @@ const Home = ({ navigation }: Props) => {
       });
         if (fetched.status === 401) {
           if (setIsLoggedIn) await logout(setIsLoggedIn);
-        }
-
-        console.log("status:", fetched.status)
-
-        if (fetched.ok) {
+        } 
+        else if (fetched.ok) {
           const projects_list = await fetched.json()
           if (projects_list.length > 0) setProjectsList(projects_list)
         }

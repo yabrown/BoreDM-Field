@@ -73,7 +73,8 @@ app.get('/get_all_projects', verifyToken, async (req, res) => {
     console.log(results);
     res.json(results);
   } catch (err) {
-    if (err instanceof jwt.JsonWebTokenError) res.status(401);
+    if (isJwtError(err)) res.status(401);
+    else res.status(500);
     console.log(err);
   }
 })
@@ -114,7 +115,7 @@ app.post('/get_all_classifications', verifyToken, async (req, res) => {
 
 app.post('/add_project', verifyToken, (req, res) => {
   try {
-    db.add_project(req.body.username, req.body.project_name, req.body.client_name, req.body.project_location, req.body.project_notes)
+    db.add_project(req.username, req.body.project_name, req.body.client_name, req.body.project_location, req.body.project_notes)
       res.status(200).json();
   } catch (err) {
         if (isJwtError(err)) {

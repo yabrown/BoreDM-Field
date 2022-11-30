@@ -1,11 +1,14 @@
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import { PORT } from '../env';
 import Header from '../common/header';
 import SelectLogList from '../models/SelectLogList';
+import { LoginContext } from "../contexts/LoginContext";
+import { getToken } from "../utils/secureStore";
+import { logout } from "../common/logout";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
@@ -23,14 +26,24 @@ const Project = ({ navigation, route}: Props) => {
   let default_log: log = {project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default"}
   const [logsList, setLogsList] = useState<log[]>([default_log])
   const [currProject, setProject] = useState(route.params.project);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
   const refreshProject = async () => {
     try {
-        const fetched = await fetch(`${PORT}/projects/${currProject.id}`);
-        if (fetched.ok) {
-          const updated_project = await fetched.json()
-          setProject(updated_project)
+      const token = await getToken();
+      const fetched = await fetch(`${PORT}/projects/${currProject.id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token ? token : ''}`,
         }
+      });
+      if (fetched.ok) {
+        const updated_project = await fetched.json()
+        setProject(updated_project)
+      }
+      else if (fetched.status === 401) {
+        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+      } 
     } catch(error) {
         console.error(error)
     }
@@ -38,10 +51,12 @@ const Project = ({ navigation, route}: Props) => {
 
   const getLogs = async () => {
       try{
+        const token = await getToken();
           const fetched = await fetch(`${PORT}/get_all_logs`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
             },
             body: JSON.stringify({project_id: currProject.id})
         });
@@ -49,6 +64,9 @@ const Project = ({ navigation, route}: Props) => {
             const logs_list = await fetched.json()
             setLogsList(logs_list)
           }
+          else if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          } 
       } catch(error) {
           console.error(error)
       }
@@ -82,17 +100,24 @@ const Project = ({ navigation, route}: Props) => {
 
 // The button that deals with submitting a new Log
 const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
     const onPress = async () => {
         setModalVisible(false)
         try {
-          let fetched = await fetch(`${PORT}/add_boring_to_project`, {
+          const token = await getToken();
+          const fetched = await fetch(`${PORT}/add_boring_to_project`, {
               method: 'POST', // or 'PUT'
               headers: {
                   'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`
               },
               body: JSON.stringify({ ...log, project_id: log.project_id })
           })
           console.log(fetched.status)
+          if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          } 
       } catch(error) {
               console.error('Error:', error);
           }
@@ -105,18 +130,24 @@ const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
 
 // The component that deals with the adding a new project
 const UpdateProject = ({ project, setModalVisible, updateProject }) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
     const onPress = async () => {
         setModalVisible(false)
         try {
+          const token = await getToken();
             let fetched = await fetch(`${PORT}/update_project`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token ? token : ''}`
                 },
                 body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
             })
-            console.log("status:", fetched.status)
-            updateProject();
+            if (fetched.ok) updateProject();
+            else if (fetched.status === 401) {
+              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            } 
         } catch(error) {
                 console.error('Error:', error);
             }
@@ -126,19 +157,29 @@ const UpdateProject = ({ project, setModalVisible, updateProject }) => {
 
   // The component that deals with the adding a new project
 const DeleteProject = ({ project, setModalVisible, navigation, updateProjectList }) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
   const onPress = async () => {
       setModalVisible(false)
       try {
+        const token = await getToken();
           let fetched = await fetch(`${PORT}/delete_project`, {
               method: 'POST', // or 'PUT'
               headers: {
                   'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`
               },
               body: JSON.stringify({project_id: project.id})
           })
           console.log("status:", fetched.status)
-          updateProjectList()
-          navigation.navigate('Home')
+          if (fetched.ok) {
+            updateProjectList()
+            navigation.navigate('Home')
+          }
+          else if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          }
+            
       } catch(error) {
               console.error('Error:', error);
           }

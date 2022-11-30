@@ -23,7 +23,6 @@ export default function App() {
     
     useEffect(() => {
         const setLoggedIn = async () => {
-            await deleteToken();
             const token = await getToken();
             if (token) setIsLoggedIn(true);
         }

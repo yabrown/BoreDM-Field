@@ -149,7 +149,7 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
 // The component that deals with the adding a new project
 const DeleteClassification = ({ classification, setModalVisible, refreshClassifications }) => {
   
-  const { setIsLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   const onPress = async () => {
 
       setModalVisible(false)
@@ -165,7 +165,7 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
         })
 
         if (fetched.status === 401) {
-          if (setIsLoggedIn) await logout(setIsLoggedIn);
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           
         console.log("status:", fetched.status)
         refreshClassifications()
@@ -182,7 +182,7 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
 // The component that deals with updating a Classification
 const UpdateClassification = ( {classification, setModalVisible}) => {
 
-  const { setIsLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
     const onPress = async () => {
         setModalVisible(false)
@@ -198,11 +198,11 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
             })
 
             if (fetched.status === 401) {
-              if (setIsLoggedIn) await logout(setIsLoggedIn);
+              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
             }
 
             console.log("status:", fetched.status)
-            
+
         } catch(error) {
                 console.error('Error:', error);
             }
