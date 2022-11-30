@@ -168,6 +168,16 @@ app.post('/add_sample', verifyToken, (req, res) => {
     }
   })
 
+  app.post('/add_classification', (req, res) => {
+    console.log(req.body)
+    try {
+        db.add_classification(req.body.log_id, req.body.start_depth, req.body.end_depth, req.body.uscs, req.body.color, req.body.moisture, req.body.density, req.body.hardness)
+        res.status(200).send("Project added");
+    } catch (err) {
+        console.log(err);
+    }
+  })
+
   app.post('/delete_project', verifyToken, (req, res) => {
     try {
       db.delete_project(req.body.project_id)
