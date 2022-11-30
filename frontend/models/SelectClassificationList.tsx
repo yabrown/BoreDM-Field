@@ -1,9 +1,12 @@
 import { HStack, ListItem } from "@react-native-material/core";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import { v4 as uuid } from 'uuid';
+import { logout } from "../common/logout";
+import { LoginContext } from "../contexts/LoginContext";
 import { PORT } from '../env';
+import { getToken, saveToken } from "../utils/secureStore";
 
 const SelectButton = ({ current, buttonOption, setFunction, color, highlightedColor="lightgrey" }) => (  
   <View style={{ minWidth: 140, margin: 4 }}>
@@ -44,8 +47,8 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Classification Data</Dialog.Title>
-          <Dialog.Content>
-            <View>
+          <Dialog.Content style={{ maxHeight: '80%'}}>
+            <ScrollView>
               <TextInput value={startDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <TextInput value={endDepth} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <List.Accordion title="USCS" id="1" theme={{colors: {background: 'white', primary: 'black'}}}>
@@ -130,7 +133,7 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
                   <SelectButton buttonOption="Hard" setFunction={setHardness} current={hardness} color="white"/>
                 </HStack>
               </List.Accordion>
-            </View>
+            </ScrollView>
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
@@ -145,39 +148,61 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
 
 // The component that deals with the adding a new project
 const DeleteClassification = ({ classification, setModalVisible, refreshClassifications }) => {
+  
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   const onPress = async () => {
+
       setModalVisible(false)
       try {
-          let fetched = await fetch(`${PORT}/delete_classification`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({classification_id: classification.id})
-          })
-          console.log("status:", fetched.status)
-          refreshClassifications()
-      } catch(error) {
+        const token = await getToken();
+        let fetched = await fetch(`${PORT}/delete_classification`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`,
+            },
+            body: JSON.stringify({classification_id: classification.id})
+        })
+
+        if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          
+        console.log("status:", fetched.status)
+        refreshClassifications()
+      } 
+    }
+      catch(error) {
             console.log("Problem")
               console.error('Error:', error);
           }
-  }
+        }
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
 }
 
 // The component that deals with updating a Classification
 const UpdateClassification = ( {classification, setModalVisible}) => {
+
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
     const onPress = async () => {
         setModalVisible(false)
         try {
+            const token = await getToken();
             let fetched = await fetch(`${PORT}/update_classification`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token ? token : ''}`,
                 },
                 body: JSON.stringify({log_id: classification.log_id, start_depth: classification.start_depth, end_depth: classification.end_depth, uscs: classification.uscs, color: classification.color, moisture: classification.moisture, density: classification.density, hardness: classification.hardness })
             })
+
+            if (fetched.status === 401) {
+              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            }
+
             console.log("status:", fetched.status)
+
         } catch(error) {
                 console.error('Error:', error);
             }

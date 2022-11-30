@@ -79,3 +79,8 @@ interface project  {
       density:        string,
       hardness:       string,
     };
+
+  type user = null | {
+    name: string,
+    username: string
+  }

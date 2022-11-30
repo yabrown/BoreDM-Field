@@ -1,7 +1,7 @@
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 // import { google } from 'googleapis';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
@@ -10,6 +10,12 @@ import SelectProjectList from '../models/SelectProjectList';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'
 import * as Location from 'expo-location';
+import PagerView from 'react-native-pager-view';
+import Project from "./project";
+import { logout } from "../common/logout";
+import { LoginContext } from "../contexts/LoginContext";
+import { getToken } from "../utils/secureStore";
+import { useIsFocused } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -17,21 +23,29 @@ type SubmitProps = { project: { name: string, client: string, location: string, 
 
 // The component that deals with the adding a new project
 const SubmitProject = ( { project, setvis, onUpdate } : SubmitProps ) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   const onPress = async () => {
     setvis(false)
       try {
-          let fetched = await fetch(`${PORT}/add_project`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
-          })
-          onUpdate();
-          console.log("status:", fetched.status)
-      } catch(error) {
-              console.error('Error:', error);
-          }
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/add_project`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
+        })
+        onUpdate();
+        console.log("status:", fetched.status)
+
+        if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        } 
+        
+    } catch(error) {
+            console.error('Error:', error);
+        }
   }
 
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
@@ -58,7 +72,7 @@ const AddProjectModal = ({ onUpdate }) => {
   return (
       <View>
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Project</PaperButton>
-        <Portal>
+      <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
             <Dialog.Title style={{color: 'black'}}>New Project</Dialog.Title>
             <Dialog.Content>
@@ -80,7 +94,7 @@ const AddProjectModal = ({ onUpdate }) => {
 };
 
 const Tab = createMaterialTopTabNavigator();
-const Map = (logs, navigate) => {
+const Map = (logs, navigate, updateLogList) => {
   
   const default_location= {
   coords: {
@@ -121,7 +135,7 @@ const Map = (logs, navigate) => {
         {logs.map(log=>
           (<Marker coordinate={{latitude: log.latitude,
           longitude: log.longitude}} key={log.id}
-          onPress={e => navigate.navigate('Log', {log})}
+          onPress={e => navigate.navigate('Log', {log, updateLogList})}
           />))}
 
       </MapView>
@@ -135,14 +149,26 @@ const Map = (logs, navigate) => {
 const Home = ({ navigation }: Props) => {
 
   const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
+  const { setIsLoggedIn } = useContext(LoginContext);
+  const isFocused = useIsFocused();
   //Important: the default log includes a coordinate set, w
   const [logs, setLogs] = useState([{project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default", latitude: 40.6240629, longitude: -73.9631628}]);
 
   const getProjectsList: () => void = async () => {
-    try{
-        const fetched = await fetch(`${PORT}/get_all_projects`);
-        const projects_list = await fetched.json()
-        setProjectsList(projects_list)
+    try {
+      const token = await getToken();  
+      const fetched = await fetch(`${PORT}/get_all_projects`, {
+        headers: {
+          'Authorization': `Bearer ${token ? token : ''}`
+        }
+      });
+        if (fetched.status === 401) {
+          if (setIsLoggedIn) await logout(setIsLoggedIn);
+        } 
+        else if (fetched.ok) {
+          const projects_list = await fetched.json()
+          if (projects_list.length > 0) setProjectsList(projects_list)
+        }
     } catch(error) {
         console.error(error)
     }
@@ -150,15 +176,22 @@ const Home = ({ navigation }: Props) => {
 
   const getAllLogs = async () => {
     try{
+        const token = await getToken();
         const fetched = await fetch(`${PORT}/get_all_logs_absolute`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token ? token : ''}`
           }
       });
-        const logs = await fetched.json()
-        setLogs(logs)
-        console.log("got all logs for markers")
+        if (fetched.ok) {
+          const logs = await fetched.json()
+          setLogs(logs)
+          console.log("got all logs for markers")
+        }
+        if (fetched.status === 401) {
+          if (setIsLoggedIn) await logout(setIsLoggedIn);
+        }
     } catch(error) {
         console.error(error)
     }
@@ -168,13 +201,15 @@ const Home = ({ navigation }: Props) => {
   // This only exists because for some reason I can't put Map(logs) directly in the component field of Tab.screen-- 
   // probably just some esoteric type issue
   const MapComponent = () => {
-    return Map(logs, navigation)
+    return Map(logs, navigation, getAllLogs)
   }
 
   useEffect(() => {
-    getProjectsList();
-    getAllLogs()
-  }, []);
+    if (isFocused) { 
+      getProjectsList();
+      getAllLogs()
+    }
+  }, [isFocused]);
 
   // This is what shows up in the 'Projects' tab screen.
   const ProjectsComponent = () => {

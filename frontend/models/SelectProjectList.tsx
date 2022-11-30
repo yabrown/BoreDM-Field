@@ -15,7 +15,7 @@ const SelectProjectList = ({ navigate: navigation, projects, onUpdate }) => {
   return(
       <View>
           <ScrollView style={styles.scrollView}>
-              {projects.map(project => (
+              {projects.length > 0 && projects.map(project => (
                   <SelectProjectButton project={project} key={uuid()} navigation={navigation} onUpdate={onUpdate}/>
               ))}
           </ScrollView>

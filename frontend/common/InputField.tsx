@@ -8,6 +8,9 @@ export default function InputField({
   keyboardType,
   fieldButtonLabel,
   fieldButtonFunction,
+  setText,
+  autoCorrect,
+  autoCapitalize,
 }: {
   label?,
   icon?,
@@ -15,6 +18,9 @@ export default function InputField({
   keyboardType?,
   fieldButtonLabel?,
   fieldButtonFunction?,
+  setText?: (text: string) => void,
+  autoCorrect?: boolean,
+  autoCapitalize?: "none" | "sentences" | "words" | "characters",
 }) {
   return (
     <View
@@ -31,13 +37,19 @@ export default function InputField({
           placeholder={label}
           keyboardType={keyboardType}
           style={{flex: 1, paddingVertical: 0}}
+          onChangeText={(text) => {if (setText) setText(text)}}
           secureTextEntry={true}
+          autoCorrect={false}
+          autoCapitalize="none"
         />
       ) : (
         <TextInput
           placeholder={label}
           keyboardType={keyboardType}
           style={{flex: 1, paddingVertical: 0}}
+          onChangeText={(text) => {if (setText) setText(text)}}
+          autoCorrect={autoCorrect}
+          autoCapitalize={autoCapitalize}
         />
       )}
       <TouchableOpacity onPress={fieldButtonFunction}>
