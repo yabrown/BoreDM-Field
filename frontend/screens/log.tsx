@@ -1,12 +1,15 @@
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import SelectClassificationList from '../models/SelectClassificationList';
 import SelectSampleList from '../models/SelectSampleList';
 import { PORT } from '../env';
+import { getToken } from "../utils/secureStore";
+import { LoginContext } from "../contexts/LoginContext";
+import { logout } from "../common/logout";
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
 
@@ -21,6 +24,7 @@ const Title = (props: { name:string }) =>{
 const Log = ({ route, navigation }: Props) => {
 
   const [currentLog, setLog] = useState(route.params.log);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
   const default_sample: sample = {
     log_id:         NaN,
@@ -51,33 +55,50 @@ const Log = ({ route, navigation }: Props) => {
   const [samplesList, setSamplesList] = useState([default_sample])
   const [classificationsList, setClassificationsList] = useState([default_classification])
 
-  const refreshSamples: () => Promise<void> = async () => {
-    try{
+  const refreshSamples: () => void = async () => {
+
+    try {
+      const token = await getToken();
       const fetched = await fetch(`${PORT}/get_all_samples`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token ? token : ''}`
         },
         body: JSON.stringify({log_id: route.params.log.id})
     });
-      const new_samples_list = await fetched.json()
-      setSamplesList(new_samples_list)
+      if (fetched.ok) {
+        const new_samples_list = await fetched.json()
+        setSamplesList(new_samples_list)
+      }
+      else if (fetched.status === 401) {
+        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+      } 
+      
   } catch(error) {
       console.error(error)
   }
   }
 
-  const refreshClassifications: () => Promise<void> = async () => {
+  const refreshClassifications: () => void = async () => {
     try{
+      const token = await getToken();
       const fetched = await fetch(`${PORT}/get_all_classifications`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token ? token : ''}`
         },
         body: JSON.stringify({log_id: route.params.log.id})
     });
-      const new_classifications_list = await fetched.json()
-      setClassificationsList(new_classifications_list)
+      if (fetched.ok) {
+        const new_classifications_list = await fetched.json()
+        setClassificationsList(new_classifications_list)
+      }
+      else if (fetched.status === 401) {
+        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+      } 
+      
   } catch(error) {
       console.error(error)
   }
@@ -248,19 +269,28 @@ const LogGraphic = ({classifications_list}) => {
 
 // The component that deals with the adding a new project
 const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
   const onPress = async () => {
     setVisible(false)
       try {
-          let fetched = await fetch(`${PORT}/add_sample`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({...sample})
-          })
-          let status = await fetched.status
-          console.log('status:', status);
-          refreshSamples();
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/add_sample`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({...sample})
+        })
+          console.log('status:', fetched.status);
+          if (fetched.ok) {
+            refreshSamples();
+          }
+          else if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          }
+          
       } catch(error) {
               console.error('Error:', error);
           }
@@ -308,19 +338,27 @@ const AddSampleModal = ({ log_id, refreshSamples }) => {
 
 // The component that deals with the adding a new project
 const DeleteLog = ({ log, setModalVisible, navigation, updateLogList }) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
   const onPress = async () => {
       setModalVisible(false)
       try {
-          let fetched = await fetch(`${PORT}/delete_log`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({log_id: log.id})
-          })
-          console.log("status:", fetched.status)
-          updateLogList()
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/delete_log`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({log_id: log.id})
+        })
+        if (fetched.ok) {
+          updateLogList();
           navigation.navigate('Project')
+        }
+        else if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        }
       } catch(error) {
             console.log("Problem")
               console.error('Error:', error);
@@ -331,17 +369,25 @@ const DeleteLog = ({ log, setModalVisible, navigation, updateLogList }) => {
 
 // The component that deals with updating log data
 const UpdateLog = ( {log, setModalVisible}) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
     const onPress = async () => {
         setModalVisible(false)
         try {
-            let fetched = await fetch(`${PORT}/update_log`, {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({log_id: log.id, log_name: log.name, driller: log.driller, logger: log.logger, notes: log.notes})
-            })
-            console.log("status:", fetched.status)
+          const token = await getToken();
+          const fetched = await fetch(`${PORT}/update_log`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`
+              },
+              body: JSON.stringify({log_id: log.id, log_name: log.name, driller: log.driller, logger: log.logger, notes: log.notes})
+          })
+          console.log("status:", fetched.status)
+          
+          if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          }
         } catch(error) {
                 console.error('Error:', error);
             }

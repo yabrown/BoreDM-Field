@@ -3,7 +3,9 @@ const express = require('express');
 const db = require('./queries')
 const env = require('./env')
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { verifyToken } = require('./verifyToken');
+const { isJwtError } = require('./jwtError');
 
 const { PORT, ACCESS_TOKEN_SECRET } = env;
 const app = express();
@@ -19,13 +21,13 @@ app.post('/register', async (req, res) => {
         const name = req.body.name;
 
         const hashedPass = await bcrypt.hash(password, 10);
+        console.log(hashedPass);
 
         const results = await db.register(username, hashedPass, name);
 
         if (results) {
           res.status(200).send("User registered");
-        }
-        else {
+        } else {
           res.status(409).send("Error: Username already exists");
         }
 
@@ -40,28 +42,20 @@ app.post('/login', async (req, res) => {
         const username = req.body.username;
         const textPassword = req.body.password;
 
-        // TODO: get stored hash from the db
-        // const storedHash = null;
-        //
-        // const doesMatch = bcrypt.compare(textPassword, storedHash);
-        //
-        // if (!doesMatch) res.status(403).send();
-        //
-        // const token = jwt.sign({ username }, ACCESS_TOKEN_SECRET);
-        //
-        // res.status(200);
-        // res.json({ token });
-
-        // TODO: Hash password
-        const hashedPassword = textPassword
-
-        const results = await db.login(username, hashedPassword);
-        if (results) {
-          console.log("Succesfully logged in");
-          res.json(results);
+        const hashedPass = await db.login(username);
+        console.log(hashedPass)
+        
+        if (hashedPass) {
+            const doesMatch = await bcrypt.compare(textPassword, hashedPass);
+            if (doesMatch) {
+                const token = jwt.sign({ username }, ACCESS_TOKEN_SECRET, { expiresIn: '2h' });
+                res.status(200).json({ token });
+            } else {
+                res.status(401).send();
+            }  
         }
         else {
-          res.status(403).send();
+          res.status(401).send();
         }
 
     } catch (err) {
@@ -71,14 +65,17 @@ app.post('/login', async (req, res) => {
 })
 
 // get request on the root directory, displays a list of projects in json format on the broswer
+// (Danny, see this)
 // written by: Max and Louis
-app.get('/get_all_projects', async (req, res) => {
-    // console.log("doing default theing")
+app.get('/get_all_projects', verifyToken, async (req, res) => {
   try {
-      const results = await db.get_all_projects();
-      res.json(results);
+    const results = await db.get_all_projects(req.username);
+    console.log(results);
+    res.json(results);
   } catch (err) {
-      console.log(err);
+    if (isJwtError(err)) res.status(401);
+    else res.status(500);
+    console.log(err);
   }
 })
 
@@ -109,149 +106,230 @@ app.get('/reseedDB', async (req, res) => {
 
 // get request on the root directory, returns a list of samples in json format
 // written by: Max and Louis
-app.post('/get_all_samples', async (req, res) => {
-    // console.log("doing default theing")
+app.post('/get_all_samples', verifyToken, async (req, res) => {
   try {
       const results = await db.get_all_samples(req.body.log_id);
       res.json(results);
   } catch (err) {
-      console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
   }
 })
 
 // get request on the root directory, returns a list of samples in json format
 // written by: Max and Louis
-app.post('/get_all_classifications', async (req, res) => {
-    // console.log("doing default theing")
+app.post('/get_all_classifications', verifyToken, async (req, res) => {
   try {
       const results = await db.get_all_classifications(req.body.log_id);
       res.json(results);
   } catch (err) {
-      console.log(err);
+    if (isJwtError(err)) {
+        res.status(401).send("JWT Error");
+      }
+    else {
+        console.error(err);
+        res.status(500).send();
+    }
   }
 })
 
-// testing webpage, do not use. Hacky way to check functions in queries.js
-app.get('/testing', async (req, res) => {
+app.post('/add_project', verifyToken, (req, res) => {
   try {
-      const results = await db.get_log(25, 1);
-      res.json(results);
+    db.add_project(req.username, req.body.project_name, req.body.client_name, req.body.project_location, req.body.project_notes)
+      res.status(200).json();
   } catch (err) {
-      console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+        }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
   }
 })
 
-app.post('/add_project', (req, res) => {
-  try {
-    db.add_project(req.body.project_name, req.body.client_name, req.body.project_location, req.body.project_notes)
-      res.status(200).send("Project added");
-  } catch (err) {
-      console.log(err);
-  }
-})
-
-app.post('/add_sample', (req, res) => {
+app.post('/add_sample', verifyToken, (req, res) => {
     try {
         db.add_sample(req.body.log_id, req.body.start_depth, req.body.end_depth, req.body.length, req.body.blows_1, req.body.blows_2, req.body.blows_3, req.body.blows_4, req.body.description, req.body.refusal_length, req.body.sampler_type)
-        res.status(200).send("Project added");
+        res.status(200).json();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
-  app.post('/delete_project', (req, res) => {
+  app.post('/delete_project', verifyToken, (req, res) => {
     try {
       db.delete_project(req.body.project_id)
-        res.status(200).send("Project deleted");
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
-  app.post('/delete_log', (req, res) => {
+  app.post('/delete_log', verifyToken, (req, res) => {
     try {
       db.delete_log(req.body.log_id)
-        res.status(200).send("Log deleted");
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
-app.post('/update_project', (req, res) => {
+app.post('/update_project', verifyToken, (req, res) => {
     try {
         db.update_project(req.body.project_id, req.body.project_name ,req.body.client_name, req.body.project_location, req.body.project_notes)
-        res.status(200).send("Project added");
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
-app.post('/update_log', (req, res) => {
+app.post('/update_log', verifyToken, (req, res) => {
     try {
         db.update_log(req.body.log_id, req.body.log_name, req.body.driller, req.body.logger, req.body.notes)
-        res.status(200).send("Log added");
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
-app.post('/update_sample', (req, res) => {
+app.post('/update_sample', verifyToken, (req, res) => {
     try {
         db.update_sample(req.body.sample_id, req.body.start_depth, req.body.end_depth, req.body.length, req.body.blows_1, req.body.blows_2, req.body.blows_3, req.body.blows_4, req.body.description, req.body.refusal_length, req.body.sampler_type)
-        res.status(200).send("Sample updated");
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
-app.post('/delete_sample', (req, res) => {
+app.post('/delete_sample', verifyToken, (req, res) => {
     try {
         db.delete_sample(req.body.sample_id)
-        res.status(200).send("Sample deleted");
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
-app.post('/delete_classification', (req, res) => {
+app.post('/delete_classification', verifyToken, (req, res) => {
     try {
         db.delete_classification(req.body.classification_id)
-        res.status(200).send("Classification deleted");
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
-app.post('/update_classification', (req, res) => {
+app.post('/update_classification', verifyToken, (req, res) => {
     try {
         db.update_classification(req.body.log_id, req.body.start_depth, req.body.end_depth, req.body.uscs, req.body.color, req.body.moisture, req.body.density, req.body.hardness)
-        res.status(200).send("Classification updated");
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
-app.post('/add_boring_to_project', (req, res) => {
+app.post('/add_boring_to_project', verifyToken, (req, res) => {
     console.log("matched correctly")
     try {
         console.log("add_boring_to_project: req.body: ", req.body);
         db.create_log(req.body.project_id, req.body.name, req.body.driller,req.body.logger,req.body.notes,req.body.latitude,req.body.longitude);
         res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
 // get request on the root directory, displays a list of projects in json format on the broswer
 // written by: Max and Louis
-app.post('/get_all_logs', async (req, res) => {
-    console.log("matched request to getlognames, id is ")
-    console.log(req.body)
+app.post('/get_all_logs', verifyToken, async (req, res) => {
   try {
       const results = await db.get_all_logs(req.body.project_id);
       res.json(results);
   } catch (err) {
-      console.log(err);
+    if (isJwtError(err)) {
+        res.status(401).send("JWT Error");
+      }
+    else {
+        console.error(err);
+        res.status(500).send();
+    }
+}
+})
+
+// get request on the root directory, returns absolutely all logs
+// written by: Ari
+app.post('/get_all_logs_absolute', async (req, res) => {
+  try {
+      const results = await db.get_all_logs_absolute();
+      res.json(results);
+  } catch (err) {
+      console.error(err);
   }
 })
 
@@ -269,15 +347,19 @@ app.post('/get_all_logs_absolute', async (req, res) => {
 // get request at url /projects/project_id, displays projects with project_id=project_id from
 // elephantsql in json format on the broswer
 // written by: Max and Louis
-app.get('/projects/:project_id', async (req, res) => {
+app.get('/projects/:project_id', verifyToken, async (req, res) => {
   try {
       const results = await db.get_project(parseInt(req.params.project_id));
       res.json(results);
   } catch (err) {
-      console.log(err);
+    if (isJwtError(err)) {
+        res.status(401).send("JWT Error");
+      }
+    else {
+        console.error(err);
+        res.status(500).send();
+    }
   }
 })
-
-
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
