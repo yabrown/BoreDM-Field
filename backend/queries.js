@@ -226,6 +226,14 @@ async function add_project(project_name, client_name, location, notes) {
   return new_proj.id;
 }
 
+// 
+// written by: Ari
+async function add_classification(log_id, start_depth, end_depth, uscs, color, moisture, density, hardness) {
+  console.log(uscs)
+  const new_class = await Classification.create({ log_id: log_id, start_depth:start_depth, end_depth:end_depth, uscs:uscs, color:color, moisture:moisture, density:density, hardness:hardness});
+  return new_class.id;
+}
+
 // creates project in db based on params, returns integer project_id of project that was created
 // written by: Louis
 async function add_sample(log_id, start_depth, end_depth, length, blows_1, blows_2, blows_3, blows_4, description, refusal_length, sampler_type) {
@@ -430,5 +438,6 @@ module.exports = {
   delete_sample,
   update_classification,
   reseedDB,
+  add_classification,
   client,
 }
