@@ -10,7 +10,6 @@ const sequelize = new Sequelize(conString, {
     min: 0,
     idle: 10000
 },
-logging: true
 });
 
 // Written by: Louis and Max
@@ -74,78 +73,9 @@ const User  = sequelize.define("User", {
     unique: true,
     allowNull: false 
   },
-  password: DataTypes.STRING,
+  hashed_password: DataTypes.STRING,
   name: DataTypes.STRING,
 })
-
-// Written by: Louis
-const initializeDefault = async () => {
-  await sequelize.sync({ force: true });
-
-  const project_1 = await Project.create({  name: "Kuba",
-                                            username: "testuser1",
-                                            location: "Princeton, NJ",
-                                            client: "Alicki",
-                                            notes: "Test Project 1"});
-  const home_1 = await Coordinate.create({  latitude: 10, longitude: 15 });
-  const log_1 = await Log.create({  project_id: project_1.id,
-                                    name: "Test Log 1",
-                                    driller: "Danny",
-                                    logger: "Ari",
-                                    notes: "Nice",
-                                    location: home_1.id});
-  const classification_1 = await Classification.create({  log_id : log_1.id,
-                                                          start_depth: 0,
-                                                          end_depth: 10,
-                                                          uscs: "CL",
-                                                          color: "Brown",
-                                                          moisture: "Moist",
-                                                          density: "Dense",
-                                                          hardness: "Very hard"});
-  const sample_1 = await Sample.create({  log_id : log_1.id,
-                                                  start_depth: 10,
-                                                  length: 6,
-                                                  blows_1: 13,
-                                                  blows_2: 22,
-                                                  blows_3: 24,
-                                                  blows_4: 31,
-                                                  description: "Description of Sample 1",
-                                                  refusal_length: 0,});
-
-                                                  const sample_3 = await Sample.create({  log_id : log_1.id,
-                                                                                                  start_depth: 12,
-                                                                                                  length: 6,
-                                                                                                  blows_1: 13,
-                                                                                                  blows_2: 22,
-                                                                                                  blows_3: 24,
-                                                                                                  blows_4: 31,
-                                                                                                  description: "Description of Sample 1",
-                                                                                                  refusal_length: 0,});
-
-  // (Danny, see this) replace line below with this one. const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
-  const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});  const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
-  const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
-  const classification_2 = await Classification.create({  log_id : log_2.id,
-    start_depth: 10,
-    end_depth: 14,
-    uscs: "CL-ML",
-    color: "Brown",
-    moisture: "Very moist",
-    density: "Medium dense",
-    hardness: "Hard"});
-  const sample_2 = await Sample.create({  log_id : log_2.id,
-      start_depth: 10,
-      length: 6,
-      blows_1: 15,
-      blows_2: 25,
-      blows_3: 24,
-      blows_4: 50,
-      description: "Description of Sample 2",
-      refusal_length: 4,
-      sampler_type: "SPS"});
-}
-
-initializeDefault();
 
 
 // creates a persistent connection to the elephantsql db. if persistence is undesirable (and we instead
@@ -360,7 +290,7 @@ async function login(username) {
     if (!user || user.length === 0) {
       return null;
     }
-    return user.password;
+    return user.hashed_password;
   } catch (err) {
     console.error(err);
   }
@@ -368,13 +298,13 @@ async function login(username) {
 
 async function register(username, hashed_password, name) {
   try {
-    const user = await User.findAll({
+    const user = await User.findOne({
       where: {
         username: username
       }
     });
-    if (user.length === 0) {
-      const new_user = await User.create({ username: username, password: hashed_password, name: name });
+    if (!user) {
+      await User.create({ username, hashed_password, name });
       return true;
     }
     return false;
@@ -383,6 +313,83 @@ async function register(username, hashed_password, name) {
   }
 }
 
+// Written by: Louis
+const initializeDefault = async () => {
+  try {
+    await sequelize.sync({ force: true });
+    await User.create({
+      username: 'testuser1',
+      hashed_password: '$2b$10$m9JiPgo3J0F1RgAMqZ/vxOYdwrHdTbmuQ1M06ThyoFn6KoXvjA1Pu',
+      name: 'Robert'
+    })
+    const project_1 = await Project.create({  name: "Kuba",
+                                              username: "testuser1",
+                                              location: "Princeton, NJ",
+                                              client: "Alicki",
+                                              notes: "Test Project 1"});
+    const home_1 = await Coordinate.create({  latitude: 10, longitude: 15 });
+    const log_1 = await Log.create({  project_id: project_1.id,
+                                      name: "Test Log 1",
+                                      driller: "Danny",
+                                      logger: "Ari",
+                                      notes: "Nice",
+                                      location: home_1.id});
+    const classification_1 = await Classification.create({  log_id : log_1.id,
+                                                            start_depth: 0,
+                                                            end_depth: 10,
+                                                            uscs: "CL",
+                                                            color: "Brown",
+                                                            moisture: "Moist",
+                                                            density: "Dense",
+                                                            hardness: "Very hard"});
+    const sample_1 = await Sample.create({  log_id : log_1.id,
+                                                    start_depth: 10,
+                                                    length: 6,
+                                                    blows_1: 13,
+                                                    blows_2: 22,
+                                                    blows_3: 24,
+                                                    blows_4: 31,
+                                                    description: "Description of Sample 1",
+                                                    refusal_length: 0,});
+  
+                                                    const sample_3 = await Sample.create({  log_id : log_1.id,
+                                                                                                    start_depth: 12,
+                                                                                                    length: 6,
+                                                                                                    blows_1: 13,
+                                                                                                    blows_2: 22,
+                                                                                                    blows_3: 24,
+                                                                                                    blows_4: 31,
+                                                                                                    description: "Description of Sample 1",
+                                                                                                    refusal_length: 0,});
+  
+    // (Danny, see this) replace line below with this one. const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
+    const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});  const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
+    const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
+    const classification_2 = await Classification.create({  log_id : log_2.id,
+      start_depth: 10,
+      end_depth: 14,
+      uscs: "CL-ML",
+      color: "Brown",
+      moisture: "Very moist",
+      density: "Medium dense",
+      hardness: "Hard"});
+    const sample_2 = await Sample.create({  log_id : log_2.id,
+        start_depth: 10,
+        length: 6,
+        blows_1: 15,
+        blows_2: 25,
+        blows_3: 24,
+        blows_4: 50,
+        description: "Description of Sample 2",
+        refusal_length: 4,
+        sampler_type: "SPS"});
+  }
+  catch (err) {
+    console.error(err);
+  }
+}
+
+initializeDefault();
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis

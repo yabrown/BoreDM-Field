@@ -5,6 +5,7 @@ const env = require('./env')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verifyToken } = require('./verifyToken');
+const { isJwtError } = require('./jwtError');
 
 const { PORT, ACCESS_TOKEN_SECRET } = env;
 const app = express();
@@ -50,11 +51,11 @@ app.post('/login', async (req, res) => {
                 const token = jwt.sign({ username }, ACCESS_TOKEN_SECRET, { expiresIn: '2h' });
                 res.status(200).json({ token });
             } else {
-                res.status(403).send();
+                res.status(401).send();
             }  
         }
         else {
-          res.status(403).send();
+          res.status(401).send();
         }
 
     } catch (err) {
@@ -70,8 +71,9 @@ app.get('/get_all_projects', verifyToken, async (req, res) => {
   try {
     const results = await db.get_all_projects(req.username);
     console.log(results);
-    res.json({ ...results, validToken: true });
+    res.json(results);
   } catch (err) {
+    if (err instanceof jwt.JsonWebTokenError) res.status(401);
     console.log(err);
   }
 })
@@ -81,9 +83,15 @@ app.get('/get_all_projects', verifyToken, async (req, res) => {
 app.post('/get_all_samples', verifyToken, async (req, res) => {
   try {
       const results = await db.get_all_samples(req.body.log_id);
-      res.json({ ...results, validToken: true });
+      res.json(results);
   } catch (err) {
-      console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
   }
 })
 
@@ -92,99 +100,165 @@ app.post('/get_all_samples', verifyToken, async (req, res) => {
 app.post('/get_all_classifications', verifyToken, async (req, res) => {
   try {
       const results = await db.get_all_classifications(req.body.log_id);
-      res.json({ ...results, validToken: true });
+      res.json(results);
   } catch (err) {
-      console.log(err);
+    if (isJwtError(err)) {
+        res.status(401).send("JWT Error");
+      }
+    else {
+        console.error(err);
+        res.status(500).send();
+    }
   }
 })
 
 app.post('/add_project', verifyToken, (req, res) => {
   try {
     db.add_project(req.body.username, req.body.project_name, req.body.client_name, req.body.project_location, req.body.project_notes)
-      res.status(200).json({ validToken: true });
+      res.status(200).json();
   } catch (err) {
-      console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+        }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
   }
 })
 
 app.post('/add_sample', verifyToken, (req, res) => {
     try {
         db.add_sample(req.body.log_id, req.body.start_depth, req.body.end_depth, req.body.length, req.body.blows_1, req.body.blows_2, req.body.blows_3, req.body.blows_4, req.body.description, req.body.refusal_length, req.body.sampler_type)
-        res.status(200).json({ validToken: true });
+        res.status(200).json();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
   app.post('/delete_project', verifyToken, (req, res) => {
     try {
       db.delete_project(req.body.project_id)
-        res.status(200).send({ validToken: true });
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
   app.post('/delete_log', verifyToken, (req, res) => {
     try {
       db.delete_log(req.body.log_id)
-        res.status(200).send({ validToken: true });
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
 app.post('/update_project', verifyToken, (req, res) => {
     try {
         db.update_project(req.body.project_id, req.body.project_name ,req.body.client_name, req.body.project_location, req.body.project_notes)
-        res.status(200).send({ validToken: true });
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
 app.post('/update_log', verifyToken, (req, res) => {
     try {
         db.update_log(req.body.log_id, req.body.log_name, req.body.driller, req.body.logger, req.body.notes)
-        res.status(200).send({ validToken: true });
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
 app.post('/update_sample', verifyToken, (req, res) => {
     try {
         db.update_sample(req.body.sample_id, req.body.start_depth, req.body.end_depth, req.body.length, req.body.blows_1, req.body.blows_2, req.body.blows_3, req.body.blows_4, req.body.description, req.body.refusal_length, req.body.sampler_type)
-        res.status(200).send({ validToken: true });
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
 app.post('/delete_sample', verifyToken, (req, res) => {
     try {
         db.delete_sample(req.body.sample_id)
-        res.status(200).send({ validToken: true });
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
 app.post('/delete_classification', verifyToken, (req, res) => {
     try {
         db.delete_classification(req.body.classification_id)
-        res.status(200).send({ validToken: true });
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
 app.post('/update_classification', verifyToken, (req, res) => {
     try {
         db.update_classification(req.body.log_id, req.body.start_depth, req.body.end_depth, req.body.uscs, req.body.color, req.body.moisture, req.body.density, req.body.hardness)
-        res.status(200).send({ validToken: true });
+        res.status(200).send();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
 })
 
@@ -193,9 +267,15 @@ app.post('/add_boring_to_project', verifyToken, (req, res) => {
     try {
         console.log("add_boring_to_project: req.body: ", req.body);
         db.create_log(req.body.project_id, req.body.name, req.body.driller,req.body.logger,req.body.notes,);
-        res.status(200).json({ validToken: true });
+        res.status(200).json();
     } catch (err) {
-        console.log(err);
+        if (isJwtError(err)) {
+            res.status(401).send("JWT Error");
+          }
+        else {
+            console.error(err);
+            res.status(500).send();
+        }
     }
   })
 
@@ -204,10 +284,16 @@ app.post('/add_boring_to_project', verifyToken, (req, res) => {
 app.post('/get_all_logs', verifyToken, async (req, res) => {
   try {
       const results = await db.get_all_logs(req.body.project_id);
-      res.json({...results, validToken: true });
+      res.json(results);
   } catch (err) {
-      console.log(err);
-  }
+    if (isJwtError(err)) {
+        res.status(401).send("JWT Error");
+      }
+    else {
+        console.error(err);
+        res.status(500).send();
+    }
+}
 })
 
 // get request at url /projects/project_id, displays projects with project_id=project_id from
@@ -216,9 +302,15 @@ app.post('/get_all_logs', verifyToken, async (req, res) => {
 app.get('/projects/:project_id', verifyToken, async (req, res) => {
   try {
       const results = await db.get_project(parseInt(req.params.project_id));
-      res.json({...results, validToken: true });
+      res.json(results);
   } catch (err) {
-      console.log(err);
+    if (isJwtError(err)) {
+        res.status(401).send("JWT Error");
+      }
+    else {
+        console.error(err);
+        res.status(500).send();
+    }
   }
 })
 

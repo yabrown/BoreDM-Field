@@ -60,8 +60,11 @@ const Log = ({ route, navigation }: Props) => {
         },
         body: JSON.stringify({log_id: route.params.log.id})
     });
-      const new_samples_list = await fetched.json()
-      setSamplesList(new_samples_list)
+      if (fetched.ok) {
+        const new_samples_list = await fetched.json()
+        setSamplesList(new_samples_list)
+      }
+      
   } catch(error) {
       console.error(error)
   }
@@ -76,8 +79,11 @@ const Log = ({ route, navigation }: Props) => {
         },
         body: JSON.stringify({log_id: route.params.log.id})
     });
-      const new_classifications_list = await fetched.json()
-      setClassificationsList(new_classifications_list)
+      if (fetched.ok) {
+        const new_classifications_list = await fetched.json()
+        setClassificationsList(new_classifications_list)
+      }
+      
   } catch(error) {
       console.error(error)
   }
@@ -122,8 +128,7 @@ const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
               },
               body: JSON.stringify({...sample})
           })
-          let status = await fetched.status
-          console.log('status:', status);
+          console.log('status:', fetched.status);
           refreshSamples();
       } catch(error) {
               console.error('Error:', error);

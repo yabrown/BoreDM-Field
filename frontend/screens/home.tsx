@@ -1,7 +1,7 @@
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 // import { google } from 'googleapis';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
@@ -12,6 +12,9 @@ import MapView, {Marker} from 'react-native-maps'
 import * as Location from 'expo-location';
 import PagerView from 'react-native-pager-view';
 import Project from "./project";
+import { logout } from "../common/logout";
+import { LoginContext } from "../contexts/LoginContext";
+import { getToken } from "../utils/secureStore";
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -148,12 +151,26 @@ const Map = () => {
 const Home = ({ navigation }: Props) => {
 
   const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
+  const { setIsLoggedIn } = useContext(LoginContext);
 
   const getProjectsList: () => void = async () => {
-    try{
-        const fetched = await fetch(`${PORT}/get_all_projects`);
-        const projects_list = await fetched.json()
-        setProjectsList(projects_list)
+    try {
+      const token = await getToken();  
+      const fetched = await fetch(`${PORT}/get_all_projects`, {
+        headers: {
+          'Authorization': `Bearer ${token ? token : ''}`
+        }
+      });
+        if (fetched.status === 401) {
+          if (setIsLoggedIn) await logout(setIsLoggedIn);
+        }
+
+        console.log("status:", fetched.status)
+
+        if (fetched.ok) {
+          const projects_list = await fetched.json()
+          if (projects_list.length > 0) setProjectsList(projects_list)
+        }
     } catch(error) {
         console.error(error)
     }

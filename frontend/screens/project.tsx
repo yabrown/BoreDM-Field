@@ -27,8 +27,10 @@ const Project = ({ navigation, route}: Props) => {
   const refreshProject = async () => {
     try {
         const fetched = await fetch(`${PORT}/projects/${currProject.id}`);
-        const updated_project = await fetched.json()
-        setProject(updated_project)
+        if (fetched.ok) {
+          const updated_project = await fetched.json()
+          setProject(updated_project)
+        }
     } catch(error) {
         console.error(error)
     }
@@ -43,8 +45,10 @@ const Project = ({ navigation, route}: Props) => {
             },
             body: JSON.stringify({project_id: currProject.id})
         });
-          const logs_list = await fetched.json()
-          setLogsList(logs_list)
+          if (fetched.ok) {
+            const logs_list = await fetched.json()
+            setLogsList(logs_list)
+          }
       } catch(error) {
           console.error(error)
       }
@@ -88,8 +92,7 @@ const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
               },
               body: JSON.stringify({ ...log, project_id: log.project_id })
           })
-          let status = await fetched.status
-          console.log(status)
+          console.log(fetched.status)
       } catch(error) {
               console.error('Error:', error);
           }

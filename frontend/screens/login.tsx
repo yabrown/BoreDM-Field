@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -7,17 +7,23 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
+  Alert,
 } from 'react-native';
+import {  } from 'react-native-paper'
 import InputField from '../common/InputField';
 import CustomButton from '../common/CustomButton';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { UserContext } from '../contexts/UserContext';
+import { LoginContext } from '../contexts/LoginContext';
+import { saveToken } from '../utils/secureStore';
+import * as env from '../env';
 
 const LoginScreen = ({navigation}) => {
 
   const default_user: user = {name: 'Robert', username: 'testuser1'}
-  const {user, setUser} = useContext(UserContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const [credentials, setCredentials] = useState({username: '', password: ''});
   
 
   return (
@@ -49,9 +55,10 @@ const LoginScreen = ({navigation}) => {
           />
           }
           keyboardType="default"
+          setText={(text: string) => setCredentials({...credentials, username: text})}
         />
 
-<InputField
+        <InputField
           label={'Password'}
           icon={
             <Ionicons
@@ -62,9 +69,31 @@ const LoginScreen = ({navigation}) => {
           />
           }
           inputType="password"
+          setText={(text: string) => setCredentials({...credentials, password: text})}
         />
         
-        <CustomButton label={"Login"} onPress={() => {setUser && setUser(default_user)}} />
+        <CustomButton label={"Login"} onPress={async () => {
+          try {
+            const fetched = await fetch(`${env.PORT}/login`, 
+              { method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+              },
+            body: JSON.stringify({ username: credentials.username.toLocaleLowerCase().trim(), password: credentials.password })});
+
+            if (fetched.ok) {
+              const token = await fetched.json();
+              await saveToken(token.token);
+              if (setIsLoggedIn) setIsLoggedIn(true);
+            }
+            if (fetched.status === 401) {
+              Alert.alert("Login Error", "Your username or password is incorrect. Please try again.")
+            }
+          }
+          catch (err) {
+            console.log(err);
+          }
+          }} />
 
         <View
           style={{
@@ -82,12 +111,13 @@ const LoginScreen = ({navigation}) => {
   );
 };
 
+const height = Dimensions.get('window').height;
 const styles = StyleSheet.create({
-  image: 
-  { objectFit: 'cover',
-    width: '100%',
-    height: 60
-}
-})
+  image: {
+      objectFit: 'cover',
+      width: '100%',
+      height: height / 9.0
+  },
+});
 
 export default LoginScreen;
