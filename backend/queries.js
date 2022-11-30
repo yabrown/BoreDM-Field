@@ -320,6 +320,11 @@ const initializeDefault = async () => {
     await User.create({
       username: 'testuser1',
       hashed_password: '$2b$10$m9JiPgo3J0F1RgAMqZ/vxOYdwrHdTbmuQ1M06ThyoFn6KoXvjA1Pu',
+      name: 'Kuba'
+    })
+    await User.create({
+      username: 'testuser2',
+      hashed_password: '$2b$10$m9JiPgo3J0F1RgAMqZ/vxOYdwrHdTbmuQ1M06ThyoFn6KoXvjA1Pu',
       name: 'Robert'
     })
     const project_1 = await Project.create({  name: "Kuba",
