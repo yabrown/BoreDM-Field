@@ -58,7 +58,7 @@ const AddProjectModal = ({ onUpdate }) => {
   return (
       <View>
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Project</PaperButton>
-        <Portal>
+      <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
             <Dialog.Title style={{color: 'black'}}>New Project</Dialog.Title>
             <Dialog.Content>
@@ -80,7 +80,7 @@ const AddProjectModal = ({ onUpdate }) => {
 };
 
 const Tab = createMaterialTopTabNavigator();
-const Map = (logs, navigate) => {
+const Map = (logs, navigate, updateLogList) => {
   
   const default_location= {
   coords: {
@@ -121,7 +121,7 @@ const Map = (logs, navigate) => {
         {logs.map(log=>
           (<Marker coordinate={{latitude: log.latitude,
           longitude: log.longitude}} key={log.id}
-          onPress={e => navigate.navigate('Log', {log})}
+          onPress={e => navigate.navigate('Log', {log, updateLogList})}
           />))}
 
       </MapView>
@@ -168,7 +168,7 @@ const Home = ({ navigation }: Props) => {
   // This only exists because for some reason I can't put Map(logs) directly in the component field of Tab.screen-- 
   // probably just some esoteric type issue
   const MapComponent = () => {
-    return Map(logs, navigation)
+    return Map(logs, navigation, getAllLogs)
   }
 
   useEffect(() => {

@@ -76,7 +76,8 @@ const Coordinate = sequelize.define("Coordinate", {
 // })
 
 // Written by: Louis
-(async () => {
+const reseed = (async () => {
+  console.log("restarting-- ")
   await sequelize.sync({ force: true });
 
   const project_1 = await Project.create({  name: "Kuba",
@@ -142,8 +143,8 @@ const Coordinate = sequelize.define("Coordinate", {
       description: "Description of Sample 2",
       refusal_length: 4,
       sampler_type: "SPS"});
-})();
-
+})
+reseed()
 
 // creates a persistent connection to the elephantsql db. if persistence is undesirable (and we instead
 // want to open and close connections with each query, we will need to rewrite this)
@@ -159,13 +160,19 @@ client.connect(function(err) {
     console.log(result.rows[0].theTime);
   });
 });
-
 // uses the client connection above to query for a list of projects from db
 // written by: Max and Louis
 async function get_all_projects() {
   const result = await Project.findAll({
     // attributes: ['name']
   });
+  return result;
+}
+
+// uses the client connection above to query for a list of projects from db
+// written by: Max and Louis
+async function reseedDB() {
+  const result = await reseed()
   return result;
 }
 
@@ -406,5 +413,6 @@ module.exports = {
   update_sample,
   delete_sample,
   update_classification,
+  reseedDB,
   client,
 }
