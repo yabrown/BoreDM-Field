@@ -82,6 +82,18 @@ app.get('/get_all_projects', async (req, res) => {
   }
 })
 
+// reseeds the DB
+// written by: Max and Louis
+app.get('/reseedDB', async (req, res) => {
+    // console.log("doing default theing")
+  try {
+      const results = await db.reseedDB();
+      res.json(results);
+  } catch (err) {
+      console.log(err);
+  }
+})
+
 // get request on the root directory, displays a list of projects in json format on the broswer
 // (Danny, see this)
 // written by: Max and Louis
