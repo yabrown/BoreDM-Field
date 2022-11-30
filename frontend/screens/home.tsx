@@ -15,6 +15,7 @@ import Project from "./project";
 import { logout } from "../common/logout";
 import { LoginContext } from "../contexts/LoginContext";
 import { getToken } from "../utils/secureStore";
+import { useIsFocused } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -160,6 +161,7 @@ const Home = ({ navigation }: Props) => {
 
   const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
   const { setIsLoggedIn } = useContext(LoginContext);
+  const isFocused = useIsFocused();
 
   const getProjectsList: () => void = async () => {
     try {
@@ -182,8 +184,8 @@ const Home = ({ navigation }: Props) => {
   }
 
   useEffect(() => {
-    getProjectsList();
-  }, []);
+    if (isFocused) getProjectsList();
+  }, [isFocused]);
 
   const ProjectsTabView = () => {
     return(
