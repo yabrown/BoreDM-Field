@@ -18,7 +18,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
 const Title = (props: { name:string }) =>{
   return(
       <View style={styles.titleView}>
-          <Text style={{fontWeight:'500', fontSize: 20, color: 'black'}}>{props.name}</Text>
+          <Text style={{fontWeight:'600', fontSize: 30, color: 'black'}}>{props.name}</Text>
       </View>
   )
 }
@@ -338,7 +338,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
-    borderColor: 'red'
+    borderColor: 'red',
+    marginLeft: '2%'
   },
   centeredView: {
     flex: 1,

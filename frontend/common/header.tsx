@@ -38,7 +38,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
-    borderColor: 'red'
+    borderColor: 'red',
+    marginLeft: '2%',
+    marginTop: '2%',
   },
 })
 

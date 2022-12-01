@@ -118,13 +118,12 @@ const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
   }, [])
 
   return(
-      <View style={{margin: 10}}>
-        <Text> Samples (Log ID: {id})</Text>
-          <ScrollView style={styles.scrollView}>
-              {samplesList.map(sample => (
-                  <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>
-              ))}
-          </ScrollView>
+      <View style={{marginTop: '4%'}}>
+        <ScrollView style={styles.scrollView}>
+            {samplesList.map(sample => (
+                <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>
+            ))}
+        </ScrollView>
       </View>
   )
 }
