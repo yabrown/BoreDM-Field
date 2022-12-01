@@ -10,6 +10,7 @@ import { PORT } from '../env';
 import { getToken } from "../utils/secureStore";
 import { LoginContext } from "../contexts/LoginContext";
 import { logout } from "../common/logout";
+import { v4 as uuid } from 'uuid';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
 
@@ -211,7 +212,7 @@ const LogGraphic = ({classifications_list}) => {
     const length = classification.end_depth - classification.start_depth;
     const boxColor = uscs_colormap[classification.uscs]['box'];
     const textColor = uscs_colormap[classification.uscs]['text'];
-    return <View style={[styles.classification_box, {flex: length, backgroundColor: boxColor }]} ><Text style={{color: textColor}}>{classification.uscs}</Text></View>
+    return <View key={uuid()} style={[styles.classification_box, {flex: length, backgroundColor: boxColor }]} ><Text style={{color: textColor}}>{classification.uscs}</Text></View>
   };
 
   function compareDepths(classification_a: classification, classification_b: classification) {
@@ -272,7 +273,7 @@ const LogGraphic = ({classifications_list}) => {
     }
     
     const ruler_boxes = depths.map((depth) =>
-      <View style={[styles.ruler_box, {flex: 1}]} ><Text>{depth}'</Text></View>
+      <View style={[styles.ruler_box, {flex: 1}]} key={uuid()} ><Text>{depth}'</Text></View>
     );
 
     return ruler_boxes
