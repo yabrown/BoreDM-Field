@@ -43,7 +43,7 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
 
   return(
     <View>
-    <ListItem title={'Classification Starting at ' + classification.start_depth + "'"} onPress={showDialog}/>
+    <ListItem title={classification.start_depth + "' - " + classification.end_depth + "': " + classification.uscs} onPress={showDialog}/>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Classification Data</Dialog.Title>
@@ -212,18 +212,14 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
 
 const SelectClassificationList = ({ id, classifications_list, refreshClassifications }) => {
 
-  useEffect(() => {
-      refreshClassifications()
-  }, [])
-
   return(
-      <View style={{margin: "10%"}}>
-        <Text> Classifications (Log ID: {id})</Text>
-          <ScrollView style={styles.scrollView}>
-              {classifications_list.map(classification => (
-                  <SelectClassificationButton classification={classification} key={uuid()} refreshClassifications={refreshClassifications}/>
-              ))}
-          </ScrollView>
+      <View style={{marginTop: '4%'}}>
+        <Text style={{marginLeft: '2%', fontSize: '24', fontWeight: '500'}}>Classifications</Text>
+        <ScrollView style={styles.scrollView}>
+            {classifications_list.map(classification => (
+                <SelectClassificationButton classification={classification} key={uuid()} refreshClassifications={refreshClassifications}/>
+            ))}
+        </ScrollView>
       </View>
   )
 }

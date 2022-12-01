@@ -1,16 +1,18 @@
 import { HStack, Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { ScrollView, Dimensions, StyleSheet, Text, View } from "react-native";
 import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import SelectClassificationList from '../models/SelectClassificationList';
 import SelectSampleList from '../models/SelectSampleList';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { PORT } from '../env';
 import { getToken } from "../utils/secureStore";
 import { LoginContext } from "../contexts/LoginContext";
 import { logout } from "../common/logout";
 import { v4 as uuid } from 'uuid';
+
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
 
@@ -34,12 +36,12 @@ const SelectButton = ({ current, buttonOption, setFunction, color, highlightedCo
 
 
 const Title = (props: { name:string }) =>{
-    return(
-        <View style={styles.titleView}>
-            <Text style={{fontWeight:'600', fontSize: 30, color: 'black'}}>{props.name}</Text>
-        </View>
-    )
-  }
+  return(
+      <View style={styles.titleView}>
+          <Text style={{fontWeight:'600', fontSize: 30, color: 'black'}}>{props.name}</Text>
+      </View>
+  )
+}
 
 
 const Log = ({ route, navigation }: Props) => {
@@ -96,9 +98,9 @@ const Log = ({ route, navigation }: Props) => {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
       } 
       
-  } catch(error) {
-      console.error(error)
-  }
+    } catch(error) {
+        console.error(error)
+    }
   }
 
   const refreshClassifications: () => void = async () => {
@@ -120,11 +122,33 @@ const Log = ({ route, navigation }: Props) => {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
       } 
       
-  } catch(error) {
-      console.error(error)
-  }
+    } catch(error) {
+        console.error(error)
+    }
   }
 
+  const ListComponent = () =>{
+    return(
+      <Box>
+        <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
+        <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
+      </Box>
+    )
+  }
+
+  const GraphicComponent = () =>{
+    return(
+      <LogGraphic classifications_list={classificationsList}></LogGraphic>
+    )
+  }
+
+  const Tab = createMaterialTopTabNavigator();
+
+  useEffect(() => {
+    refreshSamples();
+    refreshClassifications();
+  }, [])
+  
   return (
     <View style={styles.container}>
         <Flex fill flex-grow style={{ width:"100%" }}>
@@ -134,18 +158,37 @@ const Log = ({ route, navigation }: Props) => {
           <Box>
             <Title name={route.params.log.name}/>
           </Box>
-          <Box>
-            <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
-            <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
+          <Box style={{minHeight: "70%" }}>
+            <Tab.Navigator
+              initialRouteName="Projects"
+              screenOptions={{
+                tabBarActiveTintColor: '#000000',
+                tabBarLabelStyle: { fontSize: 12 },
+                tabBarStyle: { backgroundColor: 'white' },
+                tabBarIndicatorStyle: { backgroundColor: 'black' },
+                lazy: true
+              }}
+              sceneContainerStyle= {{backgroundColor: 'white'}}
+            >
+              <Tab.Screen
+                name="Data"
+                component = {ListComponent} 
+                options={{ tabBarLabel: 'Data' }}
+              />
+              <Tab.Screen
+                name="Graphic Log"
+                component={GraphicComponent}  //Had to use intermediary because can't put props directly in component-- probably a type issue
+                options={{ tabBarLabel: 'Graphic Log' }}
+              />
+            </Tab.Navigator>
           </Box>
-          <LogGraphic classifications_list={classificationsList}></LogGraphic>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
             <Box style={{ margin: 4 }}>
               <AddSampleModal log_id={currentLog.id} refreshSamples={refreshSamples}/>
             </Box>
             <Box style={{ margin: 4 }}>
-            <AddClassificationModal log_id={currentLog.id} refreshClassifications={refreshClassifications}/>
+              <AddClassificationModal log_id={currentLog.id} refreshClassifications={refreshClassifications}/>
             </Box>
             <Box style={{ margin: 4 }}>
               <EditLogModal log={currentLog} navigation={navigation} updateLogList={route.params.updateLogList}/>
@@ -636,7 +679,7 @@ const styles = StyleSheet.create({
     borderColor: 'red'
   },
   titleView: {
-    height: 30,
+    // height: 30,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,

@@ -18,7 +18,7 @@ const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refresh
 
   return(
     <View>
-    <ListItem title={'Sample Starting at ' + sample.start_depth + "'"} onPress={showDialog}/>
+    <ListItem title={"Start Depth: " + sample.start_depth + "'"} onPress={showDialog}/>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Sample Data</Dialog.Title>
@@ -113,18 +113,15 @@ const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
   // the data state will eventually be filled with array of log types
   //const [data, setData] = useState<void>()
 
-  useEffect(() => {
-      refreshSamples();
-  }, [])
-
   return(
-      <View style={{marginTop: '4%'}}>
-        <ScrollView style={styles.scrollView}>
-            {samplesList.map(sample => (
-                <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>
-            ))}
-        </ScrollView>
-      </View>
+    <View style={{marginTop: '4%'}}>
+      <Text style={{marginLeft: '2%', fontSize: '24', fontWeight: '500'}}>Samples</Text>
+      <ScrollView style={styles.scrollView}>
+          {samplesList.map(sample => (
+              <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>
+          ))}
+      </ScrollView>
+    </View>
   )
 }
 
