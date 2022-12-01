@@ -1,6 +1,4 @@
-var pg = require('pg');
 var env = require('./env');
-var client = new pg.Client(conString);
 var conString = env.POSTGRES_URL;
 
 const { Sequelize, Model, DataTypes, DATE, FLOAT } = require("sequelize");
@@ -174,20 +172,6 @@ const User  = sequelize.define("User", {
     })
     reseed()
 
-// creates a persistent connection to the elephantsql db. if persistence is undesirable (and we instead
-// want to open and close connections with each query, we will need to rewrite this)
-// written by: Max and Louis
-client.connect(function(err) {
-  if(err) {
-    return console.error('could not connect to postgres', err);
-  }
-  client.query('SELECT NOW() AS "theTime"', function(err, result) {
-    if(err) {
-      return console.error('error running query', err);
-    }
-    console.log(result.rows[0].theTime);
-  });
-});
 // uses the client connection above to query for a list of projects from db
 // written by: Max and Louis
 async function get_all_projects() {
@@ -533,9 +517,9 @@ async function register(username, hashed_password, name) {
   });
   if (user.length == 0) {
     const new_user = await User.create({ username: username, password: hashed_password, name: name });
-    return True;
+    return true;
   }
-  return False;
+  return false;
 }
 
 
@@ -563,7 +547,7 @@ module.exports = {
   update_classification,
   reseedDB,
   add_classification,
-  client,
+  // client,
   register,
 
 }

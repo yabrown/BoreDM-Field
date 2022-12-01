@@ -343,17 +343,6 @@ app.post('/get_all_logs_absolute', async (req, res) => {
   }
 })
 
-// get request on the root directory, returns absolutely all logs
-// written by: Ari
-app.post('/get_all_logs_absolute', async (req, res) => {
-  try {
-      const results = await db.get_all_logs_absolute();
-      res.json(results);
-  } catch (err) {
-      console.log(err);
-  }
-})
-
 // get request at url /projects/project_id, displays projects with project_id=project_id from
 // elephantsql in json format on the broswer
 // written by: Max and Louis
