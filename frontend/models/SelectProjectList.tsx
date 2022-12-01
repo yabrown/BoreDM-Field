@@ -7,13 +7,10 @@ const SelectProjectButton = ({ navigation, project, onUpdate  }) => {
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   
   let lastUpdated = project.updatedAt;
-  let outputDate = "Loading projects"
-  if (typeof lastUpdated !== 'undefined') {
-    let year = lastUpdated.substring(0, 4)
-    let month = lastUpdated.substring(5, 7);
-    let day = lastUpdated.substring(8, 10);
-    outputDate = "Last Updated: " + monthNames[month-1] + " " + day + ", " + year;
-  }  
+  let year = lastUpdated.substring(0, 4)
+  let month = lastUpdated.substring(5, 7);
+  let day = lastUpdated.substring(8, 10);
+  let outputDate = "Last Updated: " + monthNames[month-1] + " " + day + ", " + year;
   
   return (<ListItem
     leadingMode="avatar"

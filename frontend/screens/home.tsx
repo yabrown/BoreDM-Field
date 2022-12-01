@@ -148,7 +148,8 @@ const Map = (logs, navigate, updateLogList) => {
 
 const Home = ({ navigation }: Props) => {
 
-  const [projectsList, setProjectsList] = useState<project[]>([{name: "default", id: -1, client:"default", location:"default", notes:"default"}])
+  const [projectsList, setProjectsList] = useState<project[]>([]);
+  // {name: "default", id: -1, client:"default", location:"default", notes:"default"}
   const { setIsLoggedIn } = useContext(LoginContext);
   const isFocused = useIsFocused();
   //Important: the default log includes a coordinate set, w
