@@ -127,12 +127,42 @@ const Log = ({ route, navigation }: Props) => {
     }
   }
 
-  const ListComponent = () =>{
+  const dataStyles = StyleSheet.create({
+    container: {
+      // backgroundColor: "#7CA1B4",
+      flex: 1,
+      alignItems: "flex-start", // ignore this - we'll come back to it
+      justifyContent: "center", // ignore this - we'll come back to it
+      flexDirection: "row",
+    },
+    column: {
+      // backgroundColor: "#7cb48f",
+      flex: 1,
+      margin: '1%',
+      padding: '1%',
+      borderColor: 'black',
+      borderWidth: 1,
+    },
+  });
+
+  const DataComponent = () =>{
     return(
-      <Box>
-        <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
-        <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
-      </Box>
+      <View style={dataStyles.container}>
+        <View style={[dataStyles.column, {flex: 2}]}>
+          <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
+          <Spacer />
+          <Box style={{ margin: 4 }}>
+            <AddSampleModal log_id={currentLog.id} refreshSamples={refreshSamples}/>
+          </Box>
+        </View>
+        <View style={[dataStyles.column, {flex: 5}]}>
+          <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
+          <Spacer />
+          <Box style={{ margin: 4 }}>
+            <AddClassificationModal log_id={currentLog.id} refreshClassifications={refreshClassifications}/>
+          </Box>
+        </View>
+      </View>
     )
   }
 
@@ -148,7 +178,7 @@ const Log = ({ route, navigation }: Props) => {
     refreshSamples();
     refreshClassifications();
   }, [])
-  
+
   return (
     <View style={styles.container}>
         <Flex fill flex-grow style={{ width:"100%" }}>
@@ -158,7 +188,7 @@ const Log = ({ route, navigation }: Props) => {
           <Box>
             <Title name={route.params.log.name}/>
           </Box>
-          <Box style={{minHeight: "70%" }}>
+          <Box style={{minHeight: "80%" }}>
             <Tab.Navigator
               initialRouteName="Projects"
               screenOptions={{
@@ -172,7 +202,7 @@ const Log = ({ route, navigation }: Props) => {
             >
               <Tab.Screen
                 name="Data"
-                component = {ListComponent} 
+                component = {DataComponent} 
                 options={{ tabBarLabel: 'Data' }}
               />
               <Tab.Screen
@@ -184,12 +214,6 @@ const Log = ({ route, navigation }: Props) => {
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center" }}>
-            <Box style={{ margin: 4 }}>
-              <AddSampleModal log_id={currentLog.id} refreshSamples={refreshSamples}/>
-            </Box>
-            <Box style={{ margin: 4 }}>
-              <AddClassificationModal log_id={currentLog.id} refreshClassifications={refreshClassifications}/>
-            </Box>
             <Box style={{ margin: 4 }}>
               <EditLogModal log={currentLog} navigation={navigation} updateLogList={route.params.updateLogList}/>
             </Box>
@@ -323,7 +347,7 @@ const LogGraphic = ({classifications_list}) => {
   }
 
   return (
-    <View style={{flexDirection: 'row', flex: 1, paddingLeft: '10%'}}>
+    <View style={{flexDirection: 'row', flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}}>
       <View style={[styles.ruler_col, {flex: 1}]}>
         {make_ruler_boxes(classifications_list)}
       </View>

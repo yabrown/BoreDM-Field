@@ -18,7 +18,7 @@ const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refresh
 
   return(
     <View>
-    <ListItem title={"Start Depth: " + sample.start_depth + "'"} onPress={showDialog}/>
+    <ListItem title={"Sample Depth: " + sample.start_depth + "'"} onPress={showDialog}/>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Sample Data</Dialog.Title>
@@ -114,8 +114,8 @@ const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
   //const [data, setData] = useState<void>()
 
   return(
-    <View style={{marginTop: '4%'}}>
-      <Text style={{marginLeft: '2%', fontSize: '24', fontWeight: '500'}}>Samples</Text>
+    <View>
+      <Text style={{marginLeft: '6%', fontSize: '24', fontWeight: '500'}}>Samples</Text>
       <ScrollView style={styles.scrollView}>
           {samplesList.map(sample => (
               <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>
@@ -134,11 +134,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
-    borderColor: 'red'
+    borderColor: 'red',
   },
   scrollView: {
     borderWidth: showViews,
-    borderColor: 'red'
+    borderColor: 'red',
   },
   button: {
     alignItems: 'center',

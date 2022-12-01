@@ -7,7 +7,7 @@ const Header = () => {
       <View style={styles.headerView}>
           <Text style={{fontWeight:'800', fontSize: 50, color: 'black'}}>BORE<Text style={{ fontWeight: '800', color: 'grey' }}>
           DM</Text> <Text style={{ fontWeight: '400' }}>Field</Text></Text>
-          <ReseedButton/>
+          {/* <ReseedButton/> */}
       </View>
   );
 }

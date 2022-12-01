@@ -213,7 +213,7 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
 const SelectClassificationList = ({ id, classifications_list, refreshClassifications }) => {
 
   return(
-      <View style={{marginTop: '4%'}}>
+      <View>
         <Text style={{marginLeft: '2%', fontSize: '24', fontWeight: '500'}}>Classifications</Text>
         <ScrollView style={styles.scrollView}>
             {classifications_list.map(classification => (
