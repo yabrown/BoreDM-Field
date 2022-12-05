@@ -2,16 +2,13 @@ import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 // import { google } from 'googleapis';
 import React, { useContext, useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'
-import * as Location from 'expo-location';
-import PagerView from 'react-native-pager-view';
-import Project from "./project";
 import { logout } from "../common/logout";
 import { LoginContext } from "../contexts/LoginContext";
 import { getToken } from "../utils/secureStore";
@@ -51,17 +48,6 @@ const SubmitProject = ( { project, setvis, onUpdate } : SubmitProps ) => {
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
 }
 
-//This returns a scrollable view containing the projectButton components
-
-// Returns text to go above changing view-- Ex: Project, Map, Mariner's Apartment
-const Title = (props: { name:string }) =>{
-  return(
-      <View style={styles.titleView}>
-          <Text style={{fontWeight:'500', fontSize: 20, color: 'black'}}>{props.name}</Text>
-      </View>
-  )
-}
-
 const AddProjectModal = ({ onUpdate }) => {
   const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
@@ -95,21 +81,6 @@ const AddProjectModal = ({ onUpdate }) => {
 
 const Tab = createMaterialTopTabNavigator();
 const Map = (logs, navigate, updateLogList) => {
-  
-  const default_location= {
-  coords: {
-    accuracy: 16.548999786376953, 
-    altitude: -20.100000381469727, 
-    altitudeAccuracy: 1, 
-    heading: 0, 
-    latitude: 40.6240629, 
-    longitude: -73.9631628, 
-    speed: 0},
-  mocked: false, 
-   timestamp: 1669592647218
-  }
-  const [location, setLocation] = useState<Location.LocationObject>(default_location);
-  const [errorMsg, setErrorMsg] = useState('');
 
   return(
     <View style={{
@@ -121,13 +92,23 @@ const Map = (logs, navigate, updateLogList) => {
 
     <MapView style={{ ...StyleSheet.absoluteFillObject }}
 
-      initialRegion={{
-        latitude: logs[0].latitude,
-        longitude: logs[0].longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      }}
-      showsMyLocationButton={true}
+initialRegion={
+  {
+  latitude: logs[0] && logs[0].latitude,
+  longitude: logs[0] && logs[0].longitude,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+}   
+
+// initialRegion={
+      //   logs[0] ? {
+      //   latitude: logs[0] && logs[0].latitude,
+      //   longitude: logs[0] && logs[0].longitude,
+      //   latitudeDelta: 0.0922,
+      //   longitudeDelta: 0.0421,
+      // } : {}
+  }
+      // showsMyLocationButton={true}
       provider = {PROVIDER_GOOGLE}
       mapType = {"hybrid"}
     >
@@ -135,7 +116,7 @@ const Map = (logs, navigate, updateLogList) => {
         {logs.map(log=>
           (<Marker coordinate={{latitude: log.latitude,
           longitude: log.longitude}} key={log.id}
-          onPress={e => navigate.navigate('Log', {log, updateLogList})}
+          onPress={() => navigate.navigate('Log', {log, updateLogList})}
           />))}
 
       </MapView>
@@ -153,7 +134,7 @@ const Home = ({ navigation }: Props) => {
   const { setIsLoggedIn } = useContext(LoginContext);
   const isFocused = useIsFocused();
   //Important: the default log includes a coordinate set, w
-  const [logs, setLogs] = useState([{project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default", latitude: 40.6240629, longitude: -73.9631628}]);
+  const [logs, setLogs] = useState<log[]>([]);
 
   const getProjectsList: () => void = async () => {
     try {
@@ -226,7 +207,7 @@ const Home = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <Flex fill flex-grow style={{width:"100%"}}>
-        <Box>
+      <Box>
           <Header/>
         </Box>
         <Box style={{minHeight: "70%"}}>
@@ -254,7 +235,7 @@ const Home = ({ navigation }: Props) => {
           </Tab.Navigator>
         </Box>
         <Spacer />
-        <Box style={{ margin: 6 }}>
+        <Box style={{ marginHorizontal: 6, marginBottom: 6 }}>
           <AddProjectModal onUpdate={getProjectsList}/>
         </Box>
       </Flex>

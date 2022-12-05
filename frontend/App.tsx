@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { Provider as PaperProvider, Button } from 'react-native-paper';
 import { LoginContext } from './contexts/LoginContext';
-import { deleteToken, getToken, saveToken } from './utils/secureStore';
+import { getToken } from './utils/secureStore';
 
 // screens
 import Home from './screens/home';
@@ -38,7 +38,7 @@ export default function App() {
                     {isLoggedIn ? 
 
                     <HomeStack.Navigator initialRouteName='Home'>
-                        <HomeStack.Screen name='Home' component={Home} options={{title: 'BoreDM Home', headerRight: () => (<Button onPress={async () => {if (setIsLoggedIn) await logout(setIsLoggedIn)}} buttonColor="#000000" textColor='#ffffff'>Logout</Button>)}} />
+                        <HomeStack.Screen name='Home' component={Home} options={{title: 'Projects', headerRight: () => (<Button onPress={async () => {if (setIsLoggedIn) await logout(setIsLoggedIn)}} buttonColor="#000000" textColor='#ffffff'>Logout</Button>)}} />
                         <HomeStack.Screen name='Project' component={Project} options={{title: 'Project Details', headerRight: () => (<Button onPress={async () => {if (setIsLoggedIn) await logout(setIsLoggedIn)}} buttonColor="#000000" textColor='#ffffff'>Logout</Button>)}} />
                         <HomeStack.Screen name='Log' component={Log} options={{title: 'Log Details', headerRight: () => (<Button onPress={async () => {if (setIsLoggedIn) await logout(setIsLoggedIn)}} buttonColor="#000000" textColor='#ffffff'>Logout</Button>)}} />
                     </HomeStack.Navigator> :

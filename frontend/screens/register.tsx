@@ -128,7 +128,7 @@ const RegisterScreen = ({navigation}) => {
                   headers: {
                     'Content-Type': 'application/json',
                 },
-              body: JSON.stringify({ username: credentials.username.toLocaleLowerCase().trim(), password: credentials.password })});
+              body: JSON.stringify({ username: credentials.username.toLowerCase().trim(), password: credentials.password })});
 
               if (fetched.ok) {
                 Alert.alert("Succesfully registered!");
