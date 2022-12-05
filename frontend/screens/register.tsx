@@ -166,9 +166,9 @@ const RegisterScreen = ({navigation}) => {
 const height = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   image: {
-      objectFit: 'cover',
-      width: '100%',
-      height: height / 9.0
+      width: '90%',
+      height: height / 9.0,
+      alignSelf: 'center'
   },
 });
 
