@@ -59,6 +59,11 @@ const Classification = sequelize.define("Classification", {
 });
 
 const Remark = sequelize.define("Remark", {
+  remark_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   log_id: DataTypes.INTEGER,
   start_depth: DataTypes.FLOAT,
   notes: {
@@ -451,10 +456,8 @@ async function register(username, hashed_password, name) {
     });
     if (!user) {
       await User.create({ username, hashed_password, name });
-      console.log('success registering!');
       return true;
     }
-    console.log('failed registering!');
     return false;
   } catch (err) {
     console.error(err);
@@ -462,7 +465,7 @@ async function register(username, hashed_password, name) {
 }
 
 async function add_remark(log_id, start_depth, notes) {
-  const new_sample = await Classification.create({ log_id, start_depth, notes });
+  const new_sample = await Remark.create({ log_id, start_depth, notes });
   return new_sample.log_id;
 }
 
