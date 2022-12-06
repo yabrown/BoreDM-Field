@@ -38,8 +38,8 @@ const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refresh
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-            <UpdateSample setModalVisible={setVisible} refreshSamples={refreshSamples} sample={sample}/>
             <DeleteSample setModalVisible={setVisible} sample={sample} refreshSamples={refreshSamples}/>
+            <UpdateSample setModalVisible={setVisible} refreshSamples={refreshSamples} sample={sample}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -105,7 +105,7 @@ const DeleteSample = ({ sample, setModalVisible, refreshSamples }) => {
               console.error('Error:', error);
           }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
+  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
 }
 
 const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
