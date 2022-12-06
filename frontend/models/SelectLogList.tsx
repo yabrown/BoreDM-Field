@@ -17,7 +17,8 @@ const SelectLogButton = ({ log, navigate, updateLogList }) => {
   return (<ListItem
     title={log.name}
     secondaryText={outputDate}
-    onPress={() => { navigate.navigate('Log', {log, updateLogList}) }}
+    onPress={() => { navigate.navigate('Log', { log }) }}
+    // onPress={() => { navigate.navigate('Log', {log, updateLogList}) }}
     />)
 }
 

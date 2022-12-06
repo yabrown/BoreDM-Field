@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
@@ -31,8 +32,8 @@ export default function App() {
 
 
     return (
+        <NavigationContainer>
         <PaperProvider>
-            <NavigationContainer>
                 <LoginContext.Provider value={{isLoggedIn, setIsLoggedIn}}>
 
                     {isLoggedIn ? 
@@ -49,7 +50,7 @@ export default function App() {
                     </LoginStack.Navigator>}
 
                 </LoginContext.Provider>
-            </NavigationContainer>
         </PaperProvider>
+        </NavigationContainer>
     ); 
     }

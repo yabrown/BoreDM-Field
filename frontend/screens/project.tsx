@@ -1,7 +1,7 @@
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState, useContext } from 'react';
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import { PORT } from '../env';
 import Header from '../common/header';
@@ -25,8 +25,7 @@ const Title = (props: { name:string }) =>{
 
 const Project = ({ navigation, route}: Props) => {
 
-  let default_log: log = {project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default"}
-  const [logsList, setLogsList] = useState<log[]>([default_log]);
+  const [logsList, setLogsList] = useState<log[]>([]);
   const [latitude, setLat] = useState(10);
   const [longitude, setLon] = useState(10);
   const [currProject, setProject] = useState(route.params.project);
@@ -296,7 +295,7 @@ const EditProjectModal = ({ project, updateProject, updateProjectList, navigatio
   const [textNotes, setTextNotes] = useState(project.notes);
 
   return (
-      <View>
+      <SafeAreaView>
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Project Metadata</PaperButton>
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
@@ -316,7 +315,7 @@ const EditProjectModal = ({ project, updateProject, updateProjectList, navigatio
             </Dialog.Actions>
           </Dialog>
         </Portal>
-      </View>
+      </SafeAreaView>
   );
 }
 
@@ -335,7 +334,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   titleView: {
-    height: 30,
+    height: 'auto',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,

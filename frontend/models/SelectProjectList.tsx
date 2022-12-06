@@ -17,7 +17,8 @@ const SelectProjectButton = ({ navigation, project, onUpdate  }) => {
     leading={<Avatar style={{ backgroundColor: "white" }} image={{ uri: "https://boredm-web-assets.s3.amazonaws.com/images/black_on_white_drill.png" }} />}
     title={project.name}
     secondaryText={outputDate}
-    onPress={() => navigation.navigate('Project', { project, onUpdate })}
+    // onPress={() => navigation.navigate('Project', { project, onUpdate })}
+    onPress={() => navigation.navigate('Project', { project })}
     />)
 }
 

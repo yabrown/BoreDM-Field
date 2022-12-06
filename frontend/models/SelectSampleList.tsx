@@ -115,7 +115,7 @@ const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
 
   return(
     <View>
-      <Text style={{marginLeft: '6%', fontSize: '24', fontWeight: '500'}}>Samples</Text>
+      <Text style={{marginLeft: '6%', fontSize: 24, fontWeight: '500'}}>Samples</Text>
       <ScrollView style={styles.scrollView}>
           {samplesList.map(sample => (
               <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>

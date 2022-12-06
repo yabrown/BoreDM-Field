@@ -2,21 +2,26 @@ import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 // import { google } from 'googleapis';
 import React, { useContext, useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, SafeAreaView, StyleSheet, View } from 'react-native';
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import { PORT } from '../env';
 import SelectProjectList from '../models/SelectProjectList';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+// import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'
 import { logout } from "../common/logout";
 import { LoginContext } from "../contexts/LoginContext";
 import { getToken } from "../utils/secureStore";
 import { useIsFocused } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 type SubmitProps = { project: { name: string, client: string, location: string, notes: string }, setvis: React.Dispatch<React.SetStateAction<boolean>>, onUpdate: () => void}
+
+// const Drawer = createDrawerNavigator();
 
 // The component that deals with the adding a new project
 const SubmitProject = ( { project, setvis, onUpdate } : SubmitProps ) => {
@@ -79,7 +84,7 @@ const AddProjectModal = ({ onUpdate }) => {
   );
 };
 
-const Tab = createMaterialTopTabNavigator();
+const Tab = createBottomTabNavigator();
 const Map = (logs, navigate, updateLogList) => {
 
   return(
@@ -116,7 +121,8 @@ initialRegion={
         {logs.map(log=>
           (<Marker coordinate={{latitude: log.latitude,
           longitude: log.longitude}} key={log.id}
-          onPress={() => navigate.navigate('Log', {log, updateLogList})}
+          // onPress={() => navigate.navigate('Log', {log, updateLogList})}
+          onPress={() => navigate.navigate('Log', {log })}
           />))}
 
       </MapView>
@@ -135,6 +141,7 @@ const Home = ({ navigation }: Props) => {
   const isFocused = useIsFocused();
   //Important: the default log includes a coordinate set, w
   const [logs, setLogs] = useState<log[]>([]);
+  // const insets = useSafeAreaInsets();
 
   const getProjectsList: () => void = async () => {
     try {
@@ -205,27 +212,56 @@ const Home = ({ navigation }: Props) => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Flex fill flex-grow style={{width:"100%"}}>
-      <Box>
+      <View>
           <Header/>
-        </Box>
-        <Box style={{minHeight: "70%"}}>
+        </View>
+        {/* <View>
+          <Drawer.Navigator initialRouteName="Register2">
+            <Drawer.Screen name="Register2" component={RegisterScreen2} />
+            <Drawer.Screen name="Register3" component={RegisterScreen3} />
+          </Drawer.Navigator>
+        </View> */}
+        <View style={{minHeight: "85%"}}>
           <Tab.Navigator
-            initialRouteName="Projects"
-            screenOptions={{
-              tabBarActiveTintColor: '#000000',
-              tabBarLabelStyle: { fontSize: 12 },
-              tabBarStyle: { backgroundColor: 'white' },
-              tabBarIndicatorStyle: { backgroundColor: 'black' },
-              lazy: true
-            }}
+            initialRouteName="Project List"
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+    
+                if (route.name === 'Project List') {
+                  iconName = focused
+                    ? 'ios-information-circle'
+                    : 'ios-information-circle-outline';
+                } else if (route.name === 'Maps') {
+                  iconName = focused ? 'ios-list' : 'ios-list-outline';
+                }
+    
+                // You can return any component that you like here!
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+              tabBarActiveTintColor: 'tomato',
+              tabBarInactiveTintColor: 'gray',
+              lazy: true,
+              tabBarScrollEnabled: false,
+              tabBarStyle: { height: '10%' },
+              tabBarLabelStyle: { fontSize: 24 },
+            })}
+            // screenOptions={{
+            //   tabBarActiveTintColor: '#000000',
+            //   tabBarLabelStyle: { fontSize: 12 },
+            //   tabBarStyle: { backgroundColor: 'white' },
+            //   // tabBarIndicatorStyle: { backgroundColor: 'black' },
+            //   lazy: true,
+            //   tabBarScrollEnabled: false,
+            // }}
             sceneContainerStyle= {{backgroundColor: 'white'}}
           >
             <Tab.Screen
-              name="Projects"
+              name="Project List"
               component = {ProjectsComponent} 
-              options={{ tabBarLabel: 'Projects' }}/>
+              options={{ tabBarLabel: 'Project List' }}/>
 
             <Tab.Screen
               name="Maps"
@@ -233,13 +269,13 @@ const Home = ({ navigation }: Props) => {
               options={{ tabBarLabel: 'Map' }}
             />
           </Tab.Navigator>
-        </Box>
+        </View>
         <Spacer />
-        <Box style={{ marginHorizontal: 6, marginBottom: 6 }}>
+        <View style={{ marginHorizontal: 6, marginBottom: 6, minHeight: '5%' }}>
           <AddProjectModal onUpdate={getProjectsList}/>
-        </Box>
+        </View>
       </Flex>
-    </View>
+    </SafeAreaView>
   )
     }
 
@@ -328,3 +364,4 @@ const styles = StyleSheet.create({
 });
 
 export default Home;
+

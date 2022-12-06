@@ -1,7 +1,7 @@
 import { HStack, Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useContext, useState, useEffect } from 'react';
-import { ScrollView, Dimensions, StyleSheet, Text, View } from "react-native";
+import { ScrollView, Dimensions, StyleSheet, Text, View, SafeAreaView } from "react-native";
 import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import SelectClassificationList from '../models/SelectClassificationList';
@@ -173,7 +173,7 @@ const Log = ({ route, navigation }: Props) => {
   }, [])
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
         <Flex fill flex-grow style={{ width:"100%" }}>
           <Box>
             <Header/>
@@ -212,7 +212,7 @@ const Log = ({ route, navigation }: Props) => {
             </Box>
           </Box>
         </Flex>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -269,9 +269,9 @@ const LogGraphic = ({classifications_list}) => {
 
 
   let make_uscs_box = function (classification: classification) {    
-    const length = classification.end_depth - classification.start_depth;
-    const boxColor = uscs_colormap[classification.uscs]['box'];
-    const textColor = uscs_colormap[classification.uscs]['text'];
+    const length = classification.end_depth - classification.start_depth;    
+    const boxColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['box'] : 'white';
+    const textColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['text'] : 'white';
     return <View key={uuid()} style={[styles.classification_box, {flex: length, backgroundColor: boxColor }]} ><Text style={{color: textColor}}>{classification.uscs}</Text></View>
   };
 
@@ -523,7 +523,7 @@ const EditLogModal = ({log, updateLogList, navigation}) => {
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
             <Dialog.Title>Edit Log Metadata</Dialog.Title>
-            <Dialog.Content>
+            <Dialog.Content>e
               <View>
                 <TextInput value={textName} label="Log Name" mode="outlined" onChangeText={(text) => setTextName(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                 <TextInput value={textLogger} label="Logger" mode="outlined" onChangeText={(text) => setTextLogger(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
