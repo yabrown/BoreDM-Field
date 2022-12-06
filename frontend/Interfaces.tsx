@@ -80,6 +80,12 @@ interface project  {
       hardness:       string,
     };
 
+    interface remark {
+      log_id:         number
+      start_depth:    number
+      notes:       string,
+    };
+
   type user = null | {
     name: string,
     username: string

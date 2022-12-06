@@ -8,6 +8,7 @@ import SelectClassificationList from '../models/SelectClassificationList';
 import SelectSampleList from '../models/SelectSampleList';
 import SelectRemarkList from '../models/SelectRemarkList';
 import AddClassificationModal from "../dialogs/AddClassificationModal";
+import AddRemarkModal from "../dialogs/AddRemarkModal";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { PORT } from '../env';
 import { getToken } from "../utils/secureStore";
@@ -59,8 +60,16 @@ const Log = ({ route, navigation }: Props) => {
     hardness:   '',
   }
 
+  const default_remark: remark = {
+    log_id:         NaN,
+    start_depth:    0,
+    notes:      "Default Note",
+  }
+
   const [samplesList, setSamplesList] = useState([default_sample])
   const [classificationsList, setClassificationsList] = useState([default_classification])
+  const [remarksList, setRemarksList] = useState([default_remark])
+
 
   const refreshSamples: () => void = async () => {
 
@@ -111,6 +120,30 @@ const Log = ({ route, navigation }: Props) => {
     }
   }
 
+  const refreshRemarks: () => void = async () => {
+    try{
+      const token = await getToken();
+      const fetched = await fetch(`${PORT}/get_all_remarks`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token ? token : ''}`
+        },
+        body: JSON.stringify({log_id: route.params.log.id})
+    });
+      if (fetched.ok) {
+        const new_remarks_list = await fetched.json()
+        setRemarksList(new_remarks_list)
+      }
+      else if (fetched.status === 401) {
+        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+      } 
+      
+    } catch(error) {
+        console.error(error)
+    }
+  }
+
   const dataStyles = StyleSheet.create({
     container: {
       // backgroundColor: "#7CA1B4",
@@ -147,10 +180,10 @@ const Log = ({ route, navigation }: Props) => {
           </Box>
         </View>
         <View style={[dataStyles.column, {flex: 4}]}>
-          <SelectRemarkList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
+          <SelectRemarkList id={currentLog.id} remarks_list={remarksList} refreshRemarks={refreshRemarks}/>
           <Spacer />
           <Box style={{ margin: 4 }}>
-            <AddClassificationModal log_id={currentLog.id} refreshClassifications={refreshClassifications}/>
+            <AddRemarkModal log_id={currentLog.id} refreshRemarks={refreshRemarks}/>
           </Box>
         </View>
       </View>
@@ -168,6 +201,7 @@ const Log = ({ route, navigation }: Props) => {
   useEffect(() => {
     refreshSamples();
     refreshClassifications();
+    refreshRemarks();
   }, [])
 
   return (
