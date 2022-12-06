@@ -9,6 +9,7 @@ const projectsRouter = require('./routers/projects');
 const samplesRouter = require('./routers/samples');
 const logsRouter = require('./routers/logs');
 const classificationsRouter = require('./routers/classifications');
+const remarksRouter = require('./routers/remarks');
 
 const { PORT } = env;
 const app = express();
@@ -23,6 +24,7 @@ app.use('/', projectsRouter);
 app.use('/', samplesRouter);
 app.use('/', logsRouter);
 app.use('/', classificationsRouter);
+app.use('/', remarksRouter);
 
 // reseeds the DB
 // written by: Max and Louis

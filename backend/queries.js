@@ -58,6 +58,15 @@ const Classification = sequelize.define("Classification", {
   hardness: DataTypes.STRING,
 });
 
+const Remark = sequelize.define("Remark", {
+  log_id: DataTypes.INTEGER,
+  start_depth: DataTypes.FLOAT,
+  notes: {
+    type: DataTypes.TEXT,
+    defaultValue: '',
+  }
+});
+
 // Written by: Louis
 const Coordinate = sequelize.define("Coordinate", {
   location_id: DataTypes.INTEGER,
@@ -143,9 +152,9 @@ const reseed = (async () => {
 
   // (Danny, see this) replace line below with this one. const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2" });
-  const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
+  await Coordinate.create({ latitude: 10, longitude: 15 });
   const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", latitude: 40.349955, longitude: -74.652800 });
-  const classification_2 = await Classification.create({
+  await Classification.create({
     log_id: log_2.id,
     start_depth: 3,
     end_depth: 5,
@@ -155,7 +164,7 @@ const reseed = (async () => {
     density: "Medium dense",
     hardness: "Hard"
   });
-  const classification_3 = await Classification.create({
+  await Classification.create({
     log_id: log_2.id,
     start_depth: 8,
     end_depth: 12,
@@ -165,7 +174,7 @@ const reseed = (async () => {
     density: "Medium dense",
     hardness: "Hard"
   });
-  const classification_4 = await Classification.create({
+  await Classification.create({
     log_id: log_2.id,
     start_depth: 14,
     end_depth: 18,
@@ -175,7 +184,12 @@ const reseed = (async () => {
     density: "Medium dense",
     hardness: "Hard"
   });
-  const sample_2 = await Sample.create({
+  await Remark.create({
+    log_id: log_2.id,
+    start_depth: 22,
+    notes: "Drill started shaking pretty hard",
+  })
+  await Sample.create({
     log_id: log_2.id,
     start_depth: 10,
     length: 6,
@@ -447,100 +461,27 @@ async function register(username, hashed_password, name) {
   }
 }
 
-// Written by: Louis
-const initializeDefault = async () => {
-  try {
-    await sequelize.sync({ force: true });
-    await User.create({
-      username: 'testuser1',
-      hashed_password: '$2b$10$m9JiPgo3J0F1RgAMqZ/vxOYdwrHdTbmuQ1M06ThyoFn6KoXvjA1Pu',
-      name: 'Kuba'
-    })
-    await User.create({
-      username: 'testuser2',
-      hashed_password: '$2b$10$m9JiPgo3J0F1RgAMqZ/vxOYdwrHdTbmuQ1M06ThyoFn6KoXvjA1Pu',
-      name: 'Robert'
-    })
-    const project_1 = await Project.create({
-      name: "Kuba",
-      username: "testuser1",
-      location: "Princeton, NJ",
-      client: "Alicki",
-      notes: "Test Project 1"
-    });
-    const home_1 = await Coordinate.create({ latitude: 10, longitude: 15 });
-    const log_1 = await Log.create({
-      project_id: project_1.id,
-      name: "Test Log 1",
-      driller: "Danny",
-      logger: "Ari",
-      notes: "Nice",
-      location: home_1.id
-    });
-    const classification_1 = await Classification.create({
-      log_id: log_1.id,
-      start_depth: 0,
-      end_depth: 10,
-      uscs: "CL",
-      color: "Brown",
-      moisture: "Moist",
-      density: "Dense",
-      hardness: "Very hard"
-    });
-    const sample_1 = await Sample.create({
-      log_id: log_1.id,
-      start_depth: 10,
-      length: 6,
-      blows_1: 13,
-      blows_2: 22,
-      blows_3: 24,
-      blows_4: 31,
-      description: "Description of Sample 1",
-      refusal_length: 0,
-    });
-
-    const sample_3 = await Sample.create({
-      log_id: log_1.id,
-      start_depth: 12,
-      length: 6,
-      blows_1: 13,
-      blows_2: 22,
-      blows_3: 24,
-      blows_4: 31,
-      description: "Description of Sample 1",
-      refusal_length: 0,
-    });
-
-    // (Danny, see this) replace line below with this one. const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
-    const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2" }); const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
-    const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id });
-    const classification_2 = await Classification.create({
-      log_id: log_2.id,
-      start_depth: 10,
-      end_depth: 14,
-      uscs: "CL-ML",
-      color: "Brown",
-      moisture: "Very moist",
-      density: "Medium dense",
-      hardness: "Hard"
-    });
-    const sample_2 = await Sample.create({
-      log_id: log_2.id,
-      start_depth: 10,
-      length: 6,
-      blows_1: 15,
-      blows_2: 25,
-      blows_3: 24,
-      blows_4: 50,
-      description: "Description of Sample 2",
-      refusal_length: 4,
-      sampler_type: "SPS"
-    });
-  }
-  catch (err) {
-    console.error(err);
-  }
+async function add_remark(log_id, start_depth, notes) {
+  const new_sample = await Classification.create({ log_id, start_depth, notes });
+  return new_sample.log_id;
 }
+
+async function get_all_remarks(log_id) {
+  const remark_list = await Remark.findAll({
+    where: {
+      log_id
+    }
+  });
+  return remark_list;
+}
+
+// async function update_remark(log_id, name, driller, logger, notes) {
+//   const updated_log = await Log.update({ id: log_id, name: name, driller: driller, logger: logger, notes: notes }, {
+//     where: { id: log_id },
+//     returning: true,
+//     raw: true,
+//   });
+//   return updated_log[1][0].id;
 
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
@@ -567,7 +508,8 @@ module.exports = {
   update_classification,
   reseedDB,
   add_classification,
-  // client,
   register,
+  add_remark,
+  get_all_remarks,
 
 }
