@@ -214,7 +214,7 @@ const SelectClassificationList = ({ id, classifications_list, refreshClassificat
 
   return(
       <View>
-        <Text style={{marginLeft: '2%', fontSize: '24', fontWeight: '500'}}>Classifications</Text>
+        <Text style={{marginLeft: '2%', fontSize: 24, fontWeight: '500'}}>Classifications</Text>
         <ScrollView style={styles.scrollView}>
             {classifications_list.map(classification => (
                 <SelectClassificationButton classification={classification} key={uuid()} refreshClassifications={refreshClassifications}/>

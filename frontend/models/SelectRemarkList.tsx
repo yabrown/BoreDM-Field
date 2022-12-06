@@ -100,7 +100,7 @@ const UpdateRemark = ( {remark, setModalVisible}) => {
         setModalVisible(false)
         try {
             const token = await getToken();
-            let fetched = await fetch(`${PORT}/update_remark`, {
+            const fetched = await fetch(`${PORT}/update_remark`, {
                 method: 'POST', // or 'PUT'
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ const SelectRemarksList = ({ id, remarks_list, refreshRemarks }) => {
 
   return(
       <View>
-        <Text style={{marginLeft: '2%', fontSize: '24', fontWeight: '500'}}>Remarks</Text>
+        <Text style={styles.remarkText}>Remarks</Text>
         <ScrollView style={styles.scrollView}>
             {remarks_list && remarks_list.map(remark => (
                 <SelectRemarkButton remark={remark} key={uuid()} refreshRemarks={refreshRemarks}/>
@@ -162,6 +162,9 @@ const styles = StyleSheet.create({
     borderWidth: showViews,
     borderColor: 'red'
   },
+  remarkText: {
+    marginLeft: 2, fontSize: 24, fontWeight: "500",
+  }
 
 });
 

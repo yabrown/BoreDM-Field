@@ -7,10 +7,10 @@ const router = express.Router()
 
 router.use(verifyToken);
 
-router.post('/get_remarks', async (req, res) => {
+router.post('/get_all_remarks', async (req, res) => {
   try {
-    await db.get_all_remarks(req.body.log_id)
-    res.status(200).send();
+    const remark_list = await db.get_all_remarks(req.body.log_id)
+    res.status(200).json(remark_list);
   } catch (err) {
     if (isJwtError(err)) {
       res.status(401).send("JWT Error");

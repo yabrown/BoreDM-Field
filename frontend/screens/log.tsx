@@ -34,41 +34,9 @@ const Log = ({ route, navigation }: Props) => {
   const [currentLog, setLog] = useState(route.params.log);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
-  const default_sample: sample = {
-    log_id:         NaN,
-    sample_id:      NaN,
-    start_depth:    NaN,
-    end_depth:      NaN,
-    length:         NaN,
-    blows_1:        NaN,
-    blows_2:        NaN,
-    blows_3:        NaN,
-    blows_4:        NaN,
-    description:    '',
-    refusal_length: NaN,
-    sampler_type:   '',
-  }
-
-  const default_classification: classification = {
-    log_id:         NaN,
-    start_depth:    0,
-    end_depth:      0,
-    uscs:    'NONE',
-    color:   '',
-    moisture:   '',
-    density:   '',
-    hardness:   '',
-  }
-
-  const default_remark: remark = {
-    log_id:         NaN,
-    start_depth:    0,
-    notes:      "Default Note",
-  }
-
-  const [samplesList, setSamplesList] = useState([default_sample])
-  const [classificationsList, setClassificationsList] = useState([default_classification])
-  const [remarksList, setRemarksList] = useState([default_remark])
+  const [samplesList, setSamplesList] = useState<sample[]>([])
+  const [classificationsList, setClassificationsList] = useState<classification[]>([])
+  const [remarksList, setRemarksList] = useState<remark[]>([])
 
 
   const refreshSamples: () => void = async () => {

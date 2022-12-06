@@ -256,6 +256,7 @@ const AddLogModal = ({ project_id, getLogs, getLatLon, lat, lon, setLat, setLon 
   const hideDialog = () => setVisible(false);
 
   const [logText, setLogText] = useState({ name: "", drilled: "", logged: "", notes: "" })
+
   return (
       <View>
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Log</PaperButton>
