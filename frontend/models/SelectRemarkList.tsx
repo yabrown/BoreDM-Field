@@ -49,8 +49,8 @@ const SelectRemarkButton = ({ remark, refreshRemarks }) => {
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-            <UpdateRemark setModalVisible={setVisible} remark={{log_id: remark.log_id, startDepth, notes }}/>
             <DeleteRemark setModalVisible={setVisible} remark={remark} refreshRemarks={refreshRemarks}/>
+            <UpdateRemark setModalVisible={setVisible} remark={{log_id: remark.log_id, startDepth, notes }}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -88,7 +88,7 @@ const DeleteRemark = ({ remark, setModalVisible, refreshRemarks }) => {
               console.error('Error:', error);
           }
         }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
+  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
 }
 
 // The component that deals with updating a Classification

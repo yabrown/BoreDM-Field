@@ -208,7 +208,7 @@ const DeleteProject = ({ project, setModalVisible, navigation, updateProjectList
               console.error('Error:', error);
           }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
+  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
 }
 
 const Map = ({getLatLon, latitude, longitude, setLat, setLon}) => {
@@ -299,7 +299,7 @@ const EditProjectModal = ({ project, updateProject, updateProjectList, navigatio
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Project Metadata</PaperButton>
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title style={{color: 'black'}}>New Log</Dialog.Title>
+            <Dialog.Title style={{color: 'black'}}>Edit Project</Dialog.Title>
             <Dialog.Content>
               <View>
                 <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
@@ -310,8 +310,8 @@ const EditProjectModal = ({ project, updateProject, updateProjectList, navigatio
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <UpdateProject setModalVisible={setVisible} updateProject={updateProject} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
               <DeleteProject setModalVisible={setVisible} project={{id: project.id}} navigation={navigation} updateProjectList={updateProjectList}/>
+              <UpdateProject setModalVisible={setVisible} updateProject={updateProject} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
             </Dialog.Actions>
           </Dialog>
         </Portal>

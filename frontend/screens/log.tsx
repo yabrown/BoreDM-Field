@@ -420,33 +420,6 @@ const AddSampleModal = ({ log_id, refreshSamples }) => {
   );
 }
 
-// The component that deals with the adding a new project
-// const DeleteLog = ({ log, setModalVisible, navigation, updateLogList }) => {
-//   // const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-//   const onPress = async () => {
-//     hideDialog()
-//       try {
-//           const token = await getToken();
-//           let fetched = await fetch(`${PORT}/add_classification`, {
-//               method: 'POST', // or 'PUT'
-//               headers: {
-//                   'Content-Type': 'application/json',
-//                   'Authorization': `Bearer ${token ? token : ''}`
-//               },
-//               body: JSON.stringify({...classification})
-//           })
-//           let status = await fetched.status
-//           console.log('status:', status);
-//           refreshClassifications();
-//       } catch(error) {
-//               console.error('Error:', error);
-//           }
-//   }
-//   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
-// }
-
-
 
 // The component that deals with the adding a new project
 const DeleteLog = ({ log, setModalVisible, navigation, updateLogList }) => {
@@ -476,7 +449,7 @@ const DeleteLog = ({ log, setModalVisible, navigation, updateLogList }) => {
               console.error('Error:', error);
           }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
+  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
 }
 
 // The component that deals with updating log data
@@ -533,8 +506,8 @@ const EditLogModal = ({log, updateLogList, navigation}) => {
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <UpdateLog setModalVisible={setVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
               <DeleteLog setModalVisible={setVisible} log={{id: log.id}} navigation={navigation} updateLogList={updateLogList}/>
+              <UpdateLog setModalVisible={setVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
             </Dialog.Actions>
           </Dialog>
         </Portal>

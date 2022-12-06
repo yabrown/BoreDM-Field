@@ -137,8 +137,8 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-            <UpdateClassification setModalVisible={setVisible} classification={{log_id: classification.log_id, start_depth: startDepth, end_depth: endDepth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }}/>
             <DeleteClassification setModalVisible={setVisible} classification={classification} refreshClassifications={refreshClassifications}/>
+            <UpdateClassification setModalVisible={setVisible} classification={{log_id: classification.log_id, start_depth: startDepth, end_depth: endDepth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -176,7 +176,7 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
               console.error('Error:', error);
           }
         }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
+  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
 }
 
 // The component that deals with updating a Classification
