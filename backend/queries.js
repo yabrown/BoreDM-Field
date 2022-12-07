@@ -223,6 +223,12 @@ const reseed = (async () => {
     start_depth_1: 14,
     timing_1: "ATD",
   });
+  await Water.create({
+    log_id: log_1.id,
+    encounter_id: 2,
+    start_depth_1: 8,
+    timing_1: "ATD",
+  });
 })
 reseed()
 
