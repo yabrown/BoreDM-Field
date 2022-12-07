@@ -293,7 +293,7 @@ async function add_project(username, project_name, client_name, location, notes)
 //
 // written by: Ari
 async function add_classification(log_id, start_depth, end_depth, uscs, color, moisture, density, hardness) {
-  console.log(uscs)
+  console.log("Fetched classification")
   const new_class = await Classification.create({ log_id: log_id, start_depth: start_depth, end_depth: end_depth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness });
   return new_class.id;
 }
