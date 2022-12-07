@@ -126,7 +126,8 @@ const Log = ({ route, navigation }: Props) => {
     });
       if (fetched.ok) {
         const new_water_list = await fetched.json()
-        setWaterData(new_water_list)
+        console.log("New water list: " + new_water_list)
+        setWaterList(new_water_list)
       }
       else if (fetched.status === 401) {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -217,7 +218,7 @@ const Log = ({ route, navigation }: Props) => {
           <Box>
             <Title name={route.params.log.name}/>
           </Box>
-          <Box style={{minHeight: "75%" }}>
+          <Box style={{minHeight: "80%" }}>
             <Tab.Navigator
               initialRouteName="Projects"
               screenOptions={{
@@ -243,17 +244,11 @@ const Log = ({ route, navigation }: Props) => {
           </Box>
           <Box style={styles.containers}>
             <View style={[dataStyles.column, {flex: 3}]}>
-              <AddWaterModal water={waterList} refreshRemarks={refreshRemarks}/>
+              <AddWaterModal water={waterList} refreshWater={refreshWater}/>
             </View>
             <View style={[dataStyles.column, {flex: 3}]}>
-              <AddWaterModal water={waterList} refreshRemarks={refreshRemarks}/>
-            </View>
-          </Box>
-          <Spacer />
-          <Box style={{ justifyContent: "center" }}>
-            <Box style={{ margin: 4 }}>
               <EditLogModal log={currentLog} navigation={navigation} updateLogList={route.params.updateLogList}/>
-            </Box>
+            </View>
           </Box>
         </Flex>
     </View>
@@ -536,7 +531,7 @@ const EditLogModal = ({log, updateLogList, navigation}) => {
 
   return (
       <View>
-      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Log Metadata</PaperButton>
+      <PaperButton onPress={showDialog} style={{backgroundColor:"lightgrey"}} labelStyle={{fontSize: 18, color: "black" }}>Edit Log Metadata</PaperButton>
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
             <Dialog.Title>Edit Log Metadata</Dialog.Title>

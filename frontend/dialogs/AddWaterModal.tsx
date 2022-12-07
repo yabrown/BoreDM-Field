@@ -6,7 +6,7 @@ import { getToken } from "../utils/secureStore";
 import { LoginContext } from "../contexts/LoginContext";
 import { PORT } from '../env';
 
-const SubmitWater = ({ water, hideDialog, refreshRemarks }) => {
+const SubmitWater = ({ water, hideDialog, refreshWater }) => {
 
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
@@ -25,7 +25,7 @@ const SubmitWater = ({ water, hideDialog, refreshRemarks }) => {
           })
           console.log('status:', fetched.status);
           if (fetched.ok) {
-            refreshRemarks();
+            refreshWater();
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -37,7 +37,7 @@ const SubmitWater = ({ water, hideDialog, refreshRemarks }) => {
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
 }
 
-const UpdateWaterModal = ({ water, refreshRemarks }) => {
+const UpdateWaterModal = ({ water, refreshWater }) => {
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
@@ -45,9 +45,11 @@ const UpdateWaterModal = ({ water, refreshRemarks }) => {
   // Default water
   const [waterContent, setWaterContent] = useState(water);
 
+  console.log(waterContent)
+
   return (
     <View>
-      <PaperButton onPress={showDialog} style={{backgroundColor:"lightgrey"}} labelStyle={{fontSize: 18, color: "black",   }}>+ Water Encounter</PaperButton>
+      <PaperButton onPress={showDialog} style={{backgroundColor:"lightgrey"}} labelStyle={{fontSize: 18, color: "black",   }}>Record Water Encounters</PaperButton>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Record Water Encounters</Dialog.Title>
@@ -63,7 +65,7 @@ const UpdateWaterModal = ({ water, refreshRemarks }) => {
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-            <SubmitWater water={waterContent} hideDialog={hideDialog} refreshRemarks={refreshRemarks}/>
+            <SubmitWater water={waterContent} hideDialog={hideDialog} refreshWater={refreshWater}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
