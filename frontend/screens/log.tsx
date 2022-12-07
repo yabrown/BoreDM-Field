@@ -131,8 +131,8 @@ const Log = ({ route, navigation }: Props) => {
       }
       else if (fetched.status === 401) {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-      } 
-      
+      }
+
     } catch(error) {
         console.error(error)
     }
@@ -148,7 +148,7 @@ const Log = ({ route, navigation }: Props) => {
       shadowColor: 'black',
       shadowOffset: { width: 2, height: 2 },
       shadowOpacity: 0.2,
-      shadowRadius: 10,  
+      shadowRadius: 10,
       elevation: 4,
       backgroundColor: 'white',
       margin: '3%',
@@ -382,10 +382,12 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
 
     return bottom + bottom % 5 - 1;
 
-  let make_uscs_box = function (classification: classification) {    
+  }
+
+  let make_uscs_box = function (classification: classification) {
     const length = classification.end_depth - classification.start_depth;
-    const boxColor = uscs_colormap[classification.uscs]['box'];
-    const textColor = uscs_colormap[classification.uscs]['text'];
+    const boxColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['box'] : 'white';
+    const textColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['text'] : 'white';
     return <View key={uuid()} style={[styles.classification_box, {flex: length, backgroundColor: boxColor }]} ><Text style={{color: textColor}}>{classification.uscs}</Text></View>
   };
 
@@ -908,7 +910,7 @@ const styles = StyleSheet.create({
     shadowColor: 'black',
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 10,  
+    shadowRadius: 10,
     elevation: 4,
     backgroundColor: 'white',
     margin: '3%',
