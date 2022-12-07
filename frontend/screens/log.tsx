@@ -302,7 +302,6 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
       alignItems: 'center',
       justifyContent: 'center',
     },
-<<<<<<< HEAD
     sample_description_col: {
       flexDirection: 'column',
       paddingLeft: '1%',
@@ -312,8 +311,6 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
       alignItems: 'left',
       justifyContent: 'center',
     },
-=======
->>>>>>> cebd855c7d8c9e4ac9d2562f7225dc876c731bf2
   })
 
   const uscs_colormap = {
@@ -385,19 +382,10 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
 
     return bottom + bottom % 5 - 1;
 
-<<<<<<< HEAD
-  }
-
-  let make_uscs_box = function (classification: classification) {
-    const length = classification.end_depth - classification.start_depth;
-    const boxColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['box'] : 'white';
-    const textColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['text'] : 'white';
-=======
   let make_uscs_box = function (classification: classification) {    
     const length = classification.end_depth - classification.start_depth;
     const boxColor = uscs_colormap[classification.uscs]['box'];
     const textColor = uscs_colormap[classification.uscs]['text'];
->>>>>>> cebd855c7d8c9e4ac9d2562f7225dc876c731bf2
     return <View key={uuid()} style={[styles.classification_box, {flex: length, backgroundColor: boxColor }]} ><Text style={{color: textColor}}>{classification.uscs}</Text></View>
   };
 
