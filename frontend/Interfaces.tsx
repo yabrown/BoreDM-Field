@@ -72,19 +72,29 @@ interface project  {
   interface classification {
       log_id:         number
       start_depth:    number
-      end_depth:      number,
-      uscs:           string,
-      color:          string,
-      moisture:       string,
-      density:        string,
-      hardness:       string,
+      end_depth:      number
+      uscs:           string
+      color:          string
+      moisture:       string
+      density:        string
+      hardness:       string
     };
 
-    interface remark {
-      log_id:         number
-      start_depth:    number
-      notes:       string,
-    };
+  interface remark {
+    log_id:         number
+    start_depth:    number
+    notes:       string,
+  };
+
+  interface water {
+    log_id:         number
+    start_depth_1:  number
+    start_depth_2:  number
+    start_depth_3:  number
+    timing_1:       string
+    timing_2:       string
+    timing_3:       string
+  };
 
   type user = null | {
     name: string,

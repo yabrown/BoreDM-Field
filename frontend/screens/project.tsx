@@ -109,7 +109,7 @@ const Project = ({ navigation, route}: Props) => {
           <SelectLogList id={currProject.id} navigate={navigation} logsList={logsList} getLogs={getLogs}/>
           </Box>
           <Spacer />
-          <Box style={{ justifyContent: "center" }}>
+          <Box style={{ justifyContent: "center"}}>
             <Box style={{ margin: 4 }}>
               <AddLogModal project_id={currProject.id} getLogs={getLogs} getLatLon={getLatLon} setLat={setLat} setLon={setLon} lat={latitude} lon={longitude}/>
             </Box>
