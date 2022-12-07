@@ -73,6 +73,18 @@ const Remark = sequelize.define("Remark", {
 });
 
 // Written by: Louis
+const Water = sequelize.define("Water", {
+  log_id: DataTypes.INTEGER,
+  encounter_id: DataTypes.INTEGER,
+  start_depth_1: DataTypes.FLOAT,
+  start_depth_2: DataTypes.FLOAT,
+  start_depth_3: DataTypes.FLOAT,
+  timing_1: DataTypes.STRING,
+  timing_2: DataTypes.STRING,
+  timing_3: DataTypes.STRING,
+});
+
+// Written by: Louis
 const Coordinate = sequelize.define("Coordinate", {
   location_id: DataTypes.INTEGER,
   latitude: DataTypes.FLOAT,
@@ -193,7 +205,7 @@ const reseed = (async () => {
     log_id: log_2.id,
     start_depth: 22,
     notes: "Drill started shaking pretty hard",
-  })
+  });
   await Sample.create({
     log_id: log_2.id,
     start_depth: 10,
@@ -205,6 +217,12 @@ const reseed = (async () => {
     description: "Description of Sample 2",
     refusal_length: 4,
     sampler_type: "SPS"
+  });
+  await Water.create({
+    log_id: log_2.id,
+    encounter_id: 1,
+    start_depth_1: 14,
+    timing_1: "ATD",
   });
 })
 reseed()
@@ -486,6 +504,41 @@ async function get_all_remarks(log_id) {
 //   });
 //   return updated_log[1][0].id;
 
+async function get_all_water_encounters(log_id) {
+  const encounter_list = await Water.findAll({
+    where: {
+      log_id
+    }
+  });
+  return encounter_list;
+}
+
+// Shouldn't need this since each log has one and only one by default
+// async function add_water_encounter(log_id, encounter_count, start_depth, timing) {
+//   const new_encounter = await Remark.create({ log_id, encounter_count, start_depth, timing });
+//   return new_encounter.log_id;
+// }
+
+// updates water encounter associated with encounter_id
+async function update_water_encounter(encounter_id, start_depth_1, start_depth_2, start_depth_3, timing_1, timing_2, timing_3) {
+  const updated_encounter = await Water.update({ encounter_id, start_depth_1, start_depth_2, start_depth_3, timing_1, timing_2, timing_3 }, {
+    where: { id: encounter_id },
+    returning: true,
+    raw: true,
+  });
+  return updated_encounter[1][0].id;
+}
+
+// deletes encounter associated with encounter_id
+async function delete_encounter(encounter_id) {
+  const updated_encounter = await Water.destroy({
+    where: { id: encounter_id },
+    returning: true,
+    raw: true,
+  });
+  return;
+}
+
 
 // exports the functions in queries.js so they can be used in index.js (and potentially elsewhere)
 // written by: Max and Louis
@@ -514,5 +567,7 @@ module.exports = {
   register,
   add_remark,
   get_all_remarks,
-
+  get_all_water_encounters,
+  update_water_encounter,
+  delete_encounter,
 }
