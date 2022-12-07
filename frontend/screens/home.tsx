@@ -17,6 +17,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {SubmitProject} from "../backend-calls/SubmitButtons"
 import AddProjectModal from "../dialogs/AddProjectModal"
+import Map from "../models/Map"
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -30,52 +31,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 
 const Tab = createBottomTabNavigator();
-const Map = (logs, navigate, updateLogList) => {
-
-  return(
-    <View style={{
-      ...StyleSheet.absoluteFillObject,
-      height: '100%', // you can customize this
-      width: '100%',  // you can customize this
-      alignItems: "center"
-    }}>
-
-    <MapView style={{ ...StyleSheet.absoluteFillObject }}
-
-initialRegion={
-  {
-  latitude: logs[0] && logs[0].latitude,
-  longitude: logs[0] && logs[0].longitude,
-  latitudeDelta: 0.0922,
-  longitudeDelta: 0.0421,
-}   
-
-// initialRegion={
-      //   logs[0] ? {
-      //   latitude: logs[0] && logs[0].latitude,
-      //   longitude: logs[0] && logs[0].longitude,
-      //   latitudeDelta: 0.0922,
-      //   longitudeDelta: 0.0421,
-      // } : {}
-  }
-      // showsMyLocationButton={true}
-      provider = {PROVIDER_GOOGLE}
-      mapType = {"hybrid"}
-    >
-        {/* This is what shows up on the map-- a list of markers, each corresponding to a log, with it's key and coordinates*/}
-        {logs.map(log=>
-          (<Marker coordinate={{latitude: log.latitude,
-          longitude: log.longitude}} key={log.id}
-          // onPress={() => navigate.navigate('Log', {log, updateLogList})}
-          onPress={() => navigate.navigate('Log', {log })}
-          />))}
-
-      </MapView>
-      
-    </View>
-)
-}
-
 
 
 const Home = ({ navigation }: Props) => {
@@ -136,7 +91,7 @@ const Home = ({ navigation }: Props) => {
   // This only exists because for some reason I can't put Map(logs) directly in the component field of Tab.screen-- 
   // probably just some esoteric type issue
   const MapComponent = () => {
-    return Map(logs, navigation, getAllLogs)
+    return Map(logs, navigation)
   }
 
   useEffect(() => {
@@ -163,12 +118,6 @@ const Home = ({ navigation }: Props) => {
       <View>
           <Header/>
         </View>
-        {/* <View>
-          <Drawer.Navigator initialRouteName="Register2">
-            <Drawer.Screen name="Register2" component={RegisterScreen2} />
-            <Drawer.Screen name="Register3" component={RegisterScreen3} />
-          </Drawer.Navigator>
-        </View> */}
         <View style={{minHeight: "85%"}}>
           <Tab.Navigator
             initialRouteName="Project List"

@@ -26,9 +26,6 @@ const SelectLogList = ({ id, navigate, getLogs, logsList }) => {
   // useState is generic function, so can pass in the type
   //const [data, setData] = useState<void>()
 
-  useEffect(() => {
-      getLogs()
-  }, [])
 
   return(
       <View style={{marginTop: '4%'}}>
