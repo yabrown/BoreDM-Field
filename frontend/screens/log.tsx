@@ -123,16 +123,15 @@ const Log = ({ route, navigation }: Props) => {
             'Authorization': `Bearer ${token ? token : ''}`
         },
         body: JSON.stringify({log_id: route.params.log.id})
-    });
+    })
       if (fetched.ok) {
         const new_water_list = await fetched.json()
-        console.log("New water list: " + new_water_list)
         setWaterList(new_water_list)
       }
       else if (fetched.status === 401) {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
       }
-
+      else console.log(fetched.status)
     } catch(error) {
         console.error(error)
     }
