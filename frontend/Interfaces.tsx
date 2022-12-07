@@ -62,6 +62,7 @@ interface project  {
     Home: undefined;
     Project: { project: project, onUpdate};
     Log:     {log: log, updateLogList}
+    About: undefined;
   };
 
   type LoginStackParamList = {

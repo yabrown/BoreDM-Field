@@ -87,6 +87,7 @@ const Home = ({ navigation }: Props) => {
   //Important: the default log includes a coordinate set, w
   const [logs, setLogs] = useState<log[]>([]);
   // const insets = useSafeAreaInsets();
+  
 
   const getProjectsList: () => void = async () => {
     try {
@@ -176,9 +177,7 @@ const Home = ({ navigation }: Props) => {
                 let iconName;
     
                 if (route.name === 'Project List') {
-                  iconName = focused
-                    ? 'ios-information-circle'
-                    : 'ios-information-circle-outline';
+                  iconName = focused ? 'ios-list' : 'ios-list-outline';
                 } else if (route.name === 'Maps') {
                   iconName = focused ? 'ios-list' : 'ios-list-outline';
                 }
@@ -191,7 +190,7 @@ const Home = ({ navigation }: Props) => {
               lazy: true,
               tabBarScrollEnabled: false,
               tabBarStyle: { height: '10%' },
-              tabBarLabelStyle: { fontSize: 24 },
+              tabBarLabelStyle: { fontSize: (Dimensions.get('window').height * Dimensions.get('window').width) / 35000 },
             })}
             // screenOptions={{
             //   tabBarActiveTintColor: '#000000',
