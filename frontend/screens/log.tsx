@@ -427,7 +427,16 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
     console.log("Creating sample description box with length " + length)
     var text = ""
     if (sample.blows_1) {
-      text = sample.blows_1 + "-" + sample.blows_2 + "-" + sample.blows_3 + "-" + sample.blows_4;
+      text = sample.blows_1;
+    }
+    if (sample.blows_2) {
+      text = text + "-" + sample.blows_2;
+    }
+    if (sample.blows_3) {
+      text = text + "-" + sample.blows_3;
+    }
+    if (sample.blows_4) {
+      text = text + "-" + sample.blows_4;
     }
     console.log("text: " + text);
     return <View key={uuid()} style={[styles.sample_description_box, {flex: length}]} ><Text style={{color: "black"}}>{text}</Text></View>
@@ -688,11 +697,11 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
   return (
     <View style={{flexDirection: 'row', flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}}>
       <View style={[styles.ruler_col]}>
-        <Text style={{flex: 2}}></Text>
+        <Text></Text>
         {make_ruler_boxes(classifications_list)}
       </View>
       <View style={[styles.classification_col]}>
-        <Text style={{flex: 2}}></Text>
+        <Text style={{flex: 2, fontWeight: 'bold', textAlign: 'center'}}>USCS</Text>
         {make_uscs_boxes(classifications_list)}
       </View>
       <View style={[styles.description_col]}>
@@ -720,7 +729,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
         {make_sample_boxes(samples_list, get_final_depth(classifications_list))}
       </View>
       <View style={[styles.sample_description_col]}>
-        <Text style={{flex: 24, fontWeight: 'bold', textAlign: 'left'}}>Sampling</Text>
+        <Text style={{flex: 24, fontWeight: 'bold', textAlign: 'left'}}>Samples</Text>
         {make_sample_description_boxes(samples_list, get_final_depth(classifications_list))}
       </View>
     </View>
