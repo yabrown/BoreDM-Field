@@ -69,12 +69,13 @@ router.post('/delete_sample', (req, res) => {
   }
 })
 
-router.post('/add_boring_to_project', (req, res) => {
+router.post('/add_boring_to_project', async (req, res) => {
   console.log("matched correctly")
   try {
     console.log("add_boring_to_project: req.body: ", req.body);
-    db.create_log(req.body.project_id, req.body.name, req.body.driller, req.body.logger, req.body.notes, req.body.latitude, req.body.longitude);
-    res.status(200).send();
+    const log_id = await db.create_log(req.body.project_id, req.body.name, req.body.driller, req.body.logger, req.body.notes, req.body.latitude, req.body.longitude);
+    console.log("Log ID: " + log_id);
+    res.send(String(log_id));
   } catch (err) {
     if (isJwtError(err)) {
       res.status(401).send("JWT Error");

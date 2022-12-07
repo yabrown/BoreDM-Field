@@ -512,20 +512,20 @@ async function get_all_water_encounters(log_id) {
   return encounter_list;
 }
 
-// Shouldn't need this since each log has one and only one by default
-// async function add_water_encounter(log_id, encounter_count, start_depth, timing) {
-//   const new_encounter = await Remark.create({ log_id, encounter_count, start_depth, timing });
-//   return new_encounter.log_id;
-// }
+async function add_water_encounter(log_id) {
+  console.log(log_id)
+  const new_encounter = await Water.create({ log_id });
+  return new_encounter.log_id;
+}
 
 // updates water encounter associated with encounter_id
-async function update_water_encounter(encounter_id, start_depth_1, start_depth_2, start_depth_3, timing_1, timing_2, timing_3) {
-  const updated_encounter = await Water.update({ encounter_id, start_depth_1, start_depth_2, start_depth_3, timing_1, timing_2, timing_3 }, {
-    where: { id: encounter_id },
+async function update_water_encounter(log_id, start_depth_1, start_depth_2, start_depth_3, timing_1, timing_2, timing_3) {
+  const updated_encounter = await Water.update({ start_depth_1, start_depth_2, start_depth_3, timing_1, timing_2, timing_3 }, {
+    where: { log_id: log_id },
     returning: true,
     raw: true,
   });
-  return updated_encounter[1][0].id;
+  return;
 }
 
 // deletes encounter associated with encounter_id
@@ -569,4 +569,5 @@ module.exports = {
   get_all_water_encounters,
   update_water_encounter,
   delete_encounter,
+  add_water_encounter,
 }

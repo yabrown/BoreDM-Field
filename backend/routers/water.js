@@ -24,15 +24,15 @@ router.post('/get_all_water_encounters', async (req, res) => {
   }
 })
 
-// router.post('/add_water_encounter', (req, res) => {
-//   console.log(req.body)
-//   try {
-//     db.add_water_encounter(req.body.log_id, req.body.encounter_id, req.body.encounter_count, req.body.start_depth, req.body.encounter_timing)
-//     res.status(200).send("Water encounter added");
-//   } catch (err) {
-//     console.log(err);
-//   }
-// })
+router.post('/add_water_encounter', (req, res) => {
+  console.log(req.body)
+  try {
+    db.add_water_encounter(req.body.log_id)
+    res.status(200).send("Water encounter added");
+  } catch (err) {
+    console.log(err);
+  }
+})
 
 router.post('/delete_encounter', (req, res) => {
   try {
@@ -51,7 +51,7 @@ router.post('/delete_encounter', (req, res) => {
 
 router.post('/update_water_encounter', (req, res) => {
   try {
-    db.update_water_encounter(req.body.encounter_id, req.body.start_depth_1, req.body.start_depth_2, req.body.start_depth_3, req.body.timing_1, req.body.timing_2, req.body.timing_3)
+    db.update_water_encounter(req.body.log_id, req.body.start_depth_1, req.body.start_depth_2, req.body.start_depth_3, req.body.timing_1, req.body.timing_2, req.body.timing_3)
     res.status(200).send();
   } catch (err) {
     if (isJwtError(err)) {
