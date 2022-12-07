@@ -6,6 +6,8 @@ import { logout } from "../common/logout";
 import { LoginContext } from "../contexts/LoginContext";
 import { PORT } from '../env';
 import { getToken } from "../utils/secureStore";
+import { DeleteSample } from '../backend-calls/DeleteButtons';
+import { UpdateSample } from '../backend-calls/UpdateButtons';
 
 const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refreshSamples: () => Promise<void>}) => {
 
@@ -73,66 +75,8 @@ const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refresh
   );
 };
 
-// The component that deals with updating a Sample
-const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
 
-    const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
-    const onPress = async () => {
-        setModalVisible(false)
-        try {
-          let token = await getToken();
-          let fetched = await fetch(`${PORT}/update_sample`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-              },
-              body: JSON.stringify({sample_id: sample.id, start_depth: sample.start_depth, end_depth: sample.end_depth, length: sample.length, blows_1: sample.blows_1, blows_2: sample.blows_2, blows_3: sample.blows_3, blows_4: sample.blows_4, description: sample.description, refusal_length: sample.refusal_length, sampler_type: sample.sampler_type})
-          })
-          console.log("status:", fetched.status)
-
-          if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          }
-          }
-            catch(error) {
-                console.error('Error:', error);
-            }
-        refreshSamples();
-    }
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
-}
-
-// The component that deals with the adding a new project
-const DeleteSample = ({ sample, setModalVisible, refreshSamples }) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-  const onPress = async () => {
-      setModalVisible(false)
-      try {
-        const token = await getToken();
-          let fetched = await fetch(`${PORT}/delete_sample`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-              },
-              body: JSON.stringify({sample_id: sample.id})
-          })
-          console.log("status:", fetched.status)
-          if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          } 
-          refreshSamples()
-          
-      } catch(error) {
-            console.log("Problem")
-              console.error('Error:', error);
-          }
-  }
-  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
-}
 
 const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
 

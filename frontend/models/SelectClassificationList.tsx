@@ -7,7 +7,8 @@ import { logout } from "../common/logout";
 import { LoginContext } from "../contexts/LoginContext";
 import { PORT } from '../env';
 import { getToken, saveToken } from "../utils/secureStore";
-
+import { UpdateClassification } from "../backend-calls/UpdateButtons";
+import { DeleteClassification } from "../backend-calls/DeleteButtons";
 const SelectButton = ({ current, buttonOption, setFunction, color, highlightedColor="lightgrey" }) => (
   <View style={{ minWidth: 150, maxWidth: 150, margin: 5 }}>
     <Button
@@ -231,69 +232,7 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
   );
 };
 
-// The component that deals with the adding a new project
-const DeleteClassification = ({ classification, setModalVisible, refreshClassifications }) => {
 
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-  const onPress = async () => {
-
-      setModalVisible(false)
-      try {
-        const token = await getToken();
-        let fetched = await fetch(`${PORT}/delete_classification`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`,
-            },
-            body: JSON.stringify({classification_id: classification.id})
-        })
-
-        if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-
-        console.log("status:", fetched.status)
-        refreshClassifications()
-      }
-    }
-      catch(error) {
-            console.log("Problem")
-              console.error('Error:', error);
-          }
-        }
-  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
-}
-
-// The component that deals with updating a Classification
-const UpdateClassification = ( {classification, setModalVisible}) => {
-
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-    const onPress = async () => {
-        setModalVisible(false)
-        try {
-            const token = await getToken();
-            let fetched = await fetch(`${PORT}/update_classification`, {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token ? token : ''}`,
-                },
-                body: JSON.stringify({log_id: classification.log_id, start_depth: classification.start_depth, end_depth: classification.end_depth, uscs: classification.uscs, color: classification.color, moisture: classification.moisture, density: classification.density, hardness: classification.hardness })
-            })
-
-            if (fetched.status === 401) {
-              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-            }
-
-            console.log("status:", fetched.status)
-
-        } catch(error) {
-                console.error('Error:', error);
-            }
-    }
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
-}
 
 const SelectClassificationList = ({ id, classifications_list, refreshClassifications }) => {
 

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ScrollView, View } from "react-native";
 import { Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import SelectButton from "../dialogs/SelectButton";
-import SubmitClassification from "./SubmitClassification"
+import {SubmitClassification} from "../backend-calls/SubmitButtons"
 
 const AddClassificationModal = ({ log_id, refreshClassifications }) => {
   const [visible, setVisible] = React.useState(false);

@@ -11,6 +11,12 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { LoginContext } from "../contexts/LoginContext";
 import { getToken } from "../utils/secureStore";
 import { logout } from "../common/logout";
+import {SubmitLog} from "../backend-calls/SubmitButtons"
+import {DeleteProject} from "../backend-calls/DeleteButtons"
+import {UpdateProject} from "../backend-calls/UpdateButtons"
+import AddLogModal from "../dialogs/AddLogModal"
+import EditProjectModal from "../dialogs/EditProjectModal"
+
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
@@ -122,223 +128,11 @@ const Project = ({ navigation, route}: Props) => {
   );
 }
 
-// The button that deals with submitting a new Log
-const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-    let newLogID = -1;
-
-    const onPress = async () => {
-      setModalVisible(false)
-      try {
-        const token = await getToken();
-        const fetched = await fetch(`${PORT}/add_boring_to_project`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`
-            },
-            body: JSON.stringify({ ...log, project_id: log.project_id })
-        })
-        newLogID =  await fetched.json();
-        if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-        } 
-      } catch(error) {
-          console.error('Error:', error);
-      }
-      getLogs();
-      setLogText({ name: "", drilled: "", logged: "", notes: "" })
-
-      // set up water table
-      try {
-        const token = await getToken();
-        const fetched = await fetch(`${PORT}/add_water_encounter`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`
-            },
-            body: JSON.stringify({ log_id: newLogID })
-        })
-        console.log("Fetched status: " + fetched.status)
-        if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-        } 
-      } catch(error) {
-          console.error('Error:', error);
-      }
-    }
-
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
-  }
-
-// The component that deals with the adding a new project
-const UpdateProject = ({ project, setModalVisible, updateProject }) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-    const onPress = async () => {
-        setModalVisible(false)
-        try {
-          const token = await getToken();
-            let fetched = await fetch(`${PORT}/update_project`, {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token ? token : ''}`
-                },
-                body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
-            })
-            if (fetched.ok) updateProject();
-            else if (fetched.status === 401) {
-              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-            } 
-        } catch(error) {
-                console.error('Error:', error);
-            }
-    }
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
-  }
-
-  // The component that deals with the adding a new project
-const DeleteProject = ({ project, setModalVisible, navigation, updateProjectList }) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-  const onPress = async () => {
-      setModalVisible(false)
-      try {
-        const token = await getToken();
-          let fetched = await fetch(`${PORT}/delete_project`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-              },
-              body: JSON.stringify({project_id: project.id})
-          })
-          console.log("status:", fetched.status)
-          if (fetched.ok) {
-            updateProjectList()
-            navigation.navigate('Home')
-          }
-          else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          }
-            
-      } catch(error) {
-              console.error('Error:', error);
-          }
-  }
-  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
-}
-
-const Map = ({getLatLon, latitude, longitude, setLat, setLon}) => {
-  
-  getLatLon();
-
-  return(
-    <View style={{
-      ...StyleSheet.absoluteFillObject,
-      height: '100%', // you can customize this
-      width: '100%',  // you can customize this
-      alignItems: "center",
-      }}>
-
-      <MapView
-        style={{ ...StyleSheet.absoluteFillObject }}
-        initialRegion={{
-          latitude: latitude,
-          longitude: longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        showsMyLocationButton={true}
-        provider = {PROVIDER_GOOGLE}
-        mapType = {"hybrid"}
-      >
-        <Marker
-          coordinate={{latitude: latitude, longitude: longitude}}
-          draggable
-          onDragEnd={
-            (async (e) => {
-            setLat(e.nativeEvent.coordinate.latitude);
-            setLon(e.nativeEvent.coordinate.longitude);
-          })}
-        />
-      </MapView>
-    </View>
-)
-}
-
-const AddLogModal = ({ project_id, getLogs, getLatLon, lat, lon, setLat, setLon }) => {
-  const [visible, setVisible] = useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
-
-  const [logText, setLogText] = useState({ name: "", drilled: "", logged: "", notes: "" })
-
-  return (
-      <View>
-      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Log</PaperButton>
-        <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title style={{color: 'black'}}>New Log</Dialog.Title>
-            <Dialog.Content>
-              <View>
-                <TextInput value={logText.name} label="Log Name" mode="outlined" onChangeText={(text) => setLogText({...logText, name: text})} style={{ backgroundColor: 'white', marginBottom: 4}} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={logText.drilled} label="Drilled by" mode="outlined" onChangeText={(text) => setLogText({...logText, drilled: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={logText.logged} label="Logged by" mode="outlined" onChangeText={(text) => setLogText({...logText, logged: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={logText.notes} label="Notes" mode="outlined" onChangeText={(text) => setLogText({...logText, notes: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              </View>
-              <View style={{marginTop: "2%", minHeight: "50%"}}>
-                <Map getLatLon={getLatLon} latitude={lat} longitude={lon} setLat={setLat} setLon={setLon}></Map>
-              </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitLog setModalVisible={setVisible} getLogs={getLogs} log={{ project_id: project_id, name: logText.name, driller: logText.drilled, logger: logText.logged, notes: logText.notes, latitude: lat, longitude: lon }} setLogText={setLogText} />
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
-  );
-}
 
 
-const EditProjectModal = ({ project, updateProject, updateProjectList, navigation }) => {
-  const [visible, setVisible] = useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
 
-  const [textProject, setTextProject] = useState(project.name);
-  const [textClient, setTextClient] = useState(project.client);
-  const [textLocation, setTextLocation] = useState(project.location);
-  const [textNotes, setTextNotes] = useState(project.notes);
 
-  return (
-      <SafeAreaView>
-      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Project Metadata</PaperButton>
-        <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title style={{color: 'black'}}>Edit Project</Dialog.Title>
-            <Dialog.Content>
-              <View>
-                <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textClient} label="Client Name" mode="outlined" onChangeText={(text) => setTextClient(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textLocation} label="Location" mode="outlined" onChangeText={(text) => setTextLocation(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <DeleteProject setModalVisible={setVisible} project={{id: project.id}} navigation={navigation} updateProjectList={updateProjectList}/>
-              <UpdateProject setModalVisible={setVisible} updateProject={updateProject} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </SafeAreaView>
-  );
-}
+
 
 const showViews = 0
 //TODO: change this so that it only calulcates once, in the right place

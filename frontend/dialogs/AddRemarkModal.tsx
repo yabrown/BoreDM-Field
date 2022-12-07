@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { ScrollView, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
-import SubmitRemark from "./SubmitRemark"
+import {SubmitRemark} from "../backend-calls/SubmitButtons"
 
-const AddClassificationModal = ({ log_id, refreshRemarks }) => {
+const AddRemarkModal = ({ log_id, refreshRemarks }) => {
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
@@ -34,4 +34,4 @@ const AddClassificationModal = ({ log_id, refreshRemarks }) => {
   );
 }
 
-export default AddClassificationModal;
+export default AddRemarkModal;

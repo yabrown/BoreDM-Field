@@ -15,74 +15,19 @@ import { getToken } from "../utils/secureStore";
 import { useIsFocused } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import {SubmitProject} from "../backend-calls/SubmitButtons"
+import AddProjectModal from "../dialogs/AddProjectModal"
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-type SubmitProps = { project: { name: string, client: string, location: string, notes: string }, setvis: React.Dispatch<React.SetStateAction<boolean>>, onUpdate: () => void}
+
 
 // const Drawer = createDrawerNavigator();
 
-// The component that deals with the adding a new project
-const SubmitProject = ( { project, setvis, onUpdate } : SubmitProps ) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-  const onPress = async () => {
-    setvis(false)
-      try {
-        const token = await getToken();
-        const fetched = await fetch(`${PORT}/add_project`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`
-            },
-            body: JSON.stringify({project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
-        })
-        onUpdate();
-        console.log("status:", fetched.status)
 
-        if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-        } 
-        
-    } catch(error) {
-            console.error('Error:', error);
-        }
-  }
 
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
-}
 
-const AddProjectModal = ({ onUpdate }) => {
-  const [visible, setVisible] = useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
-
-  const [textFields, setTextFields] = useState({name: "", client: "", location: "", notes: ""});
-
-  return (
-      <View>
-      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Project</PaperButton>
-      <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title style={{color: 'black'}}>New Project</Dialog.Title>
-            <Dialog.Content>
-              <View>
-                <TextInput value={textFields.name} label={"Project Name"} mode={"outlined"} onChangeText={(projectText) => setTextFields({ ...textFields, name: projectText })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textFields.client} label="Client Name" mode="outlined" onChangeText={(clientText) => setTextFields({ ...textFields, client: clientText })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textFields.location} label="Location" mode="outlined" onChangeText={(textLocation) => setTextFields({ ...textFields, location: textLocation })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textFields.notes} label="Notes" mode="outlined" onChangeText={(notesText) => setTextFields({ ...textFields, notes: notesText })} style={styles.textInput} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitProject project={textFields} setvis={setVisible} onUpdate={onUpdate}/>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
-  );
-};
 
 const Tab = createBottomTabNavigator();
 const Map = (logs, navigate, updateLogList) => {

@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
+import { Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import { v4 as uuid } from 'uuid';
-import { logout } from "../common/logout";
-import { LoginContext } from "../contexts/LoginContext";
-import { PORT } from '../env';
-import { getToken, saveToken } from "../utils/secureStore";
+import {DeleteRemark} from "../backend-calls/DeleteButtons"
+import { UpdateRemark} from '../backend-calls/UpdateButtons';
 
 // const SelectButton = ({ current, buttonOption, setFunction, color, highlightedColor="lightgrey" }) => (  
 //   <View style={{ minWidth: 140, margin: 4 }}>
@@ -66,72 +64,6 @@ const SelectRemarkButton = ({ remark, refreshRemarks }) => {
   );
 };
 
-// The component that deals with the adding a new project
-const DeleteRemark = ({ remark, setModalVisible, refreshRemarks }) => {
-  
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-  const onPress = async () => {
-
-      setModalVisible(false)
-      try {
-        const token = await getToken();
-        let fetched = await fetch(`${PORT}/delete_remark`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`,
-            },
-            body: JSON.stringify({remark_id: remark.id})
-        })
-
-        if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          
-        console.log("status:", fetched.status)
-        refreshRemarks()
-      } 
-    }
-      catch(error) {
-            console.log("Problem")
-              console.error('Error:', error);
-          }
-        }
-  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
-}
-
-// The component that deals with updating a Classification
-const UpdateRemark = ( {remark, setModalVisible}) => {
-
-  console.log("Log id: " + remark.log_id + " startDepth: " + remark.startDepth + " Remark: " + remark.notes)
-
-
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-    const onPress = async () => {
-        setModalVisible(false)
-        try {
-            const token = await getToken();
-            const fetched = await fetch(`${PORT}/update_remark`, {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token ? token : ''}`,
-                },
-                body: JSON.stringify({remark_id: remark.remark_id, start_depth:remark.startDepth, notes: remark.notes })
-            })
-
-            if (fetched.status === 401) {
-              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-            }
-
-            console.log("status:", fetched.status)
-
-        } catch(error) {
-                console.error('Error:', error);
-            }
-    }
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
-}
 
 const SelectRemarksList = ({ id, remarks_list, refreshRemarks }) => {
 
