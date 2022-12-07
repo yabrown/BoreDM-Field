@@ -213,7 +213,6 @@ const reseed = (async () => {
     blows_1: 15,
     blows_2: 25,
     blows_3: 24,
-    blows_4: 50,
     description: "Description of Sample 2",
     refusal_length: 4,
     sampler_type: "SPS"
