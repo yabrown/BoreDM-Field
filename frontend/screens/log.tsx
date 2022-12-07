@@ -126,7 +126,7 @@ const Log = ({ route, navigation }: Props) => {
     })
       if (fetched.ok) {
         const new_water_list = await fetched.json()
-        setWaterList(new_water_list)
+        setWaterList(new_water_list[0])
       }
       else if (fetched.status === 401) {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -245,7 +245,7 @@ const Log = ({ route, navigation }: Props) => {
           </Box>
           <Box style={styles.containers}>
             <View style={[dataStyles.column, {flex: 3}]}>
-              <AddWaterModal water={waterList} refreshWater={refreshWater}/>
+              <AddWaterModal water={waterList} setWater={setWaterList} refreshWater={refreshWater}/>
             </View>
             <View style={[dataStyles.column, {flex: 3}]}>
               <EditLogModal log={currentLog} navigation={navigation} updateLogList={route.params.updateLogList}/>
