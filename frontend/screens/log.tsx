@@ -196,7 +196,7 @@ const Log = ({ route, navigation }: Props) => {
 
   const GraphicComponent = () =>{
     return(
-      <LogGraphic classifications_list={classificationsList} remarks_list={remarksList} samples_list={samplesList}></LogGraphic>
+      <LogGraphic classifications_list={classificationsList} remarks_list={remarksList} samples_list={samplesList} water_list={waterList}></LogGraphic>
     )
   }
 
@@ -255,7 +255,7 @@ const Log = ({ route, navigation }: Props) => {
   );
 }
 
-const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
+const LogGraphic = ({classifications_list, remarks_list, samples_list, water_list}) => {
 
   const styles = StyleSheet.create({
     classification_col: {
@@ -274,6 +274,14 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
     ruler_box: {
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
+    },
+    water_col: {
+      flexDirection: 'column',
+      flex: 1,
+    },
+    water_box: {
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     description_col: {
       flexDirection: 'column',
@@ -424,7 +432,6 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
 
   let make_sample_description_box = function (sample: sample) {
     const length = sample.length;
-    console.log("Creating sample description box with length " + length)
     var text = ""
     if (sample.blows_1) {
       text = sample.blows_1;
@@ -438,7 +445,6 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
     if (sample.blows_4) {
       text = text + "-" + sample.blows_4;
     }
-    console.log("text: " + text);
     return <View key={uuid()} style={[styles.sample_description_box, {flex: length}]} ><Text style={{color: "black"}}>{text}</Text></View>
   };
 
