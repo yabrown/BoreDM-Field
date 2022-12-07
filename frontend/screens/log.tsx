@@ -697,10 +697,9 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return sample_description_boxes
   }
 
-  let make_water_boxes = function (waters: water[], final_depth: int) {
-    if(waters.length == 0) return;
+  let make_water_boxes = function (waters: water, final_depth: int) {
 
-    let water = waters[0];
+    let water = waters;
 
     var water_depths = [];
 
