@@ -393,6 +393,22 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
 
   }
 
+  let make_water_box = function (code: number) {
+
+    if (code == 0){
+      return <View style={[styles.water_box, {flex: 1}]} key={uuid()} ><Text></Text></View>
+    }
+
+    if (code == 1) {
+      return <View style={[styles.water_box, {flex: 1}]} key={uuid()} ><Text>&#9660;</Text></View>
+    }
+
+    if (code == 2) {
+      return <View style={[styles.water_box, {flex: 1}]} key={uuid()} ><Text>&#9661;</Text></View>
+    }
+
+  };
+
   let make_uscs_box = function (classification: classification) {
     const length = classification.end_depth - classification.start_depth;
     const boxColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['box'] : 'white';
@@ -681,6 +697,49 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return sample_description_boxes
   }
 
+  let make_water_boxes = function (waters: water[], final_depth: int) {
+    if(waters.length == 0) return;
+
+    let water = waters[0];
+
+    var water_depths = [];
+
+    if (water.start_depth_1) {
+      water_depths.splice(0, 0, water.start_depth_1);
+    }
+
+    if (water.start_depth_2) {
+      water_depths.splice(1, 0, water.start_depth_2);
+    }
+
+    if (water.start_depth_3) {
+      water_depths.splice(1, 0, water.start_depth_3);
+    }
+
+    if (water_depths.length == 0) return
+
+    var graphics = [];
+
+    var encounter_counter = 1;
+
+    for (let i = 0; i < final_depth; i++) {
+      if (water_depths.indexOf(i) >= 0) {
+        graphics.splice(i-1, 0, encounter_counter);
+        encounter_counter++;
+      }
+      else {
+        graphics.splice(i, 0, 0)
+      }
+    }
+
+    const water_boxes = graphics.map((depth) =>
+      make_water_box(depth)
+    );
+
+    return water_boxes;
+
+  }
+
   let make_ruler_boxes = function (classifications: classification[]) {
     if(classifications.length == 0) return;
 
@@ -695,7 +754,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     }
 
     const ruler_boxes = depths.map((depth) =>
-      <View style={[styles.ruler_box, {flex: 1}]} key={uuid()} ><Text>{depth}'</Text></View>
+      <View style={[styles.ruler_box, {flex: 5}]} key={uuid()} ><Text>{depth}'</Text></View>
     );
 
     return ruler_boxes
@@ -704,15 +763,19 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
   return (
     <View style={{flexDirection: 'row', flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}}>
       <View style={[styles.ruler_col]}>
-        <Text></Text>
+        <Text style={{flex: 1}}></Text>
         {make_ruler_boxes(classifications_list)}
       </View>
+      <View style={[styles.water_col]}>
+        <Text style={{flex: 1}}></Text>
+        {make_water_boxes(water_list, get_final_depth(classifications_list))}
+      </View>
       <View style={[styles.classification_col]}>
-        <Text style={{flex: 2, fontWeight: 'bold', textAlign: 'center'}}>USCS</Text>
+        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>USCS</Text>
         {make_uscs_boxes(classifications_list)}
       </View>
       <View style={[styles.description_col]}>
-        <Text style={{flex: 2, fontWeight: 'bold', textAlign: 'left'}}>Visual Classification</Text>
+        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'left'}}>Visual Classification</Text>
         {make_description_boxes(classifications_list)}
       </View>
       <View
@@ -722,7 +785,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
         }}
       />
       <View style={[styles.remarks_col]}>
-        <Text style={{flex: 2, fontWeight: 'bold', textAlign: 'center'}}>Remarks</Text>
+        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>Remarks</Text>
         {make_remark_boxes(remarks_list, get_final_depth(classifications_list))}
       </View>
       <View
@@ -732,11 +795,11 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
         }}
       />
       <View style={[styles.samples_col]}>
-        <Text style={{flex: 24}}></Text>
+        <Text style={{flex: 12}}></Text>
         {make_sample_boxes(samples_list, get_final_depth(classifications_list))}
       </View>
       <View style={[styles.sample_description_col]}>
-        <Text style={{flex: 24, fontWeight: 'bold', textAlign: 'left'}}>Samples</Text>
+        <Text style={{flex: 12, fontWeight: 'bold', textAlign: 'left'}}>Samples</Text>
         {make_sample_description_boxes(samples_list, get_final_depth(classifications_list))}
       </View>
     </View>
