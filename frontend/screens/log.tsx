@@ -58,8 +58,8 @@ const Log = ({ route, navigation }: Props) => {
       }
       else if (fetched.status === 401) {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-      } 
-      
+      }
+
     } catch(error) {
         console.error(error)
     }
@@ -82,8 +82,8 @@ const Log = ({ route, navigation }: Props) => {
       }
       else if (fetched.status === 401) {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-      } 
-      
+      }
+
     } catch(error) {
         console.error(error)
     }
@@ -106,8 +106,8 @@ const Log = ({ route, navigation }: Props) => {
       }
       else if (fetched.status === 401) {
         if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-      } 
-      
+      }
+
     } catch(error) {
         console.error(error)
     }
@@ -196,7 +196,7 @@ const Log = ({ route, navigation }: Props) => {
 
   const GraphicComponent = () =>{
     return(
-      <LogGraphic classifications_list={classificationsList}></LogGraphic>
+      <LogGraphic classifications_list={classificationsList} remarks_list={remarksList} samples_list={samplesList}></LogGraphic>
     )
   }
 
@@ -232,7 +232,7 @@ const Log = ({ route, navigation }: Props) => {
             >
               <Tab.Screen
                 name="Data"
-                component = {DataComponent} 
+                component = {DataComponent}
                 options={{ tabBarLabel: 'Data' }}
               />
               <Tab.Screen
@@ -255,24 +255,60 @@ const Log = ({ route, navigation }: Props) => {
   );
 }
 
-const LogGraphic = ({classifications_list}) => {
+const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
 
   const styles = StyleSheet.create({
     classification_col: {
       flexDirection: 'column',
-      maxWidth: '15%',
-      flex: 1,
+      flex: 2,
+    },
+    classification_box: {
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     ruler_col: {
       flexDirection: 'column',
       maxWidth: '5%',
+      flex: 2,
     },
     ruler_box: {
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
     },
-    classification_box: {
+    description_col: {
+      flexDirection: 'column',
+      paddingLeft: '3%',
+      flex: 6,
+    },
+    description_box: {
+      alignItems: 'left',
+      justifyContent: 'center',
+    },
+    remarks_col: {
+      flexDirection: 'column',
+      paddingLeft: '3%',
+      flex: 4,
+    },
+    remark_box: {
+      alignItems: 'left',
+      justifyContent: 'top',
+    },
+    samples_col: {
+      flexDirection: 'column',
+      paddingLeft: '3%',
+      flex: 1,
+    },
+    sample_box: {
       alignItems: 'center',
+      justifyContent: 'center',
+    },
+    sample_description_col: {
+      flexDirection: 'column',
+      paddingLeft: '1%',
+      flex: 3,
+    },
+    sample_description_box: {
+      alignItems: 'left',
       justifyContent: 'center',
     },
   })
@@ -306,6 +342,45 @@ const LogGraphic = ({classifications_list}) => {
     'PT': { box: '#000000', text: 'white'},
   }
 
+  // takes info from classification to generate text for description box
+  function generate_description (classification: classification) {
+    var output  = "";
+
+    if (classification.color) {
+      output = output + classification.color + ", ";
+    }
+
+    if (classification.moisture) {
+      output = output + classification.moisture + ", ";
+    }
+
+    if (classification.density) {
+      output = output + classification.density + ", ";
+    }
+
+    if (classification.hardness) {
+      output = output + classification.hardness + " ";
+    }
+
+    return output;
+
+  }
+
+  function grammar (text: String) {
+    var output = text;
+    output = output.toLowerCase();
+    output = output.charAt(0).toUpperCase() + output.slice(1);
+
+    return output;
+  }
+
+  function get_final_depth (classifications: classification[]) {
+    if(classifications.length == 0) return;
+
+    classifications.sort(compareDepths);
+    const bottom = classifications[classifications.length - 1].end_depth;
+
+    return bottom + bottom % 5 - 1;
 
   let make_uscs_box = function (classification: classification) {    
     const length = classification.end_depth - classification.start_depth;
@@ -314,15 +389,65 @@ const LogGraphic = ({classifications_list}) => {
     return <View key={uuid()} style={[styles.classification_box, {flex: length, backgroundColor: boxColor }]} ><Text style={{color: textColor}}>{classification.uscs}</Text></View>
   };
 
+  let make_description_box = function (classification: classification) {
+    const length = classification.end_depth - classification.start_depth;
+    var description = generate_description(classification)
+    description = grammar(description)
+    if (classification.uscs) {
+      description = classification.uscs + ": " + description;
+    }
+    return <View key={uuid()} style={[styles.description_box, {flex: length}]} ><Text>{description}</Text></View>
+  };
+
+  let make_remark_box = function (remark: remark) {
+    const length = 1;
+    var text  = ""
+    if (remark.notes) {
+      text = remark.notes + " @" + remark.start_depth + "'";
+    }
+    return <View key={uuid()} style={[styles.description_box, {flex: length}]} ><Text>{text}</Text></View>
+  };
+
+  let make_sample_box = function (sample: sample) {
+    const length = sample.length;
+    var color = ""
+    if (sample.blows_1) {
+      color = "black";
+    }
+    else {
+      color = "white";
+    }
+    return <View key={uuid()} style={[styles.sample_box, {flex: length, backgroundColor: color }]} ><Text></Text></View>
+  };
+
+  let make_sample_description_box = function (sample: sample) {
+    const length = sample.length;
+    console.log("Creating sample description box with length " + length)
+    var text = ""
+    if (sample.blows_1) {
+      text = sample.blows_1 + "-" + sample.blows_2 + "-" + sample.blows_3 + "-" + sample.blows_4;
+    }
+    console.log("text: " + text);
+    return <View key={uuid()} style={[styles.sample_description_box, {flex: length}]} ><Text style={{color: "black"}}>{text}</Text></View>
+  };
+
   function compareDepths(classification_a: classification, classification_b: classification) {
     return classification_a.start_depth - classification_b.start_depth;
+  }
+
+  function compareRemarkDepths(remark_a: remark, remark_b: remark) {
+    return remark_a.start_depth - remark_b.start_depth;
+  }
+
+  function compareSampleDepths(sample_a: sample, sample_b: sample) {
+    return sample_a.start_depth - sample_b.start_depth;
   }
 
   let make_uscs_boxes = function (classifications: classification[]) {
     if(classifications.length == 0) return <Text>No Data</Text>;
 
-    const classificationsCopy  = [...classifications]; 
-    
+    const classificationsCopy  = [...classifications];
+
     classificationsCopy.sort(compareDepths);
 
     for(let i = 0; i < classificationsCopy.length; i++) {
@@ -358,6 +483,186 @@ const LogGraphic = ({classifications_list}) => {
     return uscs_boxes
   }
 
+  let make_description_boxes = function (classifications: classification[]) {
+    if(classifications.length == 0) return <Text>No Data</Text>;
+
+    const classificationsCopy  = [...classifications];
+
+    classificationsCopy.sort(compareDepths);
+
+    for(let i = 0; i < classificationsCopy.length; i++) {
+      let classification = classificationsCopy[i];
+
+      if(i == 0) {
+        // insert blank box when first classification starts deeper than 0'
+        if(classification.start_depth != 0) {
+          let emptyClassification = {"color": "", "createdAt": "", "density": "", "end_depth": classification.start_depth, "hardness": "", "id": 3, "log_id": 2, "moisture": "", "start_depth": 0, "updatedAt": "2022-11-30T07:32:13.127Z", "uscs": ""}
+          classificationsCopy.splice(0, 0, emptyClassification);
+        }
+      }
+      // insert blank box when there's a gap between this classification and the next one
+      if(i < classificationsCopy.length - 1) {
+        if(classification.end_depth < classificationsCopy[i+1].start_depth) {
+          let emptyClassification = {"color": "", "createdAt": "", "density": "", "end_depth": classificationsCopy[i+1].start_depth, "hardness": "", "id": 3, "log_id": 2, "moisture": "", "start_depth": classification.end_depth, "updatedAt": "2022-11-30T07:32:13.127Z", "uscs": ""}
+          classificationsCopy.splice(i+1, 0, emptyClassification);
+        }
+      }
+    }
+
+    // insert blank box at end to make final depth a multiple of 5
+    let bottom = classificationsCopy[classificationsCopy.length - 1].end_depth;
+    if(bottom % 5 != 0) {
+      let diff = 5 - bottom % 5
+      let emptyClassification = {"color": "", "createdAt": "", "density": "", "end_depth": bottom + diff, "hardness": "", "id": 3, "log_id": 2, "moisture": "", "start_depth": bottom, "updatedAt": "2022-11-30T07:32:13.127Z", "uscs": ""}
+      classificationsCopy.splice(classificationsCopy.length, 0, emptyClassification);
+    }
+
+    const description_boxes = classificationsCopy.map((classification) =>
+      make_description_box(classification)
+    );
+
+    return description_boxes
+  }
+
+  let make_remark_boxes = function (remarks: remark[], final_depth: int) {
+    if(remarks.length == 0) return <Text>No Data</Text>;
+
+    const remarksCopy  = [...remarks];
+
+    remarksCopy.sort(compareRemarkDepths);
+
+    for(let i = 0; i < remarksCopy.length; i++) {
+      let remark = remarksCopy[i];
+
+      if(i == 0) {
+        // insert blank box when first classification starts deeper than 0'
+        if(remark.start_depth != 0) {
+          for (let j = 0; j < remark.start_depth; j++){
+            let emptyRemark = {"remark_id": 1, "log_id": 2, "start_depth": j, "notes": ""}
+            remarksCopy.splice(j, 0, emptyRemark);
+          }
+        }
+      }
+      // insert blank box when there's a gap between this classification and the next one
+      if(i < remarksCopy.length - 1) {
+        if((remark.start_depth + 1) < remarksCopy[i+1].start_depth) {
+          for (let j = remark.start_depth + 1; j < remarksCopy[i+1].start_depth; j++) {
+            let emptyRemark = {"remark_id": 1, "log_id": 2, "start_depth": j, "notes": ""}
+            remarksCopy.splice(j, 0, emptyRemark);
+          }
+        }
+      }
+    }
+
+    // insert blank box at end to make final depth a multiple of 5
+    let bottom = remarksCopy[remarksCopy.length - 1].start_depth + 1;
+    if(bottom < final_depth) {
+      for (let j = bottom; j < final_depth; j++) {
+        let emptyRemark = {"remark_id": 1, "log_id": 2, "start_depth": j, "notes": ""}
+        remarksCopy.splice(j, 0, emptyRemark);
+      }
+    }
+
+    const remark_boxes = remarksCopy.map((remark) =>
+      make_remark_box(remark)
+    );
+
+    return remark_boxes
+  }
+
+  let make_sample_boxes = function (samples: sample[], final_depth: int) {
+    if(samples.length == 0) return <Text>No Data</Text>;
+
+    const samplesCopy  = [...samples];
+
+    samplesCopy.sort(compareSampleDepths);
+
+    for(let i = 0; i < samplesCopy.length; i++) {
+      let sample = samplesCopy[i];
+
+      if(i == 0) {
+        // insert blank box when first classification starts deeper than 0'
+        if(sample.start_depth != 0) {
+          let emptySample = {"id": "", "log_id": "", "start_depth": 0, "length": sample.start_depth * 12, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
+          samplesCopy.splice(0, 0, emptySample);
+        }
+      }
+      // insert blank box when there's a gap between this classification and the next one
+      if(i < samplesCopy.length - 1) {
+        if((sample.start_depth + (sample.length / 12)) < samplesCopy[i+1].start_depth) {
+          var distance = samplesCopy[i+1].start_depth * 12;
+          distance = distance - (sample.start_depth * 12);
+          distance = distance - sample.length;
+          let emptySample = {"id": "", "log_id": "", "start_depth": sample.start_depth + (sample.length/12), "length": distance, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
+          samplesCopy.splice(i+1, 0, emptySample);
+        }
+      }
+    }
+
+    // insert blank box at end to make final depth a multiple of 5
+    let bottom = (samplesCopy[samplesCopy.length - 1].start_depth * 12) + samplesCopy[samplesCopy.length - 1].length;
+    if(bottom < final_depth * 12) {
+      var distance = final_depth * 12;
+      distance = distance - samplesCopy[samplesCopy.length - 1].start_depth * 12;
+      distance = distance - samplesCopy[samplesCopy.length - 1].length;
+
+      let emptySample = {"id": "", "log_id": "", "start_depth": bottom / 12 + (samplesCopy[samplesCopy.length - 1].length/12), "length": distance, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
+      samplesCopy.splice(samplesCopy.length, 0, emptySample);
+    }
+
+    const sample_boxes = samplesCopy.map((sample) =>
+      make_sample_box(sample)
+    );
+
+    return sample_boxes
+  }
+
+  let make_sample_description_boxes = function (samples: sample[], final_depth: int) {
+    if(samples.length == 0) return <Text>No Data</Text>;
+
+    const samplesCopy  = [...samples];
+
+    samplesCopy.sort(compareSampleDepths);
+
+    for(let i = 0; i < samplesCopy.length; i++) {
+      let sample = samplesCopy[i];
+
+      if(i == 0) {
+        // insert blank box when first classification starts deeper than 0'
+        if(sample.start_depth != 0) {
+          let emptySample = {"id": "", "log_id": "", "start_depth": 0, "length": sample.start_depth * 12, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
+          samplesCopy.splice(0, 0, emptySample);
+        }
+      }
+      // insert blank box when there's a gap between this classification and the next one
+      if(i < samplesCopy.length - 1) {
+        if((sample.start_depth + (sample.length / 12)) < samplesCopy[i+1].start_depth) {
+          var distance = samplesCopy[i+1].start_depth * 12;
+          distance = distance - (sample.start_depth * 12);
+          distance = distance - sample.length;
+          let emptySample = {"id": "", "log_id": "", "start_depth": sample.start_depth + (sample.length/12), "length": distance, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
+          samplesCopy.splice(i+1, 0, emptySample);
+        }
+      }
+    }
+
+    // insert blank box at end to make final depth a multiple of 5
+    let bottom = (samplesCopy[samplesCopy.length - 1].start_depth * 12) + samplesCopy[samplesCopy.length - 1].length;
+    if(bottom < final_depth * 12) {
+      var distance = final_depth * 12;
+      distance = distance - samplesCopy[samplesCopy.length - 1].start_depth * 12;
+      distance = distance - samplesCopy[samplesCopy.length - 1].length;
+      let emptySample = {"id": "", "log_id": "", "start_depth": bottom / 12 + (samplesCopy[samplesCopy.length - 1].length/12), "length": distance, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
+      samplesCopy.splice(samplesCopy.length, 0, emptySample);
+    }
+
+    const sample_description_boxes = samplesCopy.map((sample) =>
+      make_sample_description_box(sample)
+    );
+
+    return sample_description_boxes
+  }
+
   let make_ruler_boxes = function (classifications: classification[]) {
     if(classifications.length == 0) return;
 
@@ -370,7 +675,7 @@ const LogGraphic = ({classifications_list}) => {
     for (var i = 0; i < depths.length; i++) {
       depths[i] = i * 5;
     }
-    
+
     const ruler_boxes = depths.map((depth) =>
       <View style={[styles.ruler_box, {flex: 1}]} key={uuid()} ><Text>{depth}'</Text></View>
     );
@@ -380,11 +685,41 @@ const LogGraphic = ({classifications_list}) => {
 
   return (
     <View style={{flexDirection: 'row', flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}}>
-      <View style={[styles.ruler_col, {flex: 1}]}>
+      <View style={[styles.ruler_col]}>
+        <Text style={{flex: 2}}></Text>
         {make_ruler_boxes(classifications_list)}
       </View>
-      <View style={[styles.classification_col, {flex: 1}]}>
+      <View style={[styles.classification_col]}>
+        <Text style={{flex: 2}}></Text>
         {make_uscs_boxes(classifications_list)}
+      </View>
+      <View style={[styles.description_col]}>
+        <Text style={{flex: 2, fontWeight: 'bold', textAlign: 'left'}}>Visual Classification</Text>
+        {make_description_boxes(classifications_list)}
+      </View>
+      <View
+        style = {{
+          borderLeftColor: 'black',
+          borderLeftWidth: StyleSheet.hairlineWidth,
+        }}
+      />
+      <View style={[styles.remarks_col]}>
+        <Text style={{flex: 2, fontWeight: 'bold', textAlign: 'center'}}>Remarks</Text>
+        {make_remark_boxes(remarks_list, get_final_depth(classifications_list))}
+      </View>
+      <View
+        style = {{
+          borderLeftColor: 'black',
+          borderLeftWidth: StyleSheet.hairlineWidth,
+        }}
+      />
+      <View style={[styles.samples_col]}>
+        <Text style={{flex: 24}}></Text>
+        {make_sample_boxes(samples_list, get_final_depth(classifications_list))}
+      </View>
+      <View style={[styles.sample_description_col]}>
+        <Text style={{flex: 24, fontWeight: 'bold', textAlign: 'left'}}>Sampling</Text>
+        {make_sample_description_boxes(samples_list, get_final_depth(classifications_list))}
       </View>
     </View>
   )
@@ -413,7 +748,7 @@ const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           }
-          
+
       } catch(error) {
               console.error('Error:', error);
           }
@@ -508,7 +843,7 @@ const UpdateLog = ( {log, setModalVisible}) => {
               body: JSON.stringify({log_id: log.id, log_name: log.name, driller: log.driller, logger: log.logger, notes: log.notes})
           })
           console.log("status:", fetched.status)
-          
+
           if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           }

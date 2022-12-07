@@ -203,7 +203,7 @@ const reseed = (async () => {
   });
   await Remark.create({
     log_id: log_2.id,
-    start_depth: 22,
+    start_depth: 12,
     notes: "Drill started shaking pretty hard",
   });
   await Sample.create({
@@ -291,7 +291,7 @@ async function add_project(username, project_name, client_name, location, notes)
   return new_proj.id;
 }
 
-// 
+//
 // written by: Ari
 async function add_classification(log_id, start_depth, end_depth, uscs, color, moisture, density, hardness) {
   console.log(uscs)
