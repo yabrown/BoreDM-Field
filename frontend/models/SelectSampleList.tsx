@@ -68,7 +68,7 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
 
           if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          } 
+          }
           }
             catch(error) {
                 console.error('Error:', error);
@@ -114,14 +114,15 @@ const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
   //const [data, setData] = useState<void>()
 
   return(
-    <View>
+    <View style={{height: "90%"}}>
       <Text style={{marginLeft: '6%', fontSize: 24, fontWeight: '500'}}>Samples</Text>
-      <ScrollView style={styles.scrollView}>
-          {samplesList.map(sample => (
-              <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>
-          ))}
-      </ScrollView>
+        <ScrollView style={styles.scrollView}>
+            {samplesList.map(sample => (
+                <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>
+            ))}
+        </ScrollView>
     </View>
+   
   )
 }
 
