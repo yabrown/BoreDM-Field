@@ -126,27 +126,48 @@ const Project = ({ navigation, route}: Props) => {
 const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
+    let newLogID = -1;
+
     const onPress = async () => {
-        setModalVisible(false)
-        try {
-          const token = await getToken();
-          const fetched = await fetch(`${PORT}/add_boring_to_project`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-              },
-              body: JSON.stringify({ ...log, project_id: log.project_id })
-          })
-          console.log(fetched.status)
-          if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          } 
+      setModalVisible(false)
+      try {
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/add_boring_to_project`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({ ...log, project_id: log.project_id })
+        })
+        newLogID =  await fetched.json();
+        if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        } 
       } catch(error) {
-              console.error('Error:', error);
-          }
-        getLogs();
-        setLogText({ name: "", drilled: "", logged: "", notes: "" })
+          console.error('Error:', error);
+      }
+      getLogs();
+      setLogText({ name: "", drilled: "", logged: "", notes: "" })
+
+      // set up water table
+      try {
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/add_water_encounter`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({ log_id: newLogID })
+        })
+        console.log("Fetched status: " + fetched.status)
+        if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        } 
+      } catch(error) {
+          console.error('Error:', error);
+      }
     }
 
     return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
