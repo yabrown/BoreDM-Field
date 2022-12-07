@@ -42,8 +42,6 @@ const UpdateWaterModal = ({ water, setWater, refreshWater }) => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  console.log("Water: " + water)
-
   return (
     <View>
       <PaperButton onPress={showDialog} style={{backgroundColor:"lightgrey"}} labelStyle={{fontSize: 18, color: "black",   }}>Record Water Encounters</PaperButton>
