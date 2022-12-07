@@ -1,7 +1,7 @@
 import { HStack, Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useContext, useState, useEffect } from 'react';
-import { ScrollView, Dimensions, StyleSheet, Text, View, SafeAreaView } from "react-native";
+import { ScrollView, Dimensions, StyleSheet, Text, View } from "react-native";
 import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import Header from '../common/header';
 import SelectClassificationList from '../models/SelectClassificationList';
@@ -9,6 +9,7 @@ import SelectSampleList from '../models/SelectSampleList';
 import SelectRemarkList from '../models/SelectRemarkList';
 import AddClassificationModal from "../dialogs/AddClassificationModal";
 import AddRemarkModal from "../dialogs/AddRemarkModal";
+import AddWaterModal from "../dialogs/AddWaterModal";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { PORT } from '../env';
 import { getToken } from "../utils/secureStore";
@@ -37,7 +38,7 @@ const Log = ({ route, navigation }: Props) => {
   const [samplesList, setSamplesList] = useState<sample[]>([])
   const [classificationsList, setClassificationsList] = useState<classification[]>([])
   const [remarksList, setRemarksList] = useState<remark[]>([])
-
+  const [waterList, setWaterList] = useState<water[]>([])
 
   const refreshSamples: () => void = async () => {
 
@@ -112,6 +113,31 @@ const Log = ({ route, navigation }: Props) => {
     }
   }
 
+  const refreshWater: () => void = async () => {
+    try{
+      const token = await getToken();
+      const fetched = await fetch(`${PORT}/get_all_water_encounters`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token ? token : ''}`
+        },
+        body: JSON.stringify({log_id: route.params.log.id})
+    });
+      if (fetched.ok) {
+        const new_water_list = await fetched.json()
+        console.log("New water list: " + new_water_list)
+        setWaterList(new_water_list)
+      }
+      else if (fetched.status === 401) {
+        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+      } 
+      
+    } catch(error) {
+        console.error(error)
+    }
+  }
+
   const dataStyles = StyleSheet.create({
     container: {
       // backgroundColor: "#7CA1B4",
@@ -119,14 +145,24 @@ const Log = ({ route, navigation }: Props) => {
       alignItems: "flex-start", // ignore this - we'll come back to it
       justifyContent: "center", // ignore this - we'll come back to it
       flexDirection: "row",
+      shadowColor: 'black',
+      shadowOffset: { width: 2, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 10,  
+      elevation: 4,
+      backgroundColor: 'white',
+      margin: '3%',
+      marginBottom: '1%',
+      padding: '1%',
+      borderRadius: 10,
     },
     column: {
       // backgroundColor: "#7cb48f",
       flex: 1,
       margin: '1%',
       padding: '1%',
-      borderColor: 'black',
-      borderWidth: 1,
+      // borderColor: 'black',
+      // borderWidth: 1,
     },
   });
 
@@ -170,10 +206,11 @@ const Log = ({ route, navigation }: Props) => {
     refreshSamples();
     refreshClassifications();
     refreshRemarks();
+    refreshWater();
   }, [])
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
         <Flex fill flex-grow style={{ width:"100%" }}>
           <Box>
             <Header/>
@@ -205,14 +242,16 @@ const Log = ({ route, navigation }: Props) => {
               />
             </Tab.Navigator>
           </Box>
-          <Spacer />
-          <Box style={{ justifyContent: "center" }}>
-            <Box style={{ margin: 4 }}>
+          <Box style={styles.containers}>
+            <View style={[dataStyles.column, {flex: 3}]}>
+              <AddWaterModal water={waterList} refreshWater={refreshWater}/>
+            </View>
+            <View style={[dataStyles.column, {flex: 3}]}>
               <EditLogModal log={currentLog} navigation={navigation} updateLogList={route.params.updateLogList}/>
-            </Box>
+            </View>
           </Box>
         </Flex>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -263,6 +302,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
       alignItems: 'center',
       justifyContent: 'center',
     },
+<<<<<<< HEAD
     sample_description_col: {
       flexDirection: 'column',
       paddingLeft: '1%',
@@ -272,6 +312,8 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
       alignItems: 'left',
       justifyContent: 'center',
     },
+=======
+>>>>>>> cebd855c7d8c9e4ac9d2562f7225dc876c731bf2
   })
 
   const uscs_colormap = {
@@ -343,12 +385,19 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list}) => {
 
     return bottom + bottom % 5 - 1;
 
+<<<<<<< HEAD
   }
 
   let make_uscs_box = function (classification: classification) {
     const length = classification.end_depth - classification.start_depth;
     const boxColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['box'] : 'white';
     const textColor = uscs_colormap[classification.uscs] ? uscs_colormap[classification.uscs]['text'] : 'white';
+=======
+  let make_uscs_box = function (classification: classification) {    
+    const length = classification.end_depth - classification.start_depth;
+    const boxColor = uscs_colormap[classification.uscs]['box'];
+    const textColor = uscs_colormap[classification.uscs]['text'];
+>>>>>>> cebd855c7d8c9e4ac9d2562f7225dc876c731bf2
     return <View key={uuid()} style={[styles.classification_box, {flex: length, backgroundColor: boxColor }]} ><Text style={{color: textColor}}>{classification.uscs}</Text></View>
   };
 
@@ -829,11 +878,11 @@ const EditLogModal = ({log, updateLogList, navigation}) => {
 
   return (
       <View>
-      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Log Metadata</PaperButton>
+      <PaperButton onPress={showDialog} style={{backgroundColor:"lightgrey"}} labelStyle={{fontSize: 18, color: "black" }}>Edit Log Metadata</PaperButton>
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
             <Dialog.Title>Edit Log Metadata</Dialog.Title>
-            <Dialog.Content>e
+            <Dialog.Content>
               <View>
                 <TextInput value={textName} label="Log Name" mode="outlined" onChangeText={(text) => setTextName(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                 <TextInput value={textLogger} label="Logger" mode="outlined" onChangeText={(text) => setTextLogger(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
@@ -863,7 +912,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: showViews,
-    borderColor: 'red'
+  },
+  containers: {
+    alignItems: "flex-start", // ignore this - we'll come back to it
+    justifyContent: "center", // ignore this - we'll come back to it
+    flexDirection: "row",
+    shadowColor: 'black',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,  
+    elevation: 4,
+    backgroundColor: 'white',
+    margin: '3%',
+    marginBottom: '1%',
+    marginTop: '1%',
+    padding: '1%',
+    paddingBottom: '0%',
+    paddingTop: '0%',
+    borderRadius: 10,
   },
   titleView: {
     // height: 30,

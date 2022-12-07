@@ -125,7 +125,7 @@ const UpdateRemark = ( {remark, setModalVisible}) => {
 const SelectRemarksList = ({ id, remarks_list, refreshRemarks }) => {
 
   return(
-      <View>
+    <View style={{height: "90%"}}>
         <Text style={styles.remarkText}>Remarks</Text>
         <ScrollView style={styles.scrollView}>
             {remarks_list && remarks_list.map(remark => (
