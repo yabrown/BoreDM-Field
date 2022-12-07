@@ -157,37 +157,39 @@ const Log = ({ route, navigation }: Props) => {
       borderRadius: 10,
     },
     column: {
-      // backgroundColor: "#7cb48f",
       flex: 1,
       margin: '1%',
       padding: '1%',
-      // borderColor: 'black',
-      // borderWidth: 1,
+    },
+    columnColor: {
+      backgroundColor: '#f1f1f1',
+      borderRadius: 10,
+      padding: '2%'
     },
   });
 
   const DataComponent = () =>{
     return(
       <View style={dataStyles.container}>
-        <View style={[dataStyles.column, {flex: 3}]}>
-          <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
-          <Spacer />
-          <Box style={{ margin: 4 }}>
-            <AddSampleModal log_id={currentLog.id} refreshSamples={refreshSamples}/>
-          </Box>
-        </View>
-        <View style={[dataStyles.column, {flex: 5}]}>
+        <View style={[dataStyles.column, {flex: 4}, dataStyles.columnColor]}>
           <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
           <Spacer />
           <Box style={{ margin: 4 }}>
             <AddClassificationModal log_id={currentLog.id} refreshClassifications={refreshClassifications}/>
           </Box>
         </View>
-        <View style={[dataStyles.column, {flex: 4}]}>
+        <View style={[dataStyles.column, {flex: 4}, dataStyles.columnColor]}>
           <SelectRemarkList id={currentLog.id} remarks_list={remarksList} refreshRemarks={refreshRemarks}/>
           <Spacer />
           <Box style={{ margin: 4 }}>
             <AddRemarkModal log_id={currentLog.id} refreshRemarks={refreshRemarks}/>
+          </Box>
+        </View>
+        <View style={[dataStyles.column, {flex: 4}, dataStyles.columnColor]}>
+          <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
+          <Spacer />
+          <Box style={{ margin: 4 }}>
+            <AddSampleModal log_id={currentLog.id} refreshSamples={refreshSamples}/>
           </Box>
         </View>
       </View>

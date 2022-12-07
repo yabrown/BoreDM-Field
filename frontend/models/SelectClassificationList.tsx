@@ -41,9 +41,22 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
   const [density, setDensity] = useState(classification.density);
   const [hardness, setHardness] = useState(classification.hardness);
 
+  let classification_title = classification.start_depth + "'-" + classification.end_depth + "' ";
+  if(classification_title.length > 8) classification_title += "" + classification.uscs;
+  else classification_title += "\t" + classification.uscs;
+
+  const liststyle = StyleSheet.create({
+    listitem: {
+      borderColor: "black",
+      borderWidth: 1,
+      borderRadius: 5,
+      margin: '3%'
+    },
+  });
+
   return(
     <View>
-    <ListItem title={classification.start_depth + "' - " + classification.end_depth + "': " + classification.uscs} onPress={showDialog}/>
+    <List.Item title={classification_title} onPress={showDialog} style={liststyle.listitem} titleNumberOfLines={5}/>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Classification Data</Dialog.Title>
@@ -214,7 +227,7 @@ const SelectClassificationList = ({ id, classifications_list, refreshClassificat
 
   return(
     <View style={{height: "90%"}}>
-        <Text style={{marginLeft: '2%', fontSize: 24, fontWeight: '500'}}>Classifications</Text>
+        <Text style={{marginLeft: '2%', marginBottom: '5%', fontSize: 24, fontWeight: '500'}}>Classifications</Text>
         <ScrollView style={styles.scrollView}>
             {classifications_list.map(classification => (
                 <SelectClassificationButton classification={classification} key={uuid()} refreshClassifications={refreshClassifications}/>

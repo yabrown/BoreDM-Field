@@ -1,4 +1,3 @@
-import { HStack, ListItem } from "@react-native-material/core";
 import React, { useEffect, useState, useContext } from 'react';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
@@ -35,9 +34,18 @@ const SelectRemarkButton = ({ remark, refreshRemarks }) => {
   const [startDepth, setStartDepth] = useState(remark.start_depth);
   const [notes, setNotes] = useState(remark.notes);
 
+  const liststyle = StyleSheet.create({
+    listitem: {
+      borderColor: "black",
+      borderWidth: 1,
+      borderRadius: 5,
+      margin: '3%'
+    },
+  });
+
   return(
     <View>
-    <ListItem title={startDepth + "': " + notes} onPress={showDialog}/>
+    <List.Item title={startDepth + "': " + notes} onPress={showDialog} style={liststyle.listitem} titleNumberOfLines={5}/>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Remark</Dialog.Title>
@@ -94,6 +102,9 @@ const DeleteRemark = ({ remark, setModalVisible, refreshRemarks }) => {
 // The component that deals with updating a Classification
 const UpdateRemark = ( {remark, setModalVisible}) => {
 
+  console.log("Log id: " + remark.log_id + " startDepth: " + remark.startDepth + " Remark: " + remark.notes)
+
+
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
     const onPress = async () => {
@@ -106,7 +117,7 @@ const UpdateRemark = ( {remark, setModalVisible}) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token ? token : ''}`,
                 },
-                body: JSON.stringify({log_id: remark.log_id, notes: remark.notes })
+                body: JSON.stringify({remark_id: remark.remark_id, start_depth:remark.startDepth, notes: remark.notes })
             })
 
             if (fetched.status === 401) {
@@ -125,8 +136,8 @@ const UpdateRemark = ( {remark, setModalVisible}) => {
 const SelectRemarksList = ({ id, remarks_list, refreshRemarks }) => {
 
   return(
-    <View style={{height: "90%"}}>
-        <Text style={styles.remarkText}>Remarks</Text>
+      <View>
+        <Text style={[styles.remarkText, {marginBottom: '5%'}]}>Remarks</Text>
         <ScrollView style={styles.scrollView}>
             {remarks_list && remarks_list.map(remark => (
                 <SelectRemarkButton remark={remark} key={uuid()} refreshRemarks={refreshRemarks}/>

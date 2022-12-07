@@ -1,7 +1,6 @@
-import { ListItem } from "@react-native-material/core";
 import React, { useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
+import { Button as PaperButton, Dialog, Portal, TextInput, List } from 'react-native-paper';
 import { v4 as uuid } from 'uuid';
 import { logout } from "../common/logout";
 import { LoginContext } from "../contexts/LoginContext";
@@ -16,9 +15,36 @@ const SelectSampleButton = ({ sample, refreshSamples }: {sample: sample, refresh
 
   const [currSample, setSample] = useState(sample)
 
+  let sampler_text = ""
+  if(sample.sampler_type !== null) sampler_text += sample.sampler_type;
+
+  let blows_text = "";
+  if(sample.blows_1 !== null) {
+    if(sample.sampler_type !== null) blows_text += ", ";
+    blows_text += sample.blows_1;
+    if(sample.blows_2 !== null) {
+      blows_text += "-" + sample.blows_2;
+      if(sample.blows_3 !== null) {
+        blows_text += "-" + sample.blows_3;
+        if(sample.blows_4 !== null) {
+          blows_text += "-" + sample.blows_3;
+        }
+      }
+    }
+  }
+
+  const liststyle = StyleSheet.create({
+    listitem: {
+      borderColor: "black",
+      borderWidth: 1,
+      borderRadius: 5,
+      margin: '3%'
+    },
+  });
+
   return(
     <View>
-    <ListItem title={"Sample Depth: " + sample.start_depth + "'"} onPress={showDialog}/>
+    <List.Item title={sample.start_depth + "': " + sampler_text + blows_text} onPress={showDialog} style={liststyle.listitem} titleNumberOfLines={5}/>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Sample Data</Dialog.Title>
@@ -115,7 +141,7 @@ const SelectSampleList = ({ id, samplesList, refreshSamples }) => {
 
   return(
     <View style={{height: "90%"}}>
-      <Text style={{marginLeft: '6%', fontSize: 24, fontWeight: '500'}}>Samples</Text>
+      <Text style={{marginLeft: '6%', fontSize: 24, fontWeight: '500',  marginBottom: '5%'}}>Samples</Text>
         <ScrollView style={styles.scrollView}>
             {samplesList.map(sample => (
                 <SelectSampleButton sample={sample} key={uuid()} refreshSamples={refreshSamples}/>
