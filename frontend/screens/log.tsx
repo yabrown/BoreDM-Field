@@ -712,10 +712,12 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     }
 
     if (water.start_depth_3) {
-      water_depths.splice(1, 0, water.start_depth_3);
+      water_depths.splice(2, 0, water.start_depth_3);
     }
 
     if (water_depths.length == 0) return
+
+    water_depths = water_depths.sort()
 
     var graphics = [];
 
