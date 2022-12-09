@@ -100,7 +100,7 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
 
 
 // The component that deals with updating a Classification
-const UpdateRemark = ( {remark, setModalVisible}) => {
+const UpdateRemark = ( {remark, setModalVisible, refreshRemarks}) => {
 
     console.log("Log id: " + remark.log_id + " startDepth: " + remark.startDepth + " Remark: " + remark.notes)
   
@@ -120,11 +120,14 @@ const UpdateRemark = ( {remark, setModalVisible}) => {
                   body: JSON.stringify({remark_id: remark.remark_id, start_depth:remark.startDepth, notes: remark.notes })
               })
   
-              if (fetched.status === 401) {
-                if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+              console.log("status:", fetched.status)
+              if (fetched.ok) {
+                await refreshRemarks();
+              }
+              else if (fetched.status === 401) {
+                if (setIsLoggedIn) await logout(setIsLoggedIn);
               }
   
-              console.log("status:", fetched.status)
   
           } catch(error) {
                   console.error('Error:', error);

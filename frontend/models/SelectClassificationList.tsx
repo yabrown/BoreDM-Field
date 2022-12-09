@@ -52,8 +52,10 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
   const hideDialog = () => setVisible(false);
 
   console.log("Reloaded log data");
-  const [startDepth, setStartDepth] = useState(classification.start_depth);
-  const [endDepth, setEndDepth] = useState(classification.end_depth);
+  console.log(classification.start_depth);
+  
+  const [startDepth, setStartDepth] = useState(String(classification.start_depth));
+  const [endDepth, setEndDepth] = useState(String(classification.end_depth));
   const [uscs, setUSCS] = useState(classification.uscs);
   const [color, setColor] = useState(classification.color);
   const [moisture, setMoisture] = useState(classification.moisture);

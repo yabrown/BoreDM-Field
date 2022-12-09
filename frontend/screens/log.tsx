@@ -61,7 +61,6 @@ const Log = ({ route, navigation }: Props) => {
         if (fetched.ok) {
           const logs_list = await fetched.json();
           console.log(logs_list);
-          
           if (setLogList) setLogList(logs_list);
         }
         else if (fetched.status === 401) {

@@ -508,7 +508,7 @@ async function delete_remark(remark_id) {
 }
 
 async function update_remark(remark_id, start_depth, notes) {
-  const updated_remark = await Remark.update({ start_depth: start_depth, notes: notes }, {
+  const updated_remark = await Remark.update({ id: remark_id, start_depth: start_depth, notes: notes }, {
     where: { id: remark_id },
     returning: true,
   });
