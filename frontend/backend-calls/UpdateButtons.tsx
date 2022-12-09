@@ -84,14 +84,16 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
           })
           console.log("status:", fetched.status)
 
-          if (fetched.status === 401) {
+          if (fetched.ok) {
+            await refreshSamples();
+          }
+          else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           }
           }
             catch(error) {
                 console.error('Error:', error);
             }
-        await refreshSamples();
     }
     return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
 }
@@ -133,7 +135,7 @@ const UpdateRemark = ( {remark, setModalVisible}) => {
 
 
 // The component that deals with updating a Classification
-const UpdateClassification = ( {classification, setModalVisible}) => {
+const UpdateClassification = ({ classification, setModalVisible, refreshClassifications }) => {
 
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
@@ -149,12 +151,13 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
                   },
                   body: JSON.stringify({log_id: classification.log_id, start_depth: classification.start_depth, end_depth: classification.end_depth, uscs: classification.uscs, color: classification.color, moisture: classification.moisture, density: classification.density, hardness: classification.hardness })
               })
-  
-              if (fetched.status === 401) {
+
+              if (fetched.ok) {
+                await refreshClassifications();
+              }
+              else if (fetched.status === 401) {
                 if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
               }
-  
-              console.log("status:", fetched.status)
   
           } catch(error) {
                   console.error('Error:', error);

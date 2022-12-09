@@ -36,7 +36,7 @@ const AddSampleModal = ({ log_id, refreshSamples }) => {
             </Dialog.Content>
             <Dialog.Actions>
               <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitSample sample={currSample} setVisible={setVisible} refreshSamples={refreshSamples}/>
+              <SubmitSample sample={currSample} setVisible={setVisible} refreshSamples={refreshSamples} setSample={setSample}/>
             </Dialog.Actions>
           </Dialog>
         </Portal>

@@ -21,7 +21,7 @@ const SubmitClassification = ({ classification, hideDialog, refreshClassificatio
                   'Authorization': `Bearer ${token ? token : ''}`
                   
               },
-              body: JSON.stringify({...classification})
+              body: JSON.stringify(classification)
           })
           console.log('status:', fetched.status);
           if (fetched.ok) {
@@ -70,7 +70,7 @@ const SubmitRemark = ({ remark, hideDialog, refreshRemarks }) => {
 }
 
 /////////////////////////////////// SAMPLE //////////////////////////////////////////////////
-const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
+const SubmitSample = ({ sample, setVisible, refreshSamples, setSample }) => {
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
   const onPress = async () => {
@@ -92,6 +92,8 @@ const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           }
+          // clear the sample
+          setSample({ name: "", classification_id: NaN, remark_id: NaN, notes: "" });
 
       } catch(error) {
               console.error('Error:', error);

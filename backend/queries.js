@@ -416,12 +416,17 @@ async function update_log(log_id, name, driller, logger, notes) {
 // updates log associated with sample_id
 // written by Louis
 async function update_sample(sample_id, start_depth, end_depth, length, blows_1, blows_2, blows_3, blows_4, description, refusal_length, sampler_type) {
-  const updated_sample = await Sample.update({ start_depth: start_depth, end_depth: end_depth, length: length, blows_1: blows_1, blows_2: blows_2, blows_3: blows_3, blows_4: blows_4, description: description, refusal_length: refusal_length, sampler_type: sampler_type }, {
-    where: { id: sample_id },
-    returning: true,
-    raw: true,
-  });
-  return updated_sample[1][0].id;
+  try {
+    const updated_sample = await Sample.update({ start_depth: start_depth, end_depth: end_depth, length: length, blows_1: blows_1, blows_2: blows_2, blows_3: blows_3, blows_4: blows_4, description: description, refusal_length: refusal_length, sampler_type: sampler_type }, {
+      where: { id: sample_id },
+      returning: true,
+      raw: true,
+    });
+    console.log("success:", updated_sample);
+    return updated_sample[1][0].id;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 // updates classification associated with log_id

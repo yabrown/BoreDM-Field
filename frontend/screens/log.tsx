@@ -72,7 +72,7 @@ const Log = ({ route, navigation }: Props) => {
     }
 }
   
-  const refreshSamples: () => void = async () => {
+  const refreshSamples: () => Promise<void> = async () => {
 
     try {
       const token = await getToken();
