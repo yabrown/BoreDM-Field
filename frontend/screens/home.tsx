@@ -119,49 +119,7 @@ const Home = ({ navigation }: Props) => {
           <Header/>
         </View>
         <View style={{minHeight: "85%"}}>
-          <Tab.Navigator
-            initialRouteName="Project List"
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
-                let iconName;
-    
-                if (route.name === 'Project List') {
-                  iconName = focused ? 'ios-list' : 'ios-list-outline';
-                } else if (route.name === 'Maps') {
-                  iconName = focused ? 'ios-list' : 'ios-list-outline';
-                }
-    
-                // You can return any component that you like here!
-                return <Ionicons name={iconName} size={size} color={color} />;
-              },
-              tabBarActiveTintColor: 'tomato',
-              tabBarInactiveTintColor: 'gray',
-              lazy: true,
-              tabBarScrollEnabled: false,
-              tabBarStyle: { height: '10%' },
-              tabBarLabelStyle: { fontSize: (Dimensions.get('window').height * Dimensions.get('window').width) / 35000 },
-            })}
-            // screenOptions={{
-            //   tabBarActiveTintColor: '#000000',
-            //   tabBarLabelStyle: { fontSize: 12 },
-            //   tabBarStyle: { backgroundColor: 'white' },
-            //   // tabBarIndicatorStyle: { backgroundColor: 'black' },
-            //   lazy: true,
-            //   tabBarScrollEnabled: false,
-            // }}
-            sceneContainerStyle= {{backgroundColor: 'white'}}
-          >
-            <Tab.Screen
-              name="Project List"
-              component = {ProjectsComponent} 
-              options={{ tabBarLabel: 'Project List' }}/>
-
-            <Tab.Screen
-              name="Maps"
-              component={MapComponent}  //Had to use intermediary because can't put props directly in component-- probably a type issue
-              options={{ tabBarLabel: 'Map' }}
-            />
-          </Tab.Navigator>
+          <ProjectsComponent/>
         </View>
         <Spacer />
         <View style={{ marginHorizontal: 6, marginBottom: 6, minHeight: '5%' }}>
