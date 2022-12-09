@@ -9,10 +9,34 @@ import { logout } from "../common/logout";
 
 
 // The component that deals with updating log data
-const UpdateLog = ( {log, setModalVisible}) => {
+const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog}) => {
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
-      const onPress = async () => {
+    const refreshLog = async () => {
+      try {
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/get_log`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({log_id: log.id})
+        })
+        if (fetched.ok) {
+          const log = await fetched.json();
+          console.log("log:", log)
+          if (log) setLog(log);
+        }
+        else if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        }
+      } catch(error) {
+              console.error('Error:', error);
+          }
+    }
+    
+    const onPress = async () => {
           setModalVisible(false)
           try {
             const token = await getToken();
@@ -25,6 +49,10 @@ const UpdateLog = ( {log, setModalVisible}) => {
                 body: JSON.stringify({log_id: log.id, log_name: log.name, driller: log.driller, logger: log.logger, notes: log.notes})
             })
             console.log("status:", fetched.status)
+
+            if (fetched.ok) {
+              await Promise.all[refreshLog(), refreshLogs()];
+            }
   
             if (fetched.status === 401) {
               if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -33,7 +61,7 @@ const UpdateLog = ( {log, setModalVisible}) => {
                   console.error('Error:', error);
               }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
+      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Submit</PaperButton>);
   }
 
 
@@ -63,9 +91,9 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
             catch(error) {
                 console.error('Error:', error);
             }
-        refreshSamples();
+        await refreshSamples();
     }
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
+    return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
 }
 
 
@@ -100,7 +128,7 @@ const UpdateRemark = ( {remark, setModalVisible}) => {
                   console.error('Error:', error);
               }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
+      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
   }
 
 
@@ -132,7 +160,7 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
                   console.error('Error:', error);
               }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
+      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
   }
 
 
@@ -152,7 +180,7 @@ const UpdateProject = ({ project, setModalVisible, updateProject }) => {
                   },
                   body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
               })
-              if (fetched.ok) updateProject();
+              if (fetched.ok) await updateProject();
               else if (fetched.status === 401) {
                 if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
               } 
@@ -160,7 +188,7 @@ const UpdateProject = ({ project, setModalVisible, updateProject }) => {
                   console.error('Error:', error);
               }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
+      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Submit</PaperButton>);
     }
   
 

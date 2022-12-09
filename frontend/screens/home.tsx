@@ -17,6 +17,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {SubmitProject} from "../backend-calls/SubmitButtons"
 import AddProjectModal from "../dialogs/AddProjectModal"
+import { ProjectListContext } from "../contexts/ProjectListContext";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -80,13 +81,23 @@ initialRegion={
 
 const Home = ({ navigation }: Props) => {
 
-  const [projectsList, setProjectsList] = useState<project[]>([]);
+  const { projectList, setProjectList } = useContext(ProjectListContext);
   // {name: "default", id: -1, client:"default", location:"default", notes:"default"}
   const { setIsLoggedIn } = useContext(LoginContext);
   const isFocused = useIsFocused();
   //Important: the default log includes a coordinate set, w
   const [logs, setLogs] = useState<log[]>([]);
   // const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    const refresh = async () => {
+    if (isFocused) { 
+      await Promise.all([getProjectsList(), getAllLogs()]);
+    }
+  }
+  refresh();
+  console.log('refreshed')
+  }, [isFocused]);
   
 
   const getProjectsList: () => void = async () => {
@@ -102,7 +113,7 @@ const Home = ({ navigation }: Props) => {
         } 
         else if (fetched.ok) {
           const projects_list = await fetched.json()
-          if (projects_list.length > 0) setProjectsList(projects_list)
+          if (projects_list.length > 0 && setProjectList) setProjectList(projects_list)
         }
     } catch(error) {
         console.error(error)
@@ -139,19 +150,12 @@ const Home = ({ navigation }: Props) => {
     return Map(logs, navigation, getAllLogs)
   }
 
-  useEffect(() => {
-    if (isFocused) { 
-      getProjectsList();
-      getAllLogs()
-    }
-  }, [isFocused]);
-
   // This is what shows up in the 'Projects' tab screen.
   const ProjectsComponent = () => {
     return(
       <View style={{backgroundColor: 'white'}}>
         <Box>
-          <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
+          <SelectProjectList navigate={navigation} projects={projectList} onUpdate={getProjectsList}/>
         </Box>
       </View>
     )
@@ -163,27 +167,21 @@ const Home = ({ navigation }: Props) => {
       <View>
           <Header/>
         </View>
-        {/* <View>
-          <Drawer.Navigator initialRouteName="Register2">
-            <Drawer.Screen name="Register2" component={RegisterScreen2} />
-            <Drawer.Screen name="Register3" component={RegisterScreen3} />
-          </Drawer.Navigator>
-        </View> */}
         <View style={{minHeight: "85%"}}>
           <Tab.Navigator
             initialRouteName="Project List"
             screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
+              tabBarIcon: ({ focused, color }) => {
                 let iconName;
     
                 if (route.name === 'Project List') {
                   iconName = focused ? 'ios-list' : 'ios-list-outline';
                 } else if (route.name === 'Maps') {
-                  iconName = focused ? 'ios-list' : 'ios-list-outline';
+                  iconName = focused ? 'map' : 'map-outline';
                 }
     
                 // You can return any component that you like here!
-                return <Ionicons name={iconName} size={size} color={color} />;
+                return <Ionicons name={iconName} size={(Dimensions.get('window').height * Dimensions.get('window').width) / 35000} color={color} />;
               },
               tabBarActiveTintColor: 'tomato',
               tabBarInactiveTintColor: 'gray',

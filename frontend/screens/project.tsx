@@ -16,6 +16,9 @@ import {DeleteProject} from "../backend-calls/DeleteButtons"
 import {UpdateProject} from "../backend-calls/UpdateButtons"
 import AddLogModal from "../dialogs/AddLogModal"
 import EditProjectModal from "../dialogs/EditProjectModal"
+import { ProjectListContext } from "../contexts/ProjectListContext";
+import SelectProjectList from "../models/SelectProjectList";
+import { LogListContext } from "../contexts/LogListContext";
 
 
 
@@ -31,11 +34,12 @@ const Title = (props: { name:string }) =>{
 
 const Project = ({ navigation, route}: Props) => {
 
-  const [logsList, setLogsList] = useState<log[]>([]);
   const [latitude, setLat] = useState(10);
   const [longitude, setLon] = useState(10);
   const [currProject, setProject] = useState(route.params.project);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { projectList, setProjectList } = useContext(ProjectListContext);
+  const { logList, setLogList } = useContext(LogListContext);
 
   const refreshProject = async () => {
     try {
@@ -58,6 +62,26 @@ const Project = ({ navigation, route}: Props) => {
     }
   }
 
+  const refreshProjectList = async () => {
+      try {
+        const token = await getToken();  
+        const fetched = await fetch(`${PORT}/get_all_projects`, {
+          headers: {
+            'Authorization': `Bearer ${token ? token : ''}`
+          }
+        });
+          if (fetched.status === 401) {
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
+          } 
+          else if (fetched.ok) {
+            const projects_list = await fetched.json()
+            if (setProjectList) setProjectList(projects_list)
+          }
+      } catch(error) {
+          console.error(error)
+      }
+    }
+
   const getLogs = async () => {
       try{
         const token = await getToken();
@@ -71,7 +95,7 @@ const Project = ({ navigation, route}: Props) => {
         });
           if (fetched.ok) {
             const logs_list = await fetched.json()
-            setLogsList(logs_list)
+            if (setLogList) setLogList(logs_list)
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -102,6 +126,8 @@ const Project = ({ navigation, route}: Props) => {
   }
   getLatLon();
 
+
+
   return (
     <View style={styles.container}>
         <Flex fill flex-grow style={{width:"100%"}}>
@@ -112,7 +138,7 @@ const Project = ({ navigation, route}: Props) => {
             <Title name={currProject.name}/>
           </Box>
           <Box>
-          <SelectLogList id={currProject.id} navigate={navigation} logsList={logsList} getLogs={getLogs}/>
+          <SelectLogList id={currProject.id} navigate={navigation} getLogs={getLogs} route={route}/>
           </Box>
           <Spacer />
           <Box style={{ justifyContent: "center"}}>
@@ -120,7 +146,8 @@ const Project = ({ navigation, route}: Props) => {
               <AddLogModal project_id={currProject.id} getLogs={getLogs} getLatLon={getLatLon} setLat={setLat} setLon={setLon} lat={latitude} lon={longitude}/>
             </Box>
             <Box style={{ margin: 4 }}>
-              <EditProjectModal project={currProject} updateProject={refreshProject} navigation={navigation} updateProjectList={route.params.onUpdate}/>
+              {/* TODO: refresh */}
+              <EditProjectModal project={currProject} updateProject={refreshProject} navigation={navigation} updateProjectList={refreshProjectList}/>
             </Box>
           </Box>
         </Flex>

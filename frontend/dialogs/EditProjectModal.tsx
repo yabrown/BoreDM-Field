@@ -29,7 +29,7 @@ const EditProjectModal = ({ project, updateProject, updateProjectList, navigatio
   
     return (
         <SafeAreaView>
-        <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Project Metadata</PaperButton>
+        <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit / Delete Project</PaperButton>
           <Portal>
             <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
               <Dialog.Title style={{color: 'black'}}>Edit Project</Dialog.Title>

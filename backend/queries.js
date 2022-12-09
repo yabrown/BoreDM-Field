@@ -59,11 +59,6 @@ const Classification = sequelize.define("Classification", {
 });
 
 const Remark = sequelize.define("Remark", {
-  remark_id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
   log_id: DataTypes.INTEGER,
   start_depth: DataTypes.FLOAT,
   notes: {
@@ -328,7 +323,6 @@ async function delete_project(project_id) {
   const updated_proj = await Project.destroy({
     where: { id: project_id },
     returning: true,
-    raw: true,
   });
   return;
 }
@@ -398,13 +392,13 @@ async function get_all_classifications(log_id) {
 
 // retrieves information about a specific log given project_id, log_id
 // written by: Max
-async function get_log(project_id, log_id) {
-  const log = await Log.findAll({
+async function get_log(log_id) {
+  const log = await Log.findOne({
     where: {
-      project_id: project_id,
       id: log_id
     }
   });
+  console.log(log);
   return log;
 }
 
@@ -501,6 +495,22 @@ async function get_all_remarks(log_id) {
   return remark_list;
 }
 
+async function delete_remark(remark_id) {
+  await Remark.destroy({
+    where: { id: remark_id },
+    returning: true,
+  });
+}
+
+async function update_remark(remark_id, start_depth, notes) {
+  const updated_remark = await Remark.update({ start_depth: start_depth, notes: notes }, {
+    where: { id: remark_id },
+    returning: true,
+  });
+  return updated_remark[1][0].id;
+}
+
+
 // async function update_remark(log_id, name, driller, logger, notes) {
 //   const updated_log = await Log.update({ id: log_id, name: name, driller: driller, logger: logger, notes: notes }, {
 //     where: { id: log_id },
@@ -576,4 +586,7 @@ module.exports = {
   update_water_encounter,
   delete_encounter,
   add_water_encounter,
+  delete_remark,
+  update_remark,
+
 }

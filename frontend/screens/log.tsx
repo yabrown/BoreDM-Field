@@ -21,15 +21,16 @@ import AddSampleModal from "../dialogs/AddSampleModal"
 import {DeleteLog} from "../backend-calls/DeleteButtons"
 import {UpdateLog} from "../backend-calls/UpdateButtons"
 import EditLogModal from "../dialogs/EditLogModal"
+import { LogListContext } from "../contexts/LogListContext";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Log'>;
 
 
-const Title = (props: { name:string }) =>{
+const Title = ({ name }) =>{
   return(
       <View style={styles.titleView}>
-          <Text style={{fontWeight:'600', fontSize: 30, color: 'black'}}>{props.name}</Text>
+          <Text style={{fontWeight:'600', fontSize: 30, color: 'black'}}>{name}</Text>
       </View>
   )
 }
@@ -37,14 +38,40 @@ const Title = (props: { name:string }) =>{
 
 const Log = ({ route, navigation }: Props) => {
 
-  const [currentLog, setLog] = useState(route.params.log);
+  const [currentLog, setLog] = useState<log>(route.params.log);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { logList, setLogList } = useContext(LogListContext);
 
   const [samplesList, setSamplesList] = useState<sample[]>([])
   const [classificationsList, setClassificationsList] = useState<classification[]>([])
   const [remarksList, setRemarksList] = useState<remark[]>([])
   const [waterList, setWaterList] = useState<water[]>([])
 
+  const refreshLogs = async () => {
+    try{
+      const token = await getToken();
+        const fetched = await fetch(`${PORT}/get_all_logs`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token ? token : ''}`
+          },
+          body: JSON.stringify({project_id: route.params.project_id})
+      });
+        if (fetched.ok) {
+          const logs_list = await fetched.json();
+          console.log(logs_list);
+          
+          if (setLogList) setLogList(logs_list);
+        }
+        else if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        } 
+    } catch(error) {
+        console.error(error);
+    }
+}
+  
   const refreshSamples: () => void = async () => {
 
     try {
@@ -209,10 +236,15 @@ const Log = ({ route, navigation }: Props) => {
   const Tab = createMaterialTopTabNavigator();
 
   useEffect(() => {
-    refreshSamples();
-    refreshClassifications();
-    refreshRemarks();
-    refreshWater();
+    const refresh = async () => {
+      try {
+        await Promise.all([refreshSamples(), refreshClassifications(), refreshRemarks(), refreshWater()])
+      }
+      catch(error) {
+        console.error(error)
+      }
+    }
+    refresh()
   }, [])
 
   return (
@@ -222,7 +254,7 @@ const Log = ({ route, navigation }: Props) => {
             <Header/>
           </Box>
           <Box>
-            <Title name={route.params.log.name}/>
+            <Title name={currentLog.name}/>
           </Box>
           <Box style={{minHeight: "80%" }}>
             <Tab.Navigator
@@ -253,7 +285,8 @@ const Log = ({ route, navigation }: Props) => {
               <AddWaterModal water={waterList} setWater={setWaterList} refreshWater={refreshWater}/>
             </View>
             <View style={[dataStyles.column, {flex: 3}]}>
-              <EditLogModal log={currentLog} navigation={navigation} updateLogList={route.params.updateLogList}/>
+              {/* TODO: fix */}
+              <EditLogModal log={currentLog} setLog={setLog} navigation={navigation} refreshLogs={refreshLogs}/>
             </View>
           </Box>
         </Flex>

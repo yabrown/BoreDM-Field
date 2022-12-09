@@ -24,7 +24,7 @@ import {UpdateLog} from "../backend-calls/UpdateButtons"
 
 
 
-const EditLogModal = ({log, updateLogList, navigation}) => {
+const EditLogModal = ({log, refreshLogs, navigation, setLog}) => {
     const [visible, setVisible] = React.useState(false);
     const showDialog = () => setVisible(true);
     const hideDialog = () => setVisible(false);
@@ -39,7 +39,7 @@ const EditLogModal = ({log, updateLogList, navigation}) => {
         <PaperButton onPress={showDialog} style={{backgroundColor:"lightgrey"}} labelStyle={{fontSize: 18, color: "black" }}>Edit Log Metadata</PaperButton>
           <Portal>
             <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-              <Dialog.Title>Edit Log Metadata</Dialog.Title>
+              <Dialog.Title>Edit / Delete Log</Dialog.Title>
               <Dialog.Content>
                 <View>
                   <TextInput value={textName} label="Log Name" mode="outlined" onChangeText={(text) => setTextName(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
@@ -50,8 +50,8 @@ const EditLogModal = ({log, updateLogList, navigation}) => {
               </Dialog.Content>
               <Dialog.Actions>
                 <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-                <DeleteLog setModalVisible={setVisible} log={{id: log.id}} navigation={navigation} updateLogList={updateLogList}/>
-                <UpdateLog setModalVisible={setVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}}/>
+                <DeleteLog setModalVisible={setVisible} log={{id: log.id}} navigation={navigation} refreshLogs={refreshLogs}/>
+                <UpdateLog setModalVisible={setVisible} log={{id: log.id, name: textName, logger: textLogger, driller: textDriller, notes: textNotes}} refreshLogs={refreshLogs} setLog={setLog}/>
               </Dialog.Actions>
             </Dialog>
           </Portal>
