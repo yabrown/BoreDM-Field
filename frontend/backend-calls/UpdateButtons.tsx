@@ -137,28 +137,34 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
 
 
 // The component that deals with the adding a new project
-const UpdateProject = ({ project, setModalVisible, updateProject }) => {
+const UpdateProject = ({ project, setModalVisible, updateProject, setNameError }) => {
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-  
+
       const onPress = async () => {
+        if(project.name == "") {
+          setNameError(true);
+        }
+    
+        else {
           setModalVisible(false)
           try {
             const token = await getToken();
-              let fetched = await fetch(`${PORT}/update_project`, {
-                  method: 'POST', // or 'PUT'
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token ? token : ''}`
-                  },
-                  body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
-              })
-              if (fetched.ok) updateProject();
-              else if (fetched.status === 401) {
-                if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-              } 
+            let fetched = await fetch(`${PORT}/update_project`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`
+              },
+              body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
+            })
+            if (fetched.ok) updateProject();
+            else if (fetched.status === 401) {
+              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            } 
           } catch(error) {
-                  console.error('Error:', error);
-              }
+              console.error('Error:', error);
+            }
+        }
       }
       return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
     }
