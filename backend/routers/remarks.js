@@ -37,4 +37,36 @@ router.post('/add_remark', async (req, res) => {
   }
 })
 
+router.post('/delete_remark', async (req, res) => {
+  try {
+    await db.delete_remark(req.body.remark_id)
+    res.status(200).send();
+  } catch (err) {
+    if (isJwtError(err)) {
+      res.status(401).send("JWT Error");
+    }
+    else {
+      console.error(err);
+      res.status(500).send();
+    }
+  }
+})
+
+router.post('/update_remark', async (req, res) => {
+  try {
+    await db.update_remark(req.body.remark_id, req.body.start_depth, req.body.notes)
+    res.status(200).send();
+  } catch (err) {
+    if (isJwtError(err)) {
+      res.status(401).send("JWT Error");
+    }
+    else {
+      console.error(err);
+      res.status(500).send();
+    }
+  }
+})
+
+
+
 module.exports = router;

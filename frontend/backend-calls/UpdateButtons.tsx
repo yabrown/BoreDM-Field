@@ -9,10 +9,34 @@ import { logout } from "../common/logout";
 
 
 // The component that deals with updating log data
-const UpdateLog = ( {log, setModalVisible}) => {
+const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog}) => {
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
-      const onPress = async () => {
+    const refreshLog = async () => {
+      try {
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/get_log`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({log_id: log.id})
+        })
+        if (fetched.ok) {
+          const log = await fetched.json();
+          console.log("log:", log)
+          if (log) setLog(log);
+        }
+        else if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        }
+      } catch(error) {
+              console.error('Error:', error);
+          }
+    }
+    
+    const onPress = async () => {
           setModalVisible(false)
           try {
             const token = await getToken();
@@ -25,6 +49,10 @@ const UpdateLog = ( {log, setModalVisible}) => {
                 body: JSON.stringify({log_id: log.id, log_name: log.name, driller: log.driller, logger: log.logger, notes: log.notes})
             })
             console.log("status:", fetched.status)
+
+            if (fetched.ok) {
+              await Promise.all[refreshLog(), refreshLogs()];
+            }
   
             if (fetched.status === 401) {
               if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -33,7 +61,7 @@ const UpdateLog = ( {log, setModalVisible}) => {
                   console.error('Error:', error);
               }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
+      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Submit</PaperButton>);
   }
 
 
@@ -56,21 +84,23 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
           })
           console.log("status:", fetched.status)
 
-          if (fetched.status === 401) {
+          if (fetched.ok) {
+            await refreshSamples();
+          }
+          else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           }
           }
             catch(error) {
                 console.error('Error:', error);
             }
-        refreshSamples();
     }
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
+    return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
 }
 
 
 // The component that deals with updating a Classification
-const UpdateRemark = ( {remark, setModalVisible}) => {
+const UpdateRemark = ( {remark, setModalVisible, refreshRemarks}) => {
 
     console.log("Log id: " + remark.log_id + " startDepth: " + remark.startDepth + " Remark: " + remark.notes)
   
@@ -90,22 +120,25 @@ const UpdateRemark = ( {remark, setModalVisible}) => {
                   body: JSON.stringify({remark_id: remark.remark_id, start_depth:remark.startDepth, notes: remark.notes })
               })
   
-              if (fetched.status === 401) {
-                if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+              console.log("status:", fetched.status)
+              if (fetched.ok) {
+                await refreshRemarks();
+              }
+              else if (fetched.status === 401) {
+                if (setIsLoggedIn) await logout(setIsLoggedIn);
               }
   
-              console.log("status:", fetched.status)
   
           } catch(error) {
                   console.error('Error:', error);
               }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
+      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
   }
 
 
 // The component that deals with updating a Classification
-const UpdateClassification = ( {classification, setModalVisible}) => {
+const UpdateClassification = ({ classification, setModalVisible, refreshClassifications }) => {
 
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
@@ -121,18 +154,19 @@ const UpdateClassification = ( {classification, setModalVisible}) => {
                   },
                   body: JSON.stringify({log_id: classification.log_id, start_depth: classification.start_depth, end_depth: classification.end_depth, uscs: classification.uscs, color: classification.color, moisture: classification.moisture, density: classification.density, hardness: classification.hardness })
               })
-  
-              if (fetched.status === 401) {
+
+              if (fetched.ok) {
+                await refreshClassifications();
+              }
+              else if (fetched.status === 401) {
                 if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
               }
-  
-              console.log("status:", fetched.status)
   
           } catch(error) {
                   console.error('Error:', error);
               }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
+      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
   }
 
 
@@ -149,24 +183,24 @@ const UpdateProject = ({ project, setModalVisible, updateProject, setNameError }
           setModalVisible(false)
           try {
             const token = await getToken();
-            let fetched = await fetch(`${PORT}/update_project`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-              },
-              body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
-            })
-            if (fetched.ok) updateProject();
-            else if (fetched.status === 401) {
-              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-            } 
+              const fetched = await fetch(`${PORT}/update_project`, {
+                  method: 'POST', // or 'PUT'
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token ? token : ''}`
+                  },
+                  body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
+              })
+              if (fetched.ok) await updateProject();
+              else if (fetched.status === 401) {
+                if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+              } 
           } catch(error) {
               console.error('Error:', error);
             }
         }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
+      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Submit</PaperButton>);
     }
   
 

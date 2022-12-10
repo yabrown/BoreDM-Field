@@ -36,9 +36,9 @@ router.post('/add_project', (req, res) => {
   }
 })
 
-router.post('/delete_project', (req, res) => {
+router.post('/delete_project', async (req, res) => {
   try {
-    db.delete_project(req.body.project_id)
+    await db.delete_project(req.body.project_id)
     res.status(200).send();
   } catch (err) {
     if (isJwtError(err)) {

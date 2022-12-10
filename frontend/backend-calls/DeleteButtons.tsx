@@ -8,7 +8,7 @@ import { LoginContext } from "../contexts/LoginContext";
 import { logout } from "../common/logout";
 
 // The component that deals with the adding a new project
-const DeleteLog = ({ log, setModalVisible, navigation, updateLogList }) => {
+const DeleteLog = ({ log, setModalVisible, navigation, refreshLogs }) => {
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
     const onPress = async () => {
@@ -24,18 +24,17 @@ const DeleteLog = ({ log, setModalVisible, navigation, updateLogList }) => {
               body: JSON.stringify({log_id: log.id})
           })
           if (fetched.ok) {
-            updateLogList();
-            navigation.navigate('Project')
+            await refreshLogs();
+            navigation.navigate('Home')
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           }
         } catch(error) {
-              console.log("Problem")
                 console.error('Error:', error);
             }
     }
-    return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
+    return (<PaperButton labelStyle={{color: "red" }} onPress={async () => await onPress()}>Delete</PaperButton>);
   }
 
   // The component that deals with the adding a new project
@@ -55,17 +54,18 @@ const DeleteSample = ({ sample, setModalVisible, refreshSamples }) => {
                 body: JSON.stringify({sample_id: sample.id})
             })
             console.log("status:", fetched.status)
-            if (fetched.status === 401) {
+            if (fetched.ok) {
+              await refreshSamples();
+            }
+            else if (fetched.status === 401) {
               if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-            } 
-            refreshSamples()
-            
+            }             
         } catch(error) {
               console.log("Problem")
                 console.error('Error:', error);
             }
     }
-    return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
+    return (<PaperButton labelStyle={{color: "red" }} onPress={async () => await onPress()}>Delete</PaperButton>);
   }
 
 
@@ -86,12 +86,12 @@ const DeleteRemark = ({ remark, setModalVisible, refreshRemarks }) => {
               },
               body: JSON.stringify({remark_id: remark.id})
           })
-  
-          if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-            
           console.log("status:", fetched.status)
-          refreshRemarks()
+          if (fetched.ok) {
+            await refreshRemarks();
+          }
+          else if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
         } 
       }
         catch(error) {
@@ -99,7 +99,7 @@ const DeleteRemark = ({ remark, setModalVisible, refreshRemarks }) => {
                 console.error('Error:', error);
             }
           }
-    return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
+    return (<PaperButton labelStyle={{color: "red" }} onPress={async () => await onPress()}>Delete</PaperButton>);
   }
 
 
@@ -120,12 +120,15 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
             },
             body: JSON.stringify({classification_id: classification.id})
         })
-
-        if (fetched.status === 401) {
+        console.log("status:", fetched.status)
+        if (fetched.ok) {
+          await refreshClassifications();
+        }
+        else if (fetched.status === 401) {
           if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
 
         console.log("status:", fetched.status)
-        refreshClassifications()
+        await refreshClassifications()
       }
     }
       catch(error) {
@@ -133,7 +136,7 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
               console.error('Error:', error);
           }
         }
-  return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
+  return (<PaperButton labelStyle={{color: "red" }} onPress={async () => await onPress()}>Delete</PaperButton>);
 }
 
   // The component that deals with the adding a new project
@@ -154,8 +157,8 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
             })
             console.log("status:", fetched.status)
             if (fetched.ok) {
-              updateProjectList()
-              navigation.navigate('Home')
+              await updateProjectList();
+              navigation.navigate('Home');
             }
             else if (fetched.status === 401) {
               if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -165,7 +168,7 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
                 console.error('Error:', error);
             }
     }
-    return (<PaperButton labelStyle={{color: "red" }} onPress={onPress}>Delete</PaperButton>);
+    return (<PaperButton labelStyle={{color: "red" }} onPress={async () => await onPress()}>Delete</PaperButton>);
   }
 
   

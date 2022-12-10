@@ -21,11 +21,11 @@ const SubmitClassification = ({ classification, hideDialog, refreshClassificatio
                   'Authorization': `Bearer ${token ? token : ''}`
                   
               },
-              body: JSON.stringify({...classification})
+              body: JSON.stringify(classification)
           })
           console.log('status:', fetched.status);
           if (fetched.ok) {
-            refreshClassifications();
+            await refreshClassifications();
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -34,7 +34,7 @@ const SubmitClassification = ({ classification, hideDialog, refreshClassificatio
               console.error('Error:', error);
           }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
+  return (<PaperButton labelStyle={{color: "black" }} onPress={async () => {await onPress()}}>Create</PaperButton>);
 }
 
 /////////////////////////////////// REMARK //////////////////////////////////////////////////
@@ -57,7 +57,7 @@ const SubmitRemark = ({ remark, hideDialog, refreshRemarks }) => {
           })
           console.log('status:', fetched.status);
           if (fetched.ok) {
-            refreshRemarks();
+            await refreshRemarks();
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -66,11 +66,11 @@ const SubmitRemark = ({ remark, hideDialog, refreshRemarks }) => {
               console.error('Error:', error);
           }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
+  return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Create</PaperButton>);
 }
 
 /////////////////////////////////// SAMPLE //////////////////////////////////////////////////
-const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
+const SubmitSample = ({ sample, setVisible, refreshSamples, setSample }) => {
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
   const onPress = async () => {
@@ -83,21 +83,23 @@ const SubmitSample = ({ sample, setVisible, refreshSamples }) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token ? token : ''}`
             },
-            body: JSON.stringify({...sample})
+            body: JSON.stringify(sample)
         })
           console.log('status:', fetched.status);
           if (fetched.ok) {
-            refreshSamples();
+            await refreshSamples();
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           }
+          // clear the sample
+          setSample({ name: "", classification_id: NaN, remark_id: NaN, notes: "" });
 
       } catch(error) {
               console.error('Error:', error);
           }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
+  return (<PaperButton labelStyle={{color: "black" }} onPress={async () => {await onPress()}}>Create</PaperButton>);
 }
 
 
@@ -127,7 +129,7 @@ const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
       } catch(error) {
           console.error('Error:', error);
       }
-      getLogs();
+      await getLogs();
       setLogText({ name: "", drilled: "", logged: "", notes: "" })
 
       // set up water table
@@ -150,7 +152,7 @@ const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
       }
     }
 
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
+    return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Create</PaperButton>);
   }
 
 /////////////////////////////////// PROJECT //////////////////////////////////////////////////
@@ -188,7 +190,7 @@ const SubmitProject = ( { project, setvis, onUpdate, setNameError } : SubmitProp
     }
   }
 
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
+  return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Create</PaperButton>);
 }
 
 export {

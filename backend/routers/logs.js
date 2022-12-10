@@ -54,6 +54,23 @@ router.post('/get_all_logs', async (req, res) => {
   }
 })
 
+// get request to get a specific log by its id
+
+router.post('/get_log', async (req, res) => {
+  try {
+    const results = await db.get_log(req.body.log_id);
+    res.json(results);
+  } catch (err) {
+    if (isJwtError(err)) {
+      res.status(401).send("JWT Error");
+    }
+    else {
+      console.error(err);
+      res.status(500).send();
+    }
+  }
+})
+
 // get request on the root directory, returns absolutely all logs
 // written by: Ari
 router.post('/get_all_logs_absolute', async (req, res) => {

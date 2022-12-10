@@ -60,8 +60,8 @@ interface project  {
 
   type RootStackParamList = {
     Home: undefined;
-    Project: { project: project, onUpdate};
-    Log:     {log: log, updateLogList}
+    Project: { project: project, onUpdate: () => Promise<void> };
+    Log:     {log: log, updateLogList: () => Promise<void>, project_id: number}
     About: undefined;
   };
 
@@ -83,6 +83,11 @@ interface project  {
 
   interface remark {
     log_id:         number
+    start_depth:    number
+    notes:       string,
+  };
+
+  interface remarkText {
     start_depth:    number
     notes:       string,
   };

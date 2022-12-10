@@ -18,6 +18,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import {SubmitProject} from "../backend-calls/SubmitButtons"
 import AddProjectModal from "../dialogs/AddProjectModal"
 import Map from "../models/Map"
+import { ProjectListContext } from "../contexts/ProjectListContext";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -35,13 +36,23 @@ const Tab = createBottomTabNavigator();
 
 const Home = ({ navigation }: Props) => {
 
-  const [projectsList, setProjectsList] = useState<project[]>([]);
+  const { projectList, setProjectList } = useContext(ProjectListContext);
   // {name: "default", id: -1, client:"default", location:"default", notes:"default"}
   const { setIsLoggedIn } = useContext(LoginContext);
   const isFocused = useIsFocused();
   //Important: the default log includes a coordinate set, w
   const [logs, setLogs] = useState<log[]>([]);
   // const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    const refresh = async () => {
+    if (isFocused) { 
+      await Promise.all([getProjectsList(), getAllLogs()]);
+    }
+  }
+  refresh();
+  console.log('refreshed')
+  }, [isFocused]);
   
 
   const getProjectsList: () => void = async () => {
@@ -57,7 +68,7 @@ const Home = ({ navigation }: Props) => {
         } 
         else if (fetched.ok) {
           const projects_list = await fetched.json()
-          if (projects_list.length > 0) setProjectsList(projects_list)
+          if (projects_list.length > 0 && setProjectList) setProjectList(projects_list)
         }
     } catch(error) {
         console.error(error)
@@ -94,19 +105,12 @@ const Home = ({ navigation }: Props) => {
     return Map(logs, navigation)
   }
 
-  useEffect(() => {
-    if (isFocused) { 
-      getProjectsList();
-      getAllLogs()
-    }
-  }, [isFocused]);
-
   // This is what shows up in the 'Projects' tab screen.
   const ProjectsComponent = () => {
     return(
       <View style={{backgroundColor: 'white'}}>
         <Box>
-          <SelectProjectList navigate={navigation} projects={projectsList} onUpdate={getProjectsList}/>
+          <SelectProjectList navigate={navigation} projects={projectList} onUpdate={getProjectsList}/>
         </Box>
       </View>
     )

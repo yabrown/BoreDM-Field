@@ -29,7 +29,7 @@ const SelectRemarkButton = ({ remark, refreshRemarks }) => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  const [startDepth, setStartDepth] = useState(remark.start_depth);
+  const [startDepth, setStartDepth] = useState(String(remark.start_depth));
   const [notes, setNotes] = useState(remark.notes);
 
   const liststyle = StyleSheet.create({
@@ -43,7 +43,7 @@ const SelectRemarkButton = ({ remark, refreshRemarks }) => {
 
   return(
     <View>
-    <List.Item title={startDepth + "': " + notes} onPress={showDialog} style={liststyle.listitem} titleNumberOfLines={5}/>
+    <List.Item title={remark.start_depth + "': " + remark.notes} onPress={showDialog} style={liststyle.listitem} titleNumberOfLines={5}/>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
           <Dialog.Title>Edit Remark</Dialog.Title>
@@ -56,7 +56,7 @@ const SelectRemarkButton = ({ remark, refreshRemarks }) => {
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
             <DeleteRemark setModalVisible={setVisible} remark={remark} refreshRemarks={refreshRemarks}/>
-            <UpdateRemark setModalVisible={setVisible} remark={{log_id: remark.log_id, startDepth, notes }}/>
+            <UpdateRemark setModalVisible={setVisible} remark={{remark_id: remark.id, log_id: remark.log_id, startDepth, notes }} refreshRemarks={refreshRemarks}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>

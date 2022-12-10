@@ -25,7 +25,7 @@ const SubmitWater = ({ water, hideDialog, refreshWater }) => {
           })
           console.log('status:', fetched.status);
           if (fetched.ok) {
-            refreshWater();
+            await refreshWater();
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -34,7 +34,7 @@ const SubmitWater = ({ water, hideDialog, refreshWater }) => {
               console.error('Error:', error);
           }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Update</PaperButton>);
+  return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
 }
 
 const UpdateWaterModal = ({ water, setWater, refreshWater }) => {
@@ -50,13 +50,13 @@ const UpdateWaterModal = ({ water, setWater, refreshWater }) => {
           <Dialog.Title>Record Water Encounters</Dialog.Title>
           <Dialog.Content style={{ maxHeight: '80%'}}>
             <ScrollView>
-              <Text style={{fontSize: '16', fontWeight: '500', marginTop: '2%', marginBottom: '1%'}}>First Encounter</Text>
+              <Text style={{fontSize: 16, fontWeight: '500', marginTop: '2%', marginBottom: '1%'}}>First Encounter</Text>
               <TextInput value={typeof water.start_depth_1!='undefined' && !water.start_depth_1 ? "": String(water.start_depth_1)} label="Depth of first encounter" mode="outlined" onChangeText={(text) => setWater({...water, start_depth_1: Number(text)})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <TextInput value={water.timing_1} label="Time of first encounter" mode="outlined" onChangeText={(text) => setWater({...water, timing_1: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              <Text style={{fontSize: '16', fontWeight: '500', marginTop: '2%', marginBottom: '1%'}}>Second Encounter</Text>
+              <Text style={{fontSize: 16, fontWeight: '500', marginTop: '2%', marginBottom: '1%'}}>Second Encounter</Text>
               <TextInput value={!water.start_depth_2 ? "": String(water.start_depth_2)} label="Depth of second encounter" mode="outlined" onChangeText={(text) => setWater({...water, start_depth_2: Number(text)})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <TextInput value={water.timing_2} label="Time of second encounter" mode="outlined" onChangeText={(text) => setWater({...water, timing_2: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              <Text style={{fontSize: '16', fontWeight: '500', marginTop: '2%', marginBottom: '1%'}}>Third Encounter</Text>
+              <Text style={{fontSize: 16, fontWeight: '500', marginTop: '2%', marginBottom: '1%'}}>Third Encounter</Text>
               <TextInput value={!water.start_depth_3 ? "": String(water.start_depth_3)} label="Depth of third encounter" mode="outlined" onChangeText={(text) => setWater({...water, start_depth_3: Number(text)})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <TextInput value={water.timing_3} label="Time of third encounter" mode="outlined" onChangeText={(text) => setWater({...water, timing_3: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
             </ScrollView>
