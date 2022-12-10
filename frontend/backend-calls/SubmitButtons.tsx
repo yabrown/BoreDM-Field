@@ -154,21 +154,26 @@ const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
   }
 
 /////////////////////////////////// PROJECT //////////////////////////////////////////////////
-type SubmitProps = { project: { name: string, client: string, location: string, notes: string }, setvis: React.Dispatch<React.SetStateAction<boolean>>, onUpdate: () => void}
+type SubmitProps = { project: { name: string, client: string, location: string, notes: string }, setvis: React.Dispatch<React.SetStateAction<boolean>>, onUpdate: () => void, setNameError: React.Dispatch<React.SetStateAction<boolean>>}
 
-const SubmitProject = ( { project, setvis, onUpdate } : SubmitProps ) => {
+const SubmitProject = ( { project, setvis, onUpdate, setNameError } : SubmitProps ) => {
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   const onPress = async () => {
-    setvis(false)
+
+    if(project.name == "") {
+      setNameError(true);
+    }
+    else {
+      setvis(false)
       try {
         const token = await getToken();
         const fetched = await fetch(`${PORT}/add_project`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`
-            },
-            body: JSON.stringify({project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
+          method: 'POST', // or 'PUT'
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token ? token : ''}`
+          },
+          body: JSON.stringify({project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
         })
         onUpdate();
         console.log("status:", fetched.status)
@@ -180,6 +185,7 @@ const SubmitProject = ( { project, setvis, onUpdate } : SubmitProps ) => {
     } catch(error) {
             console.error('Error:', error);
         }
+    }
   }
 
   return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
