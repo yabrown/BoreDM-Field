@@ -49,6 +49,7 @@ const AddLogModal = ({ project_id, getLogs, getLatLon, lat, lon, setLat, setLon 
     const showDialog = () => setVisible(true);
     const hideDialog = () => setVisible(false);
   
+    const [nameError, setNameError] = useState(false);
     const [logText, setLogText] = useState({ name: "", drilled: "", logged: "", notes: "" })
   
     return (
@@ -59,7 +60,7 @@ const AddLogModal = ({ project_id, getLogs, getLatLon, lat, lon, setLat, setLon 
               <Dialog.Title style={{color: 'black'}}>New Log</Dialog.Title>
               <Dialog.Content>
                 <View>
-                  <TextInput value={logText.name} label="Log Name" mode="outlined" onChangeText={(text) => setLogText({...logText, name: text})} style={{ backgroundColor: 'white', marginBottom: 4}} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+                  <TextInput value={logText.name} error={nameError} label="Log Name" mode="outlined" onChangeText={(text) => setLogText({...logText, name: text})} style={{ backgroundColor: 'white', marginBottom: 4}} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                   <TextInput value={logText.drilled} label="Drilled by" mode="outlined" onChangeText={(text) => setLogText({...logText, drilled: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                   <TextInput value={logText.logged} label="Logged by" mode="outlined" onChangeText={(text) => setLogText({...logText, logged: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
                   <TextInput value={logText.notes} label="Notes" mode="outlined" onChangeText={(text) => setLogText({...logText, notes: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
@@ -70,7 +71,7 @@ const AddLogModal = ({ project_id, getLogs, getLatLon, lat, lon, setLat, setLon 
               </Dialog.Content>
               <Dialog.Actions>
                 <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-                <SubmitLog setModalVisible={setVisible} getLogs={getLogs} log={{ project_id: project_id, name: logText.name, driller: logText.drilled, logger: logText.logged, notes: logText.notes, latitude: lat, longitude: lon }} setLogText={setLogText} />
+                <SubmitLog setModalVisible={setVisible} getLogs={getLogs} setNameError={setNameError} log={{ project_id: project_id, name: logText.name, driller: logText.drilled, logger: logText.logged, notes: logText.notes, latitude: lat, longitude: lon }} setLogText={setLogText} />
               </Dialog.Actions>
             </Dialog>
           </Portal>

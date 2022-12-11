@@ -1,20 +1,8 @@
-import { Box, Flex, Spacer } from "@react-native-material/core";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useState, useContext } from 'react';
-import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import React, { useState } from 'react';
+import { SafeAreaView, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
-import { PORT } from '../env';
-import Header from '../common/header';
-import SelectLogList from '../models/SelectLogList';
-import * as Location from 'expo-location';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { LoginContext } from "../contexts/LoginContext";
-import { getToken } from "../utils/secureStore";
-import { logout } from "../common/logout";
-import {SubmitLog} from "../backend-calls/SubmitButtons"
 import {DeleteProject} from "../backend-calls/DeleteButtons"
 import {UpdateProject} from "../backend-calls/UpdateButtons"
-import AddLogModal from "./AddLogModal"
 
 
 const EditProjectModal = ({ project, updateProject, updateProjectList, navigation }) => {

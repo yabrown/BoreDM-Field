@@ -105,50 +105,55 @@ const SubmitSample = ({ sample, setVisible, refreshSamples, setSample }) => {
 
 
 /////////////////////////////////// LOG //////////////////////////////////////////////////
-const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
+const SubmitLog = ( { log, setModalVisible, getLogs, setLogText, setNameError }) => {
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
     let newLogID = -1;
 
     const onPress = async () => {
-      setModalVisible(false)
-      try {
-        const token = await getToken();
-        const fetched = await fetch(`${PORT}/add_boring_to_project`, {
+      if(log.name == "") {
+        setNameError(true);
+      }
+      else {
+        setModalVisible(false)
+        try {
+          const token = await getToken();
+          const fetched = await fetch(`${PORT}/add_boring_to_project`, {
             method: 'POST', // or 'PUT'
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token ? token : ''}`
             },
             body: JSON.stringify({ ...log, project_id: log.project_id })
-        })
-        newLogID =  await fetched.json();
-        if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-        } 
-      } catch(error) {
-          console.error('Error:', error);
-      }
-      await getLogs();
-      setLogText({ name: "", drilled: "", logged: "", notes: "" })
-
-      // set up water table
-      try {
-        const token = await getToken();
-        const fetched = await fetch(`${PORT}/add_water_encounter`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`
-            },
-            body: JSON.stringify({ log_id: newLogID })
-        })
-        console.log("Fetched status: " + fetched.status)
-        if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-        } 
-      } catch(error) {
-          console.error('Error:', error);
+          })
+          newLogID =  await fetched.json();
+          if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          } 
+        } catch(error) {
+            console.error('Error:', error);
+        }
+        await getLogs();
+        setLogText({ name: "", drilled: "", logged: "", notes: "" })
+  
+        // set up water table
+        try {
+          const token = await getToken();
+          const fetched = await fetch(`${PORT}/add_water_encounter`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`
+              },
+              body: JSON.stringify({ log_id: newLogID })
+          })
+          console.log("Fetched status: " + fetched.status)
+          if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          } 
+        } catch(error) {
+            console.error('Error:', error);
+        }
       }
     }
 

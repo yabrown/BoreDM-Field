@@ -9,7 +9,7 @@ import { logout } from "../common/logout";
 
 
 // The component that deals with updating log data
-const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog}) => {
+const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog, setNameError}) => {
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
     const refreshLog = async () => {
@@ -37,6 +37,10 @@ const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog}) => {
     }
     
     const onPress = async () => {
+      if(log.name == "") {
+        setNameError(true);
+      }
+      else{
           setModalVisible(false)
           try {
             const token = await getToken();
@@ -58,9 +62,10 @@ const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog}) => {
               if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
             }
           } catch(error) {
-                  console.error('Error:', error);
-              }
+              console.error('Error:', error);
+            }
       }
+    }
       return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Submit</PaperButton>);
   }
 
