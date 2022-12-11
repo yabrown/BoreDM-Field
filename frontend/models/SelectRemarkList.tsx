@@ -42,7 +42,7 @@ const SelectRemarkButton = ({ remark, refreshRemarks }) => {
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
             <DeleteRemark setModalVisible={setVisible} remark={remark} refreshRemarks={refreshRemarks}/>
-            <UpdateRemark setStartDepthError={setStartDepthError} setRemarkError={setRemarkError} setModalVisible={setVisible} remark={{remark_id: remark.id, log_id: remark.log_id, startDepth, notes }} startDepth={startDepth} refreshRemarks={refreshRemarks}/>
+            <UpdateRemark setStartDepthError={setStartDepthError} setRemarkError={setRemarkError} setModalVisible={setVisible} remark={{remark_id: remark.id, log_id: remark.log_id, startDepth, notes }} refreshRemarks={refreshRemarks}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
