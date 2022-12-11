@@ -432,12 +432,17 @@ async function update_sample(sample_id, start_depth, end_depth, length, blows_1,
 // updates classification associated with log_id
 // written by Louis
 async function update_classification(classification_id, start_depth, end_depth, uscs, color, moisture, density, hardness) {
-  const updated_classification = await Classification.update({ start_depth: start_depth, end_depth: end_depth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }, {
-    where: { id: classification_id },
-    returning: true,
-    raw: true,
-  });
-  return updated_classification[1][0].id;
+  try {
+    const updated_classification = await Classification.update({ start_depth: start_depth, end_depth: end_depth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }, {
+      where: { id: classification_id },
+      returning: true,
+      raw: true,
+    });
+    return updated_classification[1][0].id;
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 // creates project in db based on params, returns integer project_id of project that was created

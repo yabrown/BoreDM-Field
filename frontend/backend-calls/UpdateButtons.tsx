@@ -146,7 +146,7 @@ const UpdateClassification = ({ classification, setModalVisible, refreshClassifi
           setModalVisible(false)
           try {
               const token = await getToken();
-              let fetched = await fetch(`${PORT}/update_classification`, {
+              const fetched = await fetch(`${PORT}/update_classification`, {
                   method: 'POST', // or 'PUT'
                   headers: {
                       'Content-Type': 'application/json',

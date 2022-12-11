@@ -96,7 +96,7 @@ const Log = ({ route, navigation }: Props) => {
     }
   }
 
-  const refreshClassifications: () => void = async () => {
+  const refreshClassifications: () => Promise<void> = async () => {
     try{
       const token = await getToken();
       const fetched = await fetch(`${PORT}/get_all_classifications`, {

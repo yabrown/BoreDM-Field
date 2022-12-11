@@ -45,13 +45,14 @@ const SelectColorButton = ({ current, buttonOption, setFunction, color, highligh
   </View>
 );
 
-const SelectClassificationButton = ({ classification, refreshClassifications }) => {
+const SelectClassificationButton = ({ id, classification, refreshClassifications }) => {
 
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
   console.log("Reloaded log data");
+  console.log("class_id:", id);
   console.log(classification.start_depth);
   
   const [startDepth, setStartDepth] = useState(String(classification.start_depth));
@@ -62,9 +63,9 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
   const [density, setDensity] = useState(classification.density);
   const [hardness, setHardness] = useState(classification.hardness);
 
-  let classification_title = startDepth + "'-" + endDepth + "' ";
-  if(classification_title.length > 8) classification_title += "" + uscs;
-  else classification_title += "\t" + uscs;
+  let classification_title = classification.start_depth + "'-" + classification.end_depth + "' ";
+  if(classification_title.length > 8) classification_title += "" + classification.uscs;
+  else classification_title += "\t" + classification.uscs;
 
   const liststyle = StyleSheet.create({
     listitem: {
@@ -226,7 +227,7 @@ const SelectClassificationButton = ({ classification, refreshClassifications }) 
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
             <DeleteClassification setModalVisible={setVisible} classification={classification} refreshClassifications={refreshClassifications}/>
-            <UpdateClassification setModalVisible={setVisible} classification={{log_id: classification.log_id, start_depth: startDepth, end_depth: endDepth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }} refreshClassifications={refreshClassifications}/>
+            <UpdateClassification setModalVisible={setVisible} classification={{log_id: id, start_depth: startDepth, end_depth: endDepth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }} refreshClassifications={refreshClassifications}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -243,7 +244,7 @@ const SelectClassificationList = ({ id, classifications_list, refreshClassificat
         <Text style={{marginLeft: '2%', marginBottom: '5%', fontSize: 24, fontWeight: '500'}}>Classifications</Text>
         <ScrollView style={styles.scrollView}>
             {classifications_list.map(classification => (
-                <SelectClassificationButton classification={classification} key={uuid()} refreshClassifications={refreshClassifications}/>
+                <SelectClassificationButton id={classification.id} classification={classification} key={uuid()} refreshClassifications={refreshClassifications}/>
             ))}
         </ScrollView>
       </View>

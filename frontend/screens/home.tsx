@@ -68,7 +68,7 @@ const Home = ({ navigation }: Props) => {
         } 
         else if (fetched.ok) {
           const projects_list = await fetched.json()
-          if (projects_list.length > 0 && setProjectList) setProjectList(projects_list)
+          if (setProjectList) setProjectList(projects_list)
         }
     } catch(error) {
         console.error(error)
