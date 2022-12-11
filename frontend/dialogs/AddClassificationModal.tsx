@@ -10,6 +10,10 @@ const AddClassificationModal = ({ log_id, refreshClassifications }) => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
+  // Validation
+  const [startDepthError, setStartDepthError] = useState(false);
+  const [endDepthError, setEndDepthError] = useState(false);
+
   // The default classificatin has everything empty except for log_id, which must is set by a param to this function
   const classification: classification = { log_id: log_id, start_depth: NaN, end_depth: NaN, uscs: '', color: '', moisture: '', density: '', hardness: ''}
   const [start_depth, setStartDepth] = useState(classification.start_depth);
@@ -28,8 +32,8 @@ const AddClassificationModal = ({ log_id, refreshClassifications }) => {
           <Dialog.Title>Edit Classification Data</Dialog.Title>
           <Dialog.Content style={{ maxHeight: '80%'}}>
             <ScrollView>
-              <TextInput value={isNaN(start_depth) ? "": String(start_depth)} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(Number(text))} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              <TextInput value={isNaN(end_depth) ? "": String(end_depth)} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(Number(text))} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(start_depth) ? "": String(start_depth)} error={startDepthError} label="Start Depth *" mode="outlined" onChangeText={(text) => setStartDepth(Number(text))} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(end_depth) ? "": String(end_depth)} error={endDepthError} label="End Depth *" mode="outlined" onChangeText={(text) => setEndDepth(Number(text))} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <List.Accordion title="USCS" id="1" theme={{colors: {background: 'white', primary: 'black'}}}>
                 <HStack m={4} spacing={6} style={{ flexWrap: "wrap" }}>
                   <SelectButton buttonOption="CH" setFunction={setUSCS} current={uscs} color="white"/>
@@ -116,7 +120,7 @@ const AddClassificationModal = ({ log_id, refreshClassifications }) => {
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-            <SubmitClassification classification={{log_id, start_depth, end_depth, uscs, color, moisture, density, hardness}} hideDialog={hideDialog} refreshClassifications={refreshClassifications}/>
+            <SubmitClassification setStartDepthError={setStartDepthError} setEndDepthError={setEndDepthError} classification={{log_id, start_depth, end_depth, uscs, color, moisture, density, hardness}} hideDialog={hideDialog} refreshClassifications={refreshClassifications}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>

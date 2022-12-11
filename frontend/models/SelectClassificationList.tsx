@@ -1,12 +1,8 @@
-import { HStack, Stack, ListItem } from "@react-native-material/core";
-import React, { useEffect, useState, useContext } from 'react';
+import { HStack, Stack } from "@react-native-material/core";
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
 import { v4 as uuid } from 'uuid';
-import { logout } from "../common/logout";
-import { LoginContext } from "../contexts/LoginContext";
-import { PORT } from '../env';
-import { getToken, saveToken } from "../utils/secureStore";
 import { UpdateClassification } from "../backend-calls/UpdateButtons";
 import { DeleteClassification } from "../backend-calls/DeleteButtons";
 const SelectButton = ({ current, buttonOption, setFunction, color, highlightedColor="lightgrey" }) => (
@@ -63,6 +59,10 @@ const SelectClassificationButton = ({ id, classification, refreshClassifications
   const [density, setDensity] = useState(classification.density);
   const [hardness, setHardness] = useState(classification.hardness);
 
+  // Validation
+  const [startDepthError, setStartDepthError] = useState(false);
+  const [endDepthError, setEndDepthError] = useState(false);
+
   let classification_title = classification.start_depth + "'-" + classification.end_depth + "' ";
   if(classification_title.length > 8) classification_title += "" + classification.uscs;
   else classification_title += "\t" + classification.uscs;
@@ -84,8 +84,8 @@ const SelectClassificationButton = ({ id, classification, refreshClassifications
           <Dialog.Title>Edit Classification Data</Dialog.Title>
           <Dialog.Content style={{ maxHeight: '80%'}}>
             <ScrollView>
-              <TextInput value={startDepth} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              <TextInput value={endDepth} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={startDepth} error={startDepthError} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={endDepth} error={endDepthError} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <View style={{marginTop: "0.5%", marginBottom: "0.5%"}} >
                 <List.Accordion title="USCS" id="1" theme={{colors: {background: '#f0f0f0', primary: 'black'}}}>
                   <HStack space={4} spacing={6} alignItems="center" justifyContent="center" style={{ flexWrap: "wrap" }}>
@@ -227,7 +227,7 @@ const SelectClassificationButton = ({ id, classification, refreshClassifications
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
             <DeleteClassification setModalVisible={setVisible} classification={classification} refreshClassifications={refreshClassifications}/>
-            <UpdateClassification setModalVisible={setVisible} classification={{log_id: id, start_depth: startDepth, end_depth: endDepth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }} refreshClassifications={refreshClassifications}/>
+            <UpdateClassification setStartDepthError={setStartDepthError} setEndDepthError={setEndDepthError} setModalVisible={setVisible} classification={{log_id: id, start_depth: startDepth, end_depth: endDepth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }} refreshClassifications={refreshClassifications}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>

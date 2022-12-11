@@ -6,33 +6,46 @@ import { LoginContext } from "../contexts/LoginContext";
 import { PORT } from '../env';
 
 /////////////////////////////////// CLASSIFICATION //////////////////////////////////////////////////
-const SubmitClassification = ({ classification, hideDialog, refreshClassifications }) => {
+const SubmitClassification = ({ setStartDepthError, setEndDepthError, classification, hideDialog, refreshClassifications }) => {
 
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
+  let start = classification.start_depth;
+  let end = classification.end_depth;
   const onPress = async () => {
-    hideDialog()
-      try {
-          const token = await getToken();
-          const fetched = await fetch(`${PORT}/add_classification`, {
+    if(!isNaN(start) && !isNaN(end)) {
+      if(classification.end_depth <= classification.start_depth) {
+        setStartDepthError(true);
+        setEndDepthError(true);
+      }
+      else {
+        hideDialog()
+        try {
+            const token = await getToken();
+            const fetched = await fetch(`${PORT}/add_classification`, {
               method: 'POST', // or 'PUT'
               headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-                  
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
               },
               body: JSON.stringify(classification)
-          })
-          console.log('status:', fetched.status);
-          if (fetched.ok) {
-            await refreshClassifications();
+            })
+            console.log('status:', fetched.status);
+            if (fetched.ok) {
+              await refreshClassifications();
+            }
+            else if (fetched.status === 401) {
+              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            }
+        } catch(error) {
+            console.error('Error:', error);
           }
-          else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          }
-      } catch(error) {
-              console.error('Error:', error);
-          }
+      }
+    }
+    else {
+      setStartDepthError(true);
+      setEndDepthError(true);
+    }
   }
   return (<PaperButton labelStyle={{color: "black" }} onPress={async () => {await onPress()}}>Create</PaperButton>);
 }

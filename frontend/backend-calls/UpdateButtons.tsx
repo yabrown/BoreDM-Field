@@ -143,36 +143,45 @@ const UpdateRemark = ( {remark, setModalVisible, refreshRemarks}) => {
 
 
 // The component that deals with updating a Classification
-const UpdateClassification = ({ classification, setModalVisible, refreshClassifications }) => {
+const UpdateClassification = ({ setStartDepthError, setEndDepthError, classification, setModalVisible, refreshClassifications }) => {
 
-    const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-  
-      const onPress = async () => {
-          setModalVisible(false)
-          try {
-              const token = await getToken();
-              const fetched = await fetch(`${PORT}/update_classification`, {
-                  method: 'POST', // or 'PUT'
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token ? token : ''}`,
-                  },
-                  body: JSON.stringify({log_id: classification.log_id, start_depth: classification.start_depth, end_depth: classification.end_depth, uscs: classification.uscs, color: classification.color, moisture: classification.moisture, density: classification.density, hardness: classification.hardness })
-              })
-
-              if (fetched.ok) {
-                await refreshClassifications();
-              }
-              else if (fetched.status === 401) {
-                if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-              }
-  
-          } catch(error) {
-                  console.error('Error:', error);
-              }
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const onPress = async () => {
+    if(!isNaN(classification.start_depth) && !isNaN(classification.end_depth)) {
+      if(classification.end_depth <= classification.start_depth) {
+        setStartDepthError(true);
+        setEndDepthError(true);
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
+    else {
+      setModalVisible(false)
+      try {
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/update_classification`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`,
+            },
+            body: JSON.stringify({log_id: classification.log_id, start_depth: classification.start_depth, end_depth: classification.end_depth, uscs: classification.uscs, color: classification.color, moisture: classification.moisture, density: classification.density, hardness: classification.hardness })
+        })
+        if (fetched.ok) {
+          await refreshClassifications();
+        }
+        else if (fetched.status === 401) {
+          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        }
+      } catch(error) {
+              console.error('Error:', error);
+          }
+      }
+    }
+    else {
+      setStartDepthError(true);
+      setEndDepthError(true);
+    }
   }
+  return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
+}
 
 
 // The component that deals with the adding a new project
