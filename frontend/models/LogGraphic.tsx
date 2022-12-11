@@ -1,26 +1,23 @@
-import { HStack, Box, Flex, Spacer } from "@react-native-material/core";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useContext, useState, useEffect } from 'react';
-import { ScrollView, Dimensions, StyleSheet, Text, View } from "react-native";
-import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
-import Header from '../common/header';
-import SelectClassificationList from '../models/SelectClassificationList';
-import SelectSampleList from '../models/SelectSampleList';
-import SelectRemarkList from '../models/SelectRemarkList';
-import AddClassificationModal from "../dialogs/AddClassificationModal";
-import AddRemarkModal from "../dialogs/AddRemarkModal";
-import AddWaterModal from "../dialogs/AddWaterModal";
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { PORT } from '../env';
-import { getToken } from "../utils/secureStore";
-import { LoginContext } from "../contexts/LoginContext";
-import { logout } from "../common/logout";
+import React from 'react';
+import { StyleSheet, Text, View } from "react-native";
 import { v4 as uuid } from 'uuid';
 
 
 const LogGraphic = ({classifications_list, remarks_list, samples_list, water_list}) => {
 
   const styles = StyleSheet.create({
+    main_container: {
+      shadowColor: 'black',
+      shadowOffset: { width: 2, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 10,
+      elevation: 4,
+      backgroundColor: 'white',
+      margin: '3%',
+      marginBottom: '1%',
+      padding: '1%',
+      borderRadius: 10,
+    },
     classification_col: {
       flexDirection: 'column',
       flex: 2,
@@ -524,7 +521,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
   }
 
   return (
-    <View style={{flexDirection: 'row', flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}}>
+    <View style={[styles.main_container, {flexDirection: 'row', flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}]}>
       <View style={[styles.ruler_col]}>
         <Text style={{flex: 1}}></Text>
         {make_ruler_boxes(classifications_list)}

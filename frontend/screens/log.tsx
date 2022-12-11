@@ -1,8 +1,7 @@
-import { HStack, Box, Flex, Spacer } from "@react-native-material/core";
+import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useContext, useState, useEffect } from 'react';
-import { ScrollView, Dimensions, StyleSheet, Text, View } from "react-native";
-import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import Header from '../common/header';
 import SelectClassificationList from '../models/SelectClassificationList';
 import SelectSampleList from '../models/SelectSampleList';
@@ -16,10 +15,7 @@ import { PORT } from '../env';
 import { getToken } from "../utils/secureStore";
 import { LoginContext } from "../contexts/LoginContext";
 import { logout } from "../common/logout";
-import { v4 as uuid } from 'uuid';
 import AddSampleModal from "../dialogs/AddSampleModal"
-import {DeleteLog} from "../backend-calls/DeleteButtons"
-import {UpdateLog} from "../backend-calls/UpdateButtons"
 import EditLogModal from "../dialogs/EditLogModal"
 import { LogListContext } from "../contexts/LogListContext";
 
@@ -274,7 +270,7 @@ const Log = ({ route, navigation }: Props) => {
               />
               <Tab.Screen
                 name="Graphic Log"
-                component={GraphicComponent}  //Had to use intermediary because can't put props directly in component-- probably a type issue
+                component={GraphicComponent}
                 options={{ tabBarLabel: 'Graphic Log' }}
               />
             </Tab.Navigator>
