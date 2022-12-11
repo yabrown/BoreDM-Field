@@ -51,12 +51,13 @@ const SubmitClassification = ({ setStartDepthError, setEndDepthError, classifica
 }
 
 /////////////////////////////////// REMARK //////////////////////////////////////////////////
-const SubmitRemark = ({ remark, hideDialog, refreshRemarks }) => {
+const SubmitRemark = ({ setStartDepthError, setRemarkError, remark, hideDialog, refreshRemarks }) => {
 
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   
   const onPress = async () => {
-    hideDialog()
+    if(!isNaN(remark.start_depth) && remark.notes != "") {
+      hideDialog()
       try {
           const token = await getToken();
           const fetched = await fetch(`${PORT}/add_remark`, {
@@ -77,7 +78,12 @@ const SubmitRemark = ({ remark, hideDialog, refreshRemarks }) => {
           }
       } catch(error) {
               console.error('Error:', error);
-          }
+      }
+    }
+    else {
+      if (isNaN(remark.start_depth)) setStartDepthError(true); else setStartDepthError(false)
+      if (remark.notes == "") setRemarkError(true); else setRemarkError(false)
+    }
   }
   return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Create</PaperButton>);
 }

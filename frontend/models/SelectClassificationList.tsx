@@ -64,8 +64,8 @@ const SelectClassificationButton = ({ id, classification, refreshClassifications
   const [endDepthError, setEndDepthError] = useState(false);
 
   let classification_title = classification.start_depth + "'-" + classification.end_depth + "' ";
-  if(classification_title.length > 8) classification_title += "" + classification.uscs;
-  else classification_title += "\t" + classification.uscs;
+  if(classification_title.length > 7) classification_title += "\t" + classification.uscs;
+  else classification_title += "\t\t" + classification.uscs;
 
   const liststyle = StyleSheet.create({
     listitem: {

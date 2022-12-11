@@ -105,40 +105,47 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
 
 
 // The component that deals with updating a Classification
-const UpdateRemark = ( {remark, setModalVisible, refreshRemarks}) => {
+const UpdateRemark = ( {setStartDepthError, setRemarkError, remark, setModalVisible, refreshRemarks}) => {
 
     console.log("Log id: " + remark.log_id + " startDepth: " + remark.startDepth + " Remark: " + remark.notes)
   
   
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+    let depth = parseFloat(remark.startDepth);
   
-      const onPress = async () => {
-          setModalVisible(false)
-          try {
-              const token = await getToken();
-              const fetched = await fetch(`${PORT}/update_remark`, {
-                  method: 'POST', // or 'PUT'
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token ? token : ''}`,
-                  },
-                  body: JSON.stringify({remark_id: remark.remark_id, start_depth:remark.startDepth, notes: remark.notes })
-              })
-  
-              console.log("status:", fetched.status)
-              if (fetched.ok) {
-                await refreshRemarks();
-              }
-              else if (fetched.status === 401) {
-                if (setIsLoggedIn) await logout(setIsLoggedIn);
-              }
-  
-  
-          } catch(error) {
-                  console.error('Error:', error);
-              }
+    const onPress = async () => {
+      if(!isNaN(depth) && remark.notes != "") {
+        setModalVisible(false)
+        try {
+          const token = await getToken();
+          const fetched = await fetch(`${PORT}/update_remark`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`,
+              },
+              body: JSON.stringify({remark_id: remark.remark_id, start_depth:depth, notes: remark.notes })
+          })
+
+          console.log("status:", fetched.status)
+          if (fetched.ok) {
+            await refreshRemarks();
+          }
+          else if (fetched.status === 401) {
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
+          }  
+        } catch(error) {
+                console.error('Error:', error);
+            }
       }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
+      else {
+        setStartDepthError(false);
+        setRemarkError(false);
+        if (isNaN(depth)) setStartDepthError(true);
+        if (remark.notes == "") setRemarkError(true);
+      }
+    }
+    return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
   }
 
 
