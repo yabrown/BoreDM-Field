@@ -165,7 +165,7 @@ const reseed = (async () => {
   // (Danny, see this) replace line below with this one. const project_2 = await Project.create({ name: "Robert", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
   const project_2 = await Project.create({ name: "Robbinstown Bridge Rehab", username: "testuser2", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2" });
   await Coordinate.create({ latitude: 10, longitude: 15 });
-  const log_2 = await Log.create({ project_id: project_2.id, name: "Test Log 2", driller: "Louis", logger: "Max", notes: "Very nice!", latitude: 40.349955, longitude: -74.652800 });
+  const log_2 = await Log.create({ project_id: project_2.id, name: "B-2", driller: "Louis", logger: "Max", notes: "Very nice!", latitude: 40.349955, longitude: -74.652800 });
   await Classification.create({
     log_id: log_2.id,
     start_depth: 3,
