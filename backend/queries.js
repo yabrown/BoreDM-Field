@@ -234,7 +234,7 @@ const reseed = (async () => {
 
   const proj_test = await Project.create({
     name: "Princeton Steam Tunnels",
-    username: "COS333_Testing",
+    username: "cos333_testing",
     location: "Princeton, NJ",
     client: "Alicki",
     notes: "Secret Steam Tunnels"
