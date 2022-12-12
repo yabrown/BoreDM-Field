@@ -304,7 +304,7 @@ const reseed = (async () => {
   });
   
   const test_class_1 = await Classification.create({
-    log_id: test_log_1,
+    log_id: test_log_1.id,
     start_depth: 1,
     end_depth: 5,
     uscs: "CL",
@@ -315,7 +315,7 @@ const reseed = (async () => {
   });
   
   const test_class_2 = await Classification.create({
-    log_id: test_log_1,
+    log_id: test_log_1.id,
     start_depth: 8,
     end_depth: 11,
     uscs: "ML",
@@ -326,7 +326,7 @@ const reseed = (async () => {
   });
   
   const test_class_3= await Classification.create({
-    log_id: test_log_1,
+    log_id: test_log_1.id,
     start_depth: 18,
     end_depth: 22,
     uscs: "OL",
