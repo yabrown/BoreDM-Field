@@ -47,7 +47,8 @@ initialRegion={
       //   longitudeDelta: 0.0421,
       // } : {}
 }
-      // showsMyLocationButton={true}
+      showsUserLocation={true}
+      showsMyLocationButton={true}
       provider = {PROVIDER_GOOGLE}
       mapType = {"hybrid"}
     >

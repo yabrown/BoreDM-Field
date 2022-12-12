@@ -50,7 +50,7 @@ const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog, setNameError}) =
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token ? token : ''}`
                 },
-                body: JSON.stringify({log_id: log.id, log_name: log.name, driller: log.driller, logger: log.logger, notes: log.notes})
+                body: JSON.stringify({log_id: log.id, log_name: log.name, driller: log.driller, logger: log.logger, notes: log.notes, latitude: log.latitude, longitude: log.longitude})
             })
             console.log("status:", fetched.status)
 

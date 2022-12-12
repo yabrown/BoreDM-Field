@@ -24,7 +24,7 @@ router.post('/delete_log', (req, res) => {
 
 router.post('/update_log', (req, res) => {
   try {
-    db.update_log(req.body.log_id, req.body.log_name, req.body.driller, req.body.logger, req.body.notes)
+    db.update_log(req.body.log_id, req.body.log_name, req.body.driller, req.body.logger, req.body.notes, req.body.latitude, req.body.longitude)
     res.status(200).send();
   } catch (err) {
     if (isJwtError(err)) {
