@@ -47,7 +47,7 @@ const AddClassificationModal = ({ log_id, refreshClassifications }) => {
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Classification</PaperButton>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-          <Dialog.Title>Edit Classification Data</Dialog.Title>
+          <Dialog.Title>Add Classification</Dialog.Title>
           <Dialog.Content style={{ maxHeight: '80%'}}>
             <ScrollView>
               <TextInput value={isNaN(start_depth) ? "": String(start_depth)} error={startDepthError} label="Start Depth *" mode="outlined" onChangeText={(text) => setStartDepth(Number(text))} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>

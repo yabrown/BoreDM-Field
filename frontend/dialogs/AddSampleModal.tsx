@@ -23,7 +23,7 @@ const AddSampleModal = ({ log_id, refreshSamples }) => {
       <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Sample</PaperButton>
         <Portal>
           <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title>New Sample</Dialog.Title>
+            <Dialog.Title>Add Sample</Dialog.Title>
             <Dialog.Content>
               <View>
               <TextInput error={startDepthError} value={!currSample.start_depth || isNaN(currSample.start_depth) ? "": String(currSample.start_depth)} label="Start Depth (ft)" mode="outlined" onChangeText={(text) => setSample({ ...currSample, start_depth: Number(text) })} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>

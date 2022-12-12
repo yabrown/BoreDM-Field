@@ -224,14 +224,14 @@ const reseed = (async () => {
     start_depth_1: 8,
     timing_1: "ATD",
   });
-  
+
   // This is all the projects/data that will be displayed to testers
   await User.create({
     username: 'COS333_Testing',
-    hashed_password: '$2b$10$wMBAsQZdIqfyIXJK64.4oe/UzItvMrClor2XpgRHPmeHFqNNJm/4m',
+    hashed_password: '$2b$10$4c8SAs5ju.XpRl4fKqAYO.SIngENJ/oopoCRWhqngk3Rc.lmTsmCG',
     name: 'Kuba'
   })
-  
+
   const proj_test = await Project.create({
     name: "Princeton Steam Tunnels",
     username: "COS333_Testing",
@@ -239,7 +239,7 @@ const reseed = (async () => {
     client: "Alicki",
     notes: "Secret Steam Tunnels"
   });
-  
+
   await Project.create({
     name: "Wiggins St Rennovation",
     username: "COS333_Testing",
@@ -247,7 +247,7 @@ const reseed = (async () => {
     client: "Dondero",
     notes: "63 Wiggins"
   });
-  
+
   await Project.create({
     name: "Witherspoon New Construction",
     username: "COS333_Testing",
@@ -255,7 +255,7 @@ const reseed = (async () => {
     client: "Walker",
     notes: "Let's build something that shuts down the second largest street in Princeton for a whole semester."
   });
-  
+
   await Project.create({
     name: "Yale Demolition",
     username: "COS333_Testing",
@@ -263,8 +263,8 @@ const reseed = (async () => {
     client: "Walker",
     notes: "Because we didn't get a bonfire"
   });
-  
-  
+
+
   await Project.create({
     name: "New College South",
     username: "COS333_Testing",
@@ -272,7 +272,7 @@ const reseed = (async () => {
     client: "Luijendijk",
     notes: "It's hard to find donors these days."
   });
-  
+
   const test_log_1 = await Log.create({
     project_id: proj_test.id,
     name: "B-1",
@@ -282,7 +282,7 @@ const reseed = (async () => {
     latitude: 40.346957,
     longitude: -74.655086
   });
-  
+
   const test_log_2 = await Log.create({
     project_id: proj_test.id,
     name: "B-2",
@@ -292,7 +292,7 @@ const reseed = (async () => {
     latitude: 40.344879,
     longitude: -74.654073
   });
-  
+
   const test_log_3 = await Log.create({
     project_id: proj_test.id,
     name: "B-2",
@@ -302,7 +302,7 @@ const reseed = (async () => {
     latitude: 40.345576,
     longitude: -74.652708
   });
-  
+
   const test_class_1 = await Classification.create({
     log_id: test_log_1.id,
     start_depth: 1,
@@ -313,7 +313,7 @@ const reseed = (async () => {
     density: "Dense",
     hardness: "Hard"
   });
-  
+
   const test_class_2 = await Classification.create({
     log_id: test_log_1.id,
     start_depth: 8,
@@ -324,7 +324,7 @@ const reseed = (async () => {
     density: "Medium Dense",
     hardness: "Very Soft"
   });
-  
+
   const test_class_3= await Classification.create({
     log_id: test_log_1.id,
     start_depth: 18,
@@ -335,19 +335,19 @@ const reseed = (async () => {
     density: "Medium Dense",
     hardness: "Firm"
   });
-  
+
   await Remark.create({
     log_id: test_log_1.id,
     start_depth: 7,
     notes: "Drill started shaking pretty hard",
   });
-  
+
   await Remark.create({
     log_id: test_log_1.id,
     start_depth: 16,
     notes: "Drill chatter",
   });
-  
+
   await Sample.create({
     log_id: test_log_1.id,
     start_depth: 7,
@@ -359,7 +359,7 @@ const reseed = (async () => {
     refusal_length: 4,
     sampler_type: "SPS"
   });
-  
+
   await Sample.create({
     log_id: test_log_1.id,
     start_depth: 12,
@@ -371,14 +371,14 @@ const reseed = (async () => {
     refusal_length: 4,
     sampler_type: "OTS"
   });
-  
+
   await Water.create({
     log_id: test_log_1.id,
     encounter_id: 1,
     start_depth_1: 7,
     timing_1: "ATD",
   });
-  
+
 })
 reseed()
 
