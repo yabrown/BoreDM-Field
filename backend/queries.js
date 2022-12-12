@@ -228,7 +228,7 @@ const reseed = (async () => {
   // This is all the projects/data that will be displayed to testers
   await User.create({
     username: 'COS333_Testing',
-    hashed_password: '$2b$15$pqRj0lMSbtjsHHTCxUQ2/OrtzEcJtYdOnUU3sHz1r7EKSyGrzk4Du',
+    hashed_password: '$2b$10$wMBAsQZdIqfyIXJK64.4oe/UzItvMrClor2XpgRHPmeHFqNNJm/4m',
     name: 'Kuba'
   })
   
