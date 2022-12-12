@@ -227,7 +227,7 @@ const reseed = (async () => {
 
   // This is all the projects/data that will be displayed to testers
   await User.create({
-    username: 'COS333_Testing',
+    username: 'cos333_testing',
     hashed_password: '$2b$10$CSVcdkP0Sa9zUnM/oGXNWuZfAVAqSQUxUX3IUuhENcQPaiKz5AABC',
     name: 'Kuba'
   })
@@ -242,7 +242,7 @@ const reseed = (async () => {
 
   await Project.create({
     name: "Wiggins St Rennovation",
-    username: "COS333_Testing",
+    username: "cos333_testing",
     location: "Princeton, NJ",
     client: "Dondero",
     notes: "63 Wiggins"
@@ -250,7 +250,7 @@ const reseed = (async () => {
 
   await Project.create({
     name: "Witherspoon New Construction",
-    username: "COS333_Testing",
+    username: "cos333_testing",
     location: "Princeton, NJ",
     client: "Walker",
     notes: "Let's build something that shuts down the second largest street in Princeton for a whole semester."
@@ -258,16 +258,16 @@ const reseed = (async () => {
 
   await Project.create({
     name: "Yale Demolition",
-    username: "COS333_Testing",
+    username: "cos333_testing",
     location: "New Haven, CT",
-    client: "Walker",
+    client: "Eisgruber",
     notes: "Because we didn't get a bonfire"
   });
 
 
   await Project.create({
     name: "New College South",
-    username: "COS333_Testing",
+    username: "cos333_testing",
     location: "Princeton, NJ",
     client: "Luijendijk",
     notes: "It's hard to find donors these days."
@@ -295,7 +295,7 @@ const reseed = (async () => {
 
   const test_log_3 = await Log.create({
     project_id: proj_test.id,
-    name: "B-2",
+    name: "B-3",
     driller: "Bob",
     logger: "David",
     notes: "Potential new exit point for Steam Tunnels.",
@@ -338,8 +338,8 @@ const reseed = (async () => {
 
   await Remark.create({
     log_id: test_log_1.id,
-    start_depth: 7,
-    notes: "Drill started shaking pretty hard",
+    start_depth: 12,
+    notes: "Drill shaking",
   });
 
   await Remark.create({
@@ -364,9 +364,9 @@ const reseed = (async () => {
     log_id: test_log_1.id,
     start_depth: 12,
     length: 18,
-    blows_1: 15,
-    blows_2: 25,
-    blows_3: 24,
+    blows_1: 8,
+    blows_2: 12,
+    blows_3: 30,
     description: "Sample 02b6",
     refusal_length: 4,
     sampler_type: "OTS"
@@ -374,6 +374,20 @@ const reseed = (async () => {
 
   await Water.create({
     log_id: test_log_1.id,
+    encounter_id: 1,
+    start_depth_1: 7,
+    timing_1: "ATD",
+  });
+
+  await Water.create({
+    log_id: test_log_2.id,
+    encounter_id: 1,
+    start_depth_1: 7,
+    timing_1: "ATD",
+  });
+
+  await Water.create({
+    log_id: test_log_3.id,
     encounter_id: 1,
     start_depth_1: 7,
     timing_1: "ATD",
