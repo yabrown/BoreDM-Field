@@ -21,7 +21,8 @@
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyBQFZlMC46HKziHe_AWy7dwGNz5Z3MGPzM"
-        }
+      },
+      "bundleIdentifier": "com.dannymf.boredmfield"
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +34,12 @@
       "favicon": "./assets/favicon.png",
       "config": {
         "googleMapsApiKey": "AIzaSyBQFZlMC46HKziHe_AWy7dwGNz5Z3MGPzM"
-        }
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1fc264af-b64f-41ee-81b0-bd2fb7f3dda2"
+      }
     }
   }
 }
