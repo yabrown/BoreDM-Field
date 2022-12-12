@@ -305,7 +305,7 @@ const reseed = (async () => {
   
   const test_class_1 = await Classification.create({
     log_id: test_log_1,
-    start_depth: 0,
+    start_depth: 1,
     end_depth: 5,
     uscs: "CL",
     color: "Brown",
