@@ -71,21 +71,22 @@ const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog, setNameError}) =
 
 
 // The component that deals with updating a Sample
-const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
+const UpdateSample = ( {setStartDepthError, setLengthError, setSamplerError, sample, setModalVisible, refreshSamples}) => {
 
     const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
     const onPress = async () => {
+      if(sample.start_depth != "" && sample.length != "" && sample.sampler_type != "") {
         setModalVisible(false)
         try {
           let token = await getToken();
           let fetched = await fetch(`${PORT}/update_sample`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-              },
-              body: JSON.stringify({sample_id: sample.id, start_depth: sample.start_depth, end_depth: sample.end_depth, length: sample.length, blows_1: sample.blows_1, blows_2: sample.blows_2, blows_3: sample.blows_3, blows_4: sample.blows_4, description: sample.description, refusal_length: sample.refusal_length, sampler_type: sample.sampler_type})
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`
+            },
+            body: JSON.stringify({sample_id: sample.id, start_depth: sample.start_depth, end_depth: sample.end_depth, length: sample.length, blows_1: sample.blows_1, blows_2: sample.blows_2, blows_3: sample.blows_3, blows_4: sample.blows_4, description: sample.description, refusal_length: sample.refusal_length, sampler_type: sample.sampler_type})
           })
           console.log("status:", fetched.status)
 
@@ -96,9 +97,18 @@ const UpdateSample = ( {sample, setModalVisible, refreshSamples}) => {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
           }
           }
-            catch(error) {
-                console.error('Error:', error);
-            }
+        catch(error) {
+            console.error('Error:', error);
+        }
+      }
+      else {
+        setStartDepthError(false);
+        setLengthError(false);
+        setSamplerError(false);
+        if (sample.start_depth == "") setStartDepthError(true);
+        if (sample.length == "") setLengthError(true);
+        if (sample.sampler_type == "") setSamplerError(true);
+      }
     }
     return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
 }

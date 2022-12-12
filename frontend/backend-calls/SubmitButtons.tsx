@@ -89,34 +89,44 @@ const SubmitRemark = ({ setStartDepthError, setRemarkError, remark, hideDialog, 
 }
 
 /////////////////////////////////// SAMPLE //////////////////////////////////////////////////
-const SubmitSample = ({ sample, setVisible, refreshSamples, setSample }) => {
+const SubmitSample = ({ setStartDepthError, setLengthError, setSamplerError, sample, setVisible, refreshSamples, setSample }) => {
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
   const onPress = async () => {
-    setVisible(false)
-      try {
-        const token = await getToken();
-        const fetched = await fetch(`${PORT}/add_sample`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`
-            },
-            body: JSON.stringify(sample)
-        })
-          console.log('status:', fetched.status);
-          if (fetched.ok) {
-            await refreshSamples();
-          }
-          else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          }
-          // clear the sample
-          setSample({ name: "", classification_id: NaN, remark_id: NaN, notes: "" });
+    if(!isNaN(sample.start_depth) && !isNaN(sample.length) && sample.sampler_type != "") {
+      setVisible(false)
+        try {
+          const token = await getToken();
+          const fetched = await fetch(`${PORT}/add_sample`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`
+              },
+              body: JSON.stringify(sample)
+          })
+            console.log('status:', fetched.status);
+            if (fetched.ok) {
+              await refreshSamples();
+            }
+            else if (fetched.status === 401) {
+              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            }
+            // clear the sample
+            setSample({ name: "", classification_id: NaN, remark_id: NaN, notes: "" });
 
-      } catch(error) {
-              console.error('Error:', error);
+        } catch(error) {
+                console.error('Error:', error);
           }
+    }
+    else {
+      setStartDepthError(false);
+      setLengthError(false);
+      setSamplerError(false);
+      if (isNaN(sample.start_depth)) setStartDepthError(true);
+      if (isNaN(sample.start_depth)) setLengthError(true);
+      if (sample.sampler_type == "") setSamplerError(true);
+    }
   }
   return (<PaperButton labelStyle={{color: "black" }} onPress={async () => {await onPress()}}>Create</PaperButton>);
 }
