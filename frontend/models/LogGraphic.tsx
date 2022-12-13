@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 import { v4 as uuid } from 'uuid';
+import { GetColorName } from 'hex-color-to-color-name';
 
 
 const LogGraphic = ({classifications_list, remarks_list, samples_list, water_list}) => {
@@ -115,7 +116,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     var output  = "";
 
     if (classification.color) {
-      output = output + classification.color + ", ";
+      output = output + GetColorName(classification.color) + ", ";
     }
 
     if (classification.moisture) {
@@ -182,7 +183,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     if (classification.uscs) {
       description = classification.uscs + ": " + description;
     }
-    return <View key={uuid()} style={[styles.description_box, {flex: length}]} ><Text>{description}</Text></View>
+    return <View key={uuid()} style={[styles.description_box, {flex: length}]} ><Text numberOfLines={length}>{description}</Text></View>
   };
 
   let make_remark_box = function (remark: remark) {
@@ -191,7 +192,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     if (remark.notes) {
       text = remark.notes + " @" + remark.start_depth + "'";
     }
-    return <View key={uuid()} style={[styles.description_box, {flex: length}]} ><Text>{text}</Text></View>
+    return <View key={uuid()} style={[styles.remark_box, {flex: length}]} ><Text numberOfLines={length}>{text}</Text></View>
   };
 
   let make_sample_box = function (sample: sample) {
