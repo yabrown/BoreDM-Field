@@ -14,7 +14,7 @@ const About = () => {
         <Flex flex-grow style={{width:"100%"}}>
         <Header/>
           <ScrollView style={styles.aboutText}>
-            <Text style={{fontWeight: 'normal', fontSize: 20}}>
+            <Text style={{fontWeight: 'normal', fontSize: 20, lineHeight: 35, fontFamily: 'Trebuchet MS'}}>
             <Text style={{fontWeight: 'bold', fontSize: 30}}>{'\n'}How to use the app effectively{'\n\n'}</Text>
             BoreDM Field is a web-app that allows geotechnical engineers to 
             directly enter soil information from the field into an online 
