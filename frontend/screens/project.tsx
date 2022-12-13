@@ -172,7 +172,7 @@ const Project = ({ navigation, route}: Props) => {
                 if (route.name === 'Logs List') {
                   iconName = focused ? 'ios-list' : 'ios-list-outline';
                 } else if (route.name === 'Maps') {
-                  iconName = focused ? 'ios-list' : 'ios-list-outline';
+                  iconName = focused ? 'map' : 'map-outline';
                 }
     
                 // You can return any component that you like here!
