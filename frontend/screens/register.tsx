@@ -128,7 +128,7 @@ const RegisterScreen = ({navigation}) => {
                   headers: {
                     'Content-Type': 'application/json',
                 },
-              body: JSON.stringify({ username: credentials.username.toLocaleLowerCase().trim(), password: credentials.password })});
+              body: JSON.stringify({ username: credentials.username.toLowerCase().trim(), password: credentials.password })});
 
               if (fetched.ok) {
                 Alert.alert("Succesfully registered!");
@@ -166,9 +166,9 @@ const RegisterScreen = ({navigation}) => {
 const height = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   image: {
-      objectFit: 'cover',
-      width: '100%',
-      height: height / 9.0
+      width: '90%',
+      height: height / 9.0,
+      alignSelf: 'center'
   },
 });
 

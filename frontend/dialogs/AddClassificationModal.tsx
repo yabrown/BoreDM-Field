@@ -1,27 +1,9 @@
 import { HStack, Stack } from "@react-native-material/core";
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Button, Button as PaperButton, Dialog, List, Portal, TextInput } from 'react-native-paper';
-import { v4 as uuid } from 'uuid';
-import { UpdateClassification } from "../backend-calls/UpdateButtons";
-import { DeleteClassification } from "../backend-calls/DeleteButtons";
-const SelectButton = ({ current, buttonOption, setFunction, color, highlightedColor="lightgrey" }) => (
-  <View style={{ minWidth: 150, maxWidth: 150, margin: 5 }}>
-    <Button
-      style={{borderColor: "#696969" }}
-      buttonColor={current===buttonOption ? highlightedColor : color}
-      textColor='black'
-      mode='outlined'
-      onPress={
-        () => {
-          setFunction(buttonOption);
-        }
-      }
-    >
-      { buttonOption }
-    </Button>
-  </View>
-);
+import SelectButton from "../dialogs/SelectButton";
+import {SubmitClassification} from "../backend-calls/SubmitButtons"
 
 const SelectColorButton = ({ current, buttonOption, setFunction, color, highlightedColor="red" }) => (
   <View style={{ minWidth: 50, maxWidth: 50, marginRight: "2.5%", marginTop: "1%" }}>
@@ -41,51 +23,35 @@ const SelectColorButton = ({ current, buttonOption, setFunction, color, highligh
   </View>
 );
 
-const SelectClassificationButton = ({ id, classification, refreshClassifications }) => {
-
+const AddClassificationModal = ({ log_id, refreshClassifications }) => {
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  console.log("Reloaded log data");
-  console.log("class_id:", id);
-  console.log(classification.start_depth);
-  
-  const [startDepth, setStartDepth] = useState(String(classification.start_depth));
-  const [endDepth, setEndDepth] = useState(String(classification.end_depth));
+  // Validation
+  const [startDepthError, setStartDepthError] = useState(false);
+  const [endDepthError, setEndDepthError] = useState(false);
+
+  // The default classificatin has everything empty except for log_id, which must is set by a param to this function
+  const classification: classification = { log_id: log_id, start_depth: NaN, end_depth: NaN, uscs: '', color: '', moisture: '', density: '', hardness: ''}
+  const [start_depth, setStartDepth] = useState(classification.start_depth);
+  const [end_depth, setEndDepth] = useState(classification.end_depth);
   const [uscs, setUSCS] = useState(classification.uscs);
   const [color, setColor] = useState(classification.color);
   const [moisture, setMoisture] = useState(classification.moisture);
   const [density, setDensity] = useState(classification.density);
   const [hardness, setHardness] = useState(classification.hardness);
 
-  // Validation
-  const [startDepthError, setStartDepthError] = useState(false);
-  const [endDepthError, setEndDepthError] = useState(false);
-
-  let classification_title = classification.start_depth + "'-" + classification.end_depth + "' ";
-  if(classification_title.length > 7) classification_title += "\t" + classification.uscs;
-  else classification_title += "\t\t" + classification.uscs;
-
-  const liststyle = StyleSheet.create({
-    listitem: {
-      borderColor: "black",
-      borderWidth: 1,
-      borderRadius: 5,
-      margin: '3%'
-    },
-  });
-
-  return(
+  return (
     <View>
-    <List.Item title={classification_title} onPress={showDialog} style={liststyle.listitem} titleNumberOfLines={5}/>
+      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Classification</PaperButton>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-          <Dialog.Title>Edit Classification Data</Dialog.Title>
+          <Dialog.Title>Add Classification</Dialog.Title>
           <Dialog.Content style={{ maxHeight: '80%'}}>
             <ScrollView>
-              <TextInput value={startDepth} error={startDepthError} label="Start Depth" mode="outlined" onChangeText={(text) => setStartDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              <TextInput value={endDepth} error={endDepthError} label="End Depth" mode="outlined" onChangeText={(text) => setEndDepth(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(start_depth) ? "": String(start_depth)} error={startDepthError} label="Start Depth *" mode="outlined" onChangeText={(text) => setStartDepth(Number(text))} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
+              <TextInput value={isNaN(end_depth) ? "": String(end_depth)} error={endDepthError} label="End Depth *" mode="outlined" onChangeText={(text) => setEndDepth(Number(text))} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
               <View style={{marginTop: "0.5%", marginBottom: "0.5%"}} >
                 <List.Accordion title="USCS" id="1" theme={{colors: {background: '#f0f0f0', primary: 'black'}}}>
                   <HStack space={4} spacing={6} alignItems="center" justifyContent="center" style={{ flexWrap: "wrap" }}>
@@ -226,58 +192,12 @@ const SelectClassificationButton = ({ id, classification, refreshClassifications
           </Dialog.Content>
           <Dialog.Actions>
             <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-            <DeleteClassification setModalVisible={setVisible} classification={classification} refreshClassifications={refreshClassifications}/>
-            <UpdateClassification setStartDepthError={setStartDepthError} setEndDepthError={setEndDepthError} setModalVisible={setVisible} classification={{log_id: id, start_depth: startDepth, end_depth: endDepth, uscs: uscs, color: color, moisture: moisture, density: density, hardness: hardness }} refreshClassifications={refreshClassifications}/>
+            <SubmitClassification setStartDepthError={setStartDepthError} setEndDepthError={setEndDepthError} classification={{log_id, start_depth, end_depth, uscs, color, moisture, density, hardness}} hideDialog={hideDialog} refreshClassifications={refreshClassifications}/>
           </Dialog.Actions>
         </Dialog>
       </Portal>
     </View>
   );
-};
-
-
-
-const SelectClassificationList = ({ id, classifications_list, refreshClassifications }) => {
-
-  return(
-    <View style={{height: "90%"}}>
-        <Text style={{marginLeft: '2%', marginBottom: '5%', fontSize: 24, fontWeight: '500'}}>Classifications</Text>
-        <ScrollView style={styles.scrollView}>
-            {classifications_list.map(classification => (
-                <SelectClassificationButton id={classification.id} classification={classification} key={uuid()} refreshClassifications={refreshClassifications}/>
-            ))}
-        </ScrollView>
-      </View>
-  )
 }
 
-const showViews = 0
-const styles = StyleSheet.create({
-
-  touchable: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    borderWidth: showViews,
-    borderColor: 'red'
-  },
-  scrollView: {
-    borderWidth: showViews,
-    borderColor: 'red'
-  },
-  button: {
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: 'rgba(0,0,0,0)',
-    borderWidth: showViews,
-    borderColor: 'red'
-  },
-
-});
-
-export default SelectClassificationList;
+export default AddClassificationModal;

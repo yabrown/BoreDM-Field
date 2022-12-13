@@ -1,7 +1,7 @@
 import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React, { useState, useContext } from 'react';
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState, useContext } from 'react';
+import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import { PORT } from '../env';
 import Header from '../common/header';
@@ -11,26 +11,41 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { LoginContext } from "../contexts/LoginContext";
 import { getToken } from "../utils/secureStore";
 import { logout } from "../common/logout";
+import { useIsFocused } from "@react-navigation/native";
+import {SubmitLog} from "../backend-calls/SubmitButtons"
+import {DeleteProject} from "../backend-calls/DeleteButtons"
+import {UpdateProject} from "../backend-calls/UpdateButtons"
+import Ionicons from "react-native-vector-icons/Ionicons";
+import AddLogModal from "../dialogs/AddLogModal"
+import EditProjectModal from "../dialogs/EditProjectModal"
+import Map from "../models/Map"
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { ProjectListContext } from "../contexts/ProjectListContext";
+import SelectProjectList from "../models/SelectProjectList";
+import { LogListContext } from "../contexts/LogListContext";
 
+
+const Tab = createBottomTabNavigator();
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Project'>;
 
 const Title = (props: { name:string }) =>{
   return(
       <View style={styles.titleView}>
-          <Text style={{fontWeight:'500', fontSize: 20, color: 'black'}}>{props.name}</Text>
+          <Text style={{fontWeight:'600', fontSize: 30, color: 'black'}}>{props.name}</Text>
       </View>
   )
 }
 
 const Project = ({ navigation, route}: Props) => {
 
-  let default_log: log = {project_id: -1, id: -1, name: "default", driller: "default", logger: "default", notes: "default"}
-  const [logsList, setLogsList] = useState<log[]>([default_log]);
   const [latitude, setLat] = useState(10);
   const [longitude, setLon] = useState(10);
   const [currProject, setProject] = useState(route.params.project);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const isFocused = useIsFocused();
+  const { projectList, setProjectList } = useContext(ProjectListContext);
+  const { logList, setLogList } = useContext(LogListContext);
 
   const refreshProject = async () => {
     try {
@@ -53,6 +68,26 @@ const Project = ({ navigation, route}: Props) => {
     }
   }
 
+  const refreshProjectList = async () => {
+      try {
+        const token = await getToken();  
+        const fetched = await fetch(`${PORT}/get_all_projects`, {
+          headers: {
+            'Authorization': `Bearer ${token ? token : ''}`
+          }
+        });
+          if (fetched.status === 401) {
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
+          } 
+          else if (fetched.ok) {
+            const projects_list = await fetched.json()
+            if (setProjectList) setProjectList(projects_list)
+          }
+      } catch(error) {
+          console.error(error)
+      }
+    }
+
   const getLogs = async () => {
       try{
         const token = await getToken();
@@ -66,7 +101,7 @@ const Project = ({ navigation, route}: Props) => {
         });
           if (fetched.ok) {
             const logs_list = await fetched.json()
-            setLogsList(logs_list)
+            if (setLogList) setLogList(logs_list)
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
@@ -95,229 +130,103 @@ const Project = ({ navigation, route}: Props) => {
       }
     }
   }
-  getLatLon();
+  //getLatLon();
+
+  // This is what shows up in the 'Map' tab screen. 
+  // This only exists because for some reason I can't put Map(logs) directly in the component field of Tab.screen-- 
+  // probably just some esoteric type issue
+  const MapComponent = () => Map(logList, navigation);
+
+  useEffect(() => {
+    if (isFocused) { 
+      getLogs();
+    }
+  }, [isFocused]);
+
+  // This is what shows up in the 'Logs' tab screen.
+  const LogsComponent = () => {
+    return(
+      <View style={{backgroundColor: 'white'}}>
+        <Box>
+        <SelectLogList id={currProject.id} navigate={navigation} getLogs={getLogs} route={route}/> 
+        </Box>
+      </View>
+    )
+  }
+
+
 
   return (
-    <View style={styles.container}>
-        <Flex fill flex-grow style={{width:"100%"}}>
-          <Box>
-            <Header/>
-          </Box>
-          <Box>
-            <Title name={currProject.name}/>
-          </Box>
-          <Box>
-          <SelectLogList id={currProject.id} navigate={navigation} logsList={logsList} getLogs={getLogs}/>
-          </Box>
-          <Spacer />
-          <Box style={{ justifyContent: "center" }}>
+    <SafeAreaView style={styles.container}>
+      <Flex fill flex-grow style={{width:"100%"}}>
+        <View>
+          <Header/>
+        </View>
+        <View style={{minHeight: "80%"}}>
+          <Tab.Navigator
+            initialRouteName="Log List"
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+    
+                if (route.name === 'Logs List') {
+                  iconName = focused ? 'ios-list' : 'ios-list-outline';
+                } else if (route.name === 'Maps') {
+                  iconName = focused ? 'ios-list' : 'ios-list-outline';
+                }
+    
+                // You can return any component that you like here!
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+              tabBarActiveTintColor: 'tomato',
+              tabBarInactiveTintColor: 'gray',
+              lazy: true,
+              tabBarScrollEnabled: false,
+              tabBarStyle: { height: '10%' },
+              tabBarLabelStyle: { fontSize: (Dimensions.get('window').height * Dimensions.get('window').width) / 35000 },
+            })}
+            // screenOptions={{
+            //   tabBarActiveTintColor: '#000000',
+            //   tabBarLabelStyle: { fontSize: 12 },
+            //   tabBarStyle: { backgroundColor: 'white' },
+            //   // tabBarIndicatorStyle: { backgroundColor: 'black' },
+            //   lazy: true,
+            //   tabBarScrollEnabled: false,
+            // }}
+            sceneContainerStyle= {{backgroundColor: 'white'}}
+            >
+            <Tab.Screen
+              name="Logs List"
+              component = {LogsComponent} 
+              options={{ tabBarLabel: 'Logs List' }}/>
+
+            <Tab.Screen
+              name="Maps"
+              component={MapComponent}  //Had to use intermediary because can't put props directly in component-- probably a type issue
+              options={{ tabBarLabel: 'Map' }}
+            />
+          </Tab.Navigator>
+          </View>
+            <Spacer />
+            <View style={{ marginHorizontal: 6, marginBottom: 6, minHeight: '5%' }}>
             <Box style={{ margin: 4 }}>
               <AddLogModal project_id={currProject.id} getLogs={getLogs} getLatLon={getLatLon} setLat={setLat} setLon={setLon} lat={latitude} lon={longitude}/>
             </Box>
             <Box style={{ margin: 4 }}>
-              <EditProjectModal project={currProject} updateProject={refreshProject} navigation={navigation} updateProjectList={route.params.onUpdate}/>
+              {/* TODO: refresh */}
+              <EditProjectModal project={currProject} updateProject={refreshProject} navigation={navigation} updateProjectList={refreshProjectList}/>
             </Box>
-          </Box>
-        </Flex>
-    </View>
-  );
-}
-
-// The button that deals with submitting a new Log
-const SubmitLog = ( { log, setModalVisible, getLogs, setLogText }) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-    const onPress = async () => {
-        setModalVisible(false)
-        try {
-          const token = await getToken();
-          const fetched = await fetch(`${PORT}/add_boring_to_project`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-              },
-              body: JSON.stringify({ ...log, project_id: log.project_id })
-          })
-          console.log(fetched.status)
-          if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          } 
-      } catch(error) {
-              console.error('Error:', error);
-          }
-        getLogs();
-        setLogText({ name: "", drilled: "", logged: "", notes: "" })
-    }
-
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Create</PaperButton>);
-  }
-
-// The component that deals with the adding a new project
-const UpdateProject = ({ project, setModalVisible, updateProject }) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-    const onPress = async () => {
-        setModalVisible(false)
-        try {
-          const token = await getToken();
-            let fetched = await fetch(`${PORT}/update_project`, {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token ? token : ''}`
-                },
-                body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
-            })
-            if (fetched.ok) updateProject();
-            else if (fetched.status === 401) {
-              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-            } 
-        } catch(error) {
-                console.error('Error:', error);
-            }
-    }
-    return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Submit</PaperButton>);
-  }
-
-  // The component that deals with the adding a new project
-const DeleteProject = ({ project, setModalVisible, navigation, updateProjectList }) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
-  const onPress = async () => {
-      setModalVisible(false)
-      try {
-        const token = await getToken();
-          let fetched = await fetch(`${PORT}/delete_project`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-              },
-              body: JSON.stringify({project_id: project.id})
-          })
-          console.log("status:", fetched.status)
-          if (fetched.ok) {
-            updateProjectList()
-            navigation.navigate('Home')
-          }
-          else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-          }
-            
-      } catch(error) {
-              console.error('Error:', error);
-          }
-  }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={onPress}>Delete</PaperButton>);
-}
-
-const Map = ({getLatLon, latitude, longitude, setLat, setLon}) => {
-  
-  getLatLon();
-
-  return(
-    <View style={{
-      ...StyleSheet.absoluteFillObject,
-      height: '100%', // you can customize this
-      width: '100%',  // you can customize this
-      alignItems: "center",
-      }}>
-
-      <MapView
-        style={{ ...StyleSheet.absoluteFillObject }}
-        initialRegion={{
-          latitude: latitude,
-          longitude: longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        showsMyLocationButton={true}
-        provider = {PROVIDER_GOOGLE}
-        mapType = {"hybrid"}
-      >
-        <Marker
-          coordinate={{latitude: latitude, longitude: longitude}}
-          draggable
-          onDragEnd={
-            (async (e) => {
-            setLat(e.nativeEvent.coordinate.latitude);
-            setLon(e.nativeEvent.coordinate.longitude);
-          })}
-        />
-      </MapView>
-    </View>
-)
-}
-
-const AddLogModal = ({ project_id, getLogs, getLatLon, lat, lon, setLat, setLon }) => {
-  const [visible, setVisible] = useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
-
-  const [logText, setLogText] = useState({ name: "", drilled: "", logged: "", notes: "" })
-  return (
-      <View>
-      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>+ Log</PaperButton>
-        <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title style={{color: 'black'}}>New Log</Dialog.Title>
-            <Dialog.Content>
-              <View>
-                <TextInput value={logText.name} label="Log Name" mode="outlined" onChangeText={(text) => setLogText({...logText, name: text})} style={{ backgroundColor: 'white', marginBottom: 4}} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={logText.drilled} label="Drilled by" mode="outlined" onChangeText={(text) => setLogText({...logText, drilled: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={logText.logged} label="Logged by" mode="outlined" onChangeText={(text) => setLogText({...logText, logged: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={logText.notes} label="Notes" mode="outlined" onChangeText={(text) => setLogText({...logText, notes: text})} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              </View>
-              <View style={{marginTop: "2%", minHeight: "50%"}}>
-                <Map getLatLon={getLatLon} latitude={lat} longitude={lon} setLat={setLat} setLon={setLon}></Map>
-              </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <SubmitLog setModalVisible={setVisible} getLogs={getLogs} log={{ project_id: project_id, name: logText.name, driller: logText.drilled, logger: logText.logged, notes: logText.notes, latitude: lat, longitude: lon }} setLogText={setLogText} />
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
-  );
+           </View>
+       </Flex>
+    </SafeAreaView>
+  )
 }
 
 
-const EditProjectModal = ({ project, updateProject, updateProjectList, navigation }) => {
-  const [visible, setVisible] = useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
 
-  const [textProject, setTextProject] = useState(project.name);
-  const [textClient, setTextClient] = useState(project.client);
-  const [textLocation, setTextLocation] = useState(project.location);
-  const [textNotes, setTextNotes] = useState(project.notes);
 
-  return (
-      <View>
-      <PaperButton onPress={showDialog} mode="elevated" style={{backgroundColor:"black"}} labelStyle={{fontSize: 18, color: "white" }}>Edit Project Metadata</PaperButton>
-        <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog} style={{ backgroundColor: "white" }}>
-            <Dialog.Title style={{color: 'black'}}>New Log</Dialog.Title>
-            <Dialog.Content>
-              <View>
-                <TextInput value={textProject} label="Project Name" mode="outlined" onChangeText={(text) => setTextProject(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textClient} label="Client Name" mode="outlined" onChangeText={(text) => setTextClient(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textLocation} label="Location" mode="outlined" onChangeText={(text) => setTextLocation(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-                <TextInput value={textNotes} label="Notes" mode="outlined" onChangeText={(text) => setTextNotes(text)} style={{ backgroundColor: 'white', marginBottom: 4 }} onPointerEnter={undefined} onPointerEnterCapture={undefined} onPointerLeave={undefined} onPointerLeaveCapture={undefined} onPointerMove={undefined} onPointerMoveCapture={undefined} onPointerCancel={undefined} onPointerCancelCapture={undefined} onPointerDown={undefined} onPointerDownCapture={undefined} onPointerUp={undefined} onPointerUpCapture={undefined} cursorColor={undefined}/>
-              </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <PaperButton onPress={hideDialog} labelStyle={{color: "black" }}>Cancel</PaperButton>
-              <UpdateProject setModalVisible={setVisible} updateProject={updateProject} project={{id: project.id, name: textProject, client: textClient, location: textLocation, notes: textNotes}}/>
-              <DeleteProject setModalVisible={setVisible} project={{id: project.id}} navigation={navigation} updateProjectList={updateProjectList}/>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
-  );
-}
+
+
 
 const showViews = 0
 //TODO: change this so that it only calulcates once, in the right place
@@ -334,11 +243,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   titleView: {
-    height: 30,
+    height: 'auto',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     borderWidth: showViews,
-    borderColor: 'red'
+    borderColor: 'red',
+    marginLeft: '2%'
   },
   centeredView: {
     flex: 1,
