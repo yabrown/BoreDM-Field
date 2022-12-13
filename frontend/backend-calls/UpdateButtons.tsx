@@ -165,36 +165,40 @@ const UpdateClassification = ({ setStartDepthError, setEndDepthError, classifica
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
   const onPress = async () => {
     if(!isNaN(classification.start_depth) && !isNaN(classification.end_depth)) {
-      if(classification.end_depth <= classification.start_depth) {
+      if(Number(classification.end_depth) <= Number(classification.start_depth)) {
+        console.log("Overlap issue");
         setStartDepthError(true);
         setEndDepthError(true);
       }
-    else {
-      setModalVisible(false)
-      try {
-        const token = await getToken();
-        const fetched = await fetch(`${PORT}/update_classification`, {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token ? token : ''}`,
-            },
-            body: JSON.stringify({log_id: classification.log_id, start_depth: classification.start_depth, end_depth: classification.end_depth, uscs: classification.uscs, color: classification.color, moisture: classification.moisture, density: classification.density, hardness: classification.hardness })
-        })
-        if (fetched.ok) {
-          await refreshClassifications();
-        }
-        else if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
-        }
-      } catch(error) {
-              console.error('Error:', error);
+      else {
+        setModalVisible(false)
+        try {
+          const token = await getToken();
+          const fetched = await fetch(`${PORT}/update_classification`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`,
+              },
+              body: JSON.stringify({log_id: classification.log_id, start_depth: classification.start_depth, end_depth: classification.end_depth, uscs: classification.uscs, color: classification.color, moisture: classification.moisture, density: classification.density, hardness: classification.hardness })
+          })
+          if (fetched.ok) {
+            await refreshClassifications();
           }
+          else if (fetched.status === 401) {
+            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          }
+        } catch(error) {
+                console.error('Error:', error);
+            }
+        }
       }
-    }
     else {
-      setStartDepthError(true);
-      setEndDepthError(true);
+      console.log("At least one is nan");
+      setStartDepthError(false);
+      setEndDepthError(false);
+      if(isNaN(classification.start_depth)) setStartDepthError(true);
+      if(isNaN(classification.end_depth)) setEndDepthError(true);
     }
   }
   return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
