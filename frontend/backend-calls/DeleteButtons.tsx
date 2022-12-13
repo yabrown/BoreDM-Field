@@ -25,7 +25,7 @@ const DeleteLog = ({ log, setModalVisible, navigation, refreshLogs }) => {
           })
           if (fetched.ok) {
             await refreshLogs();
-            navigation.navigate('Home')
+            navigation.goBack();
           }
           else if (fetched.status === 401) {
             if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);

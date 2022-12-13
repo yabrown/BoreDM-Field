@@ -48,7 +48,7 @@ export default function App() {
                     {isLoggedIn ? 
 
                     <HomeStack.Navigator initialRouteName='Home'>
-                        <HomeStack.Screen name='Home' component={Home} options={({navigation, route}) => ({title: 'Projects', headerRight: () => (<Button onPress={async () => {if (setIsLoggedIn) await logout(setIsLoggedIn)}} buttonColor="#000000" textColor='#ffffff'>Logout</Button>), headerLeft: () => <Button icon={() => <Ionicons name='help-circle-outline' color='#ffffff' size={24}/>} onPress={() => {navigation.navigate('About')}} buttonColor="#000000" textColor='#ffffff'>About</Button>
+                        <HomeStack.Screen name='Home' component={Home} options={({ navigation }) => ({title: 'Projects', headerRight: () => (<Button onPress={async () => {if (setIsLoggedIn) await logout(setIsLoggedIn)}} buttonColor="#000000" textColor='#ffffff'>Logout</Button>), headerLeft: () => <Button icon={() => <Ionicons name='help-circle-outline' color='#ffffff' size={24}/>} onPress={() => {navigation.navigate('About')}} buttonColor="#000000" textColor='#ffffff'>About</Button>
 })} />
                         <HomeStack.Screen name='Project' component={Project} options={{title: 'Project Details', headerRight: () => (<Button onPress={async () => {if (setIsLoggedIn) await logout(setIsLoggedIn)}} buttonColor="#000000" textColor='#ffffff'>Logout</Button>)}} />
                         <HomeStack.Screen name='Log' component={Log} options={{title: 'Log Details', headerRight: () => (<Button onPress={async () => {if (setIsLoggedIn) await logout(setIsLoggedIn)}} buttonColor="#000000" textColor='#ffffff'>Logout</Button>)}} />
