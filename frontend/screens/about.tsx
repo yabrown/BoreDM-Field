@@ -14,7 +14,7 @@ const About = () => {
         <Flex flex-grow style={{width:"100%"}}>
         <Header/>
           <ScrollView style={styles.aboutText}>
-            <Text style={{fontWeight: 'normal', fontSize: 20, lineHeight: 35, fontFamily: 'Trebuchet MS'}}>
+            <Text style={{fontWeight: 'normal', fontSize: 20, lineHeight: 35, fontFamily: 'Trebuchet MS', textAlign: 'justify'}}>
             <Text style={{fontWeight: 'bold', fontSize: 30}}>{'\n'}How to use the app effectively{'\n\n'}</Text>
             BoreDM Field is a web-app that allows geotechnical engineers to 
             directly enter soil information from the field into an online 
@@ -25,7 +25,7 @@ const About = () => {
             for paper field logs to be left (or forgotten) in the office and 
             field notes to be done on native phone apps for notetaking. The 
             result is low-quality field notes, or worse, the occasional loss 
-            of field data (resulting in $3,000 of field work needing to be 
+            of field data (resulting in $6,000 of field work needing to be 
             replicated per boring).{'\n'}{'\n'}
             BoreDM Field is solving this problem by providing a lightweight, simple interface for geotechnical engineers to enter data directly from the field. The program has a user-friendly interface optimized for field-work with POS-style data entry, graphic visualizations, and a built-in map so that engineers can spend more time boring, and less time being bored. We're excited to be at the cutting-edge of the geotechnical soil exploration industry and look forward to working with you for all your soil needs.
             </Text>
