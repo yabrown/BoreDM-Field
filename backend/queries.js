@@ -118,7 +118,7 @@ const reseed = (async () => {
     client: "Alicki",
     notes: "40th St Stormdrain Rebuild"
   });
-  const home_1 = await Coordinate.create({ latitude: 10, longitude: 15 });
+  const home_1 = await Coordinate.create({ latitude: 40.357300, longitude: -74.667221 });
   const log_1 = await Log.create({
     project_id: project_1.id,
     name: "B-1",
@@ -325,7 +325,7 @@ const reseed = (async () => {
     hardness: "Very Soft"
   });
 
-  const test_class_3= await Classification.create({
+  const test_class_3 = await Classification.create({
     log_id: test_log_1.id,
     start_depth: 18,
     end_depth: 22,
