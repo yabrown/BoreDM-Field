@@ -28,7 +28,7 @@ const SubmitWater = ({ water, hideDialog, refreshWater }) => {
             await refreshWater();
           }
           else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
           }
       } catch(error) {
               console.error('Error:', error);

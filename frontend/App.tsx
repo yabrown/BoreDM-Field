@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { Provider as PaperProvider, Button } from 'react-native-paper';
 import { getToken } from './utils/secureStore';
+import FlashMessage from "react-native-flash-message";
 
 // screens
 import Home from './screens/home';
@@ -64,6 +65,7 @@ export default function App() {
                 </ProjectListContext.Provider>
                 </LoginContext.Provider>
                 
+        <FlashMessage position="top" />
         </PaperProvider>
         </NavigationContainer>
     ); 

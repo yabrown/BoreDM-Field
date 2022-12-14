@@ -60,7 +60,7 @@ const Log = ({ route, navigation }: Props) => {
           if (setLogList) setLogList(logs_list);
         }
         else if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          if (setIsLoggedIn) await logout(setIsLoggedIn);
         } 
     } catch(error) {
         console.error(error);
@@ -84,7 +84,7 @@ const Log = ({ route, navigation }: Props) => {
         setSamplesList(new_samples_list)
       }
       else if (fetched.status === 401) {
-        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        if (setIsLoggedIn) await logout(setIsLoggedIn);
       }
 
     } catch(error) {
@@ -108,7 +108,7 @@ const Log = ({ route, navigation }: Props) => {
         setClassificationsList(new_classifications_list)
       }
       else if (fetched.status === 401) {
-        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        if (setIsLoggedIn) await logout(setIsLoggedIn);
       }
 
     } catch(error) {
@@ -132,7 +132,7 @@ const Log = ({ route, navigation }: Props) => {
         setRemarksList(new_remarks_list)
       }
       else if (fetched.status === 401) {
-        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        if (setIsLoggedIn) await logout(setIsLoggedIn);
       }
 
     } catch(error) {
@@ -156,7 +156,7 @@ const Log = ({ route, navigation }: Props) => {
         setWaterList(new_water_list[0])
       }
       else if (fetched.status === 401) {
-        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        if (setIsLoggedIn) await logout(setIsLoggedIn);
       }
       else console.log(fetched.status)
     } catch(error) {

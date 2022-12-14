@@ -29,7 +29,7 @@ const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog, setNameError}) =
           if (log) setLog(log);
         }
         else if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          if (setIsLoggedIn) await logout(setIsLoggedIn);
         }
       } catch(error) {
               console.error('Error:', error);
@@ -59,7 +59,7 @@ const UpdateLog = ( {log, setModalVisible, refreshLogs, setLog, setNameError}) =
             }
   
             if (fetched.status === 401) {
-              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+              if (setIsLoggedIn) await logout(setIsLoggedIn);
             }
           } catch(error) {
               console.error('Error:', error);
@@ -94,7 +94,7 @@ const UpdateSample = ( {setStartDepthError, setLengthError, setSamplerError, sam
             await refreshSamples();
           }
           else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
           }
           }
         catch(error) {
@@ -186,7 +186,7 @@ const UpdateClassification = ({ setStartDepthError, setEndDepthError, classifica
             await refreshClassifications();
           }
           else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
           }
         } catch(error) {
                 console.error('Error:', error);
@@ -228,7 +228,7 @@ const UpdateProject = ({ project, setModalVisible, updateProject, setNameError }
               })
               if (fetched.ok) await updateProject();
               else if (fetched.status === 401) {
-                if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+                if (setIsLoggedIn) await logout(setIsLoggedIn);
               } 
           } catch(error) {
               console.error('Error:', error);

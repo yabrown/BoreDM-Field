@@ -61,7 +61,7 @@ const Project = ({ navigation, route}: Props) => {
         setProject(updated_project)
       }
       else if (fetched.status === 401) {
-        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        if (setIsLoggedIn) await logout(setIsLoggedIn);
       } 
     } catch(error) {
         console.error(error)
@@ -104,7 +104,7 @@ const Project = ({ navigation, route}: Props) => {
             if (setLogList) setLogList(logs_list)
           }
           else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
           } 
       } catch(error) {
           console.error(error)

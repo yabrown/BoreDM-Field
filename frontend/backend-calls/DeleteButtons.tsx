@@ -28,7 +28,7 @@ const DeleteLog = ({ log, setModalVisible, navigation, refreshLogs }) => {
             navigation.goBack();
           }
           else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
           }
         } catch(error) {
                 console.error('Error:', error);
@@ -58,7 +58,7 @@ const DeleteSample = ({ sample, setModalVisible, refreshSamples }) => {
               await refreshSamples();
             }
             else if (fetched.status === 401) {
-              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+              if (setIsLoggedIn) await logout(setIsLoggedIn);
             }             
         } catch(error) {
               console.log("Problem")
@@ -91,7 +91,7 @@ const DeleteRemark = ({ remark, setModalVisible, refreshRemarks }) => {
             await refreshRemarks();
           }
           else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
         } 
       }
         catch(error) {
@@ -125,7 +125,7 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
           await refreshClassifications();
         }
         else if (fetched.status === 401) {
-          if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+          if (setIsLoggedIn) await logout(setIsLoggedIn);
 
         console.log("status:", fetched.status)
         await refreshClassifications()
@@ -161,7 +161,7 @@ const DeleteClassification = ({ classification, setModalVisible, refreshClassifi
               navigation.navigate('Home');
             }
             else if (fetched.status === 401) {
-              if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+              if (setIsLoggedIn) await logout(setIsLoggedIn);
             }
               
         } catch(error) {
