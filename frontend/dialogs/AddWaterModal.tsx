@@ -1,40 +1,65 @@
 import React, { useState, useContext } from 'react';
 import { ScrollView, View, Text } from "react-native";
-import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
+import { ActivityIndicator, Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import { logout } from "../common/logout";
 import { getToken } from "../utils/secureStore";
 import { LoginContext } from "../contexts/LoginContext";
 import { PORT } from '../env';
+import { showMessage } from "react-native-flash-message";
 
 const SubmitWater = ({ water, hideDialog, refreshWater }) => {
 
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
+  // STEP 1: create a state variable to hold the loading state
+  const [isLoading, setIsLoading] = useState(false);
+
+  // STEP 2: create a function that will set the state after a promise resolves
+  const asyncSetIsLoading = async (newState: boolean) => {
+    Promise.resolve().then(_ => setIsLoading(newState));
+  }
   
   const onPress = async () => {
-    hideDialog()
-      try {
-          const token = await getToken();
-          const fetched = await fetch(`${PORT}/update_water_encounter`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`
-                  
-              },
-              body: JSON.stringify({...water})
-          })
-          console.log('status:', fetched.status);
-          if (fetched.ok) {
-            await refreshWater();
-          }
-          else if (fetched.status === 401) {
-            if (setIsLoggedIn) await logout(setIsLoggedIn);
-          }
-      } catch(error) {
-              console.error('Error:', error);
-          }
+    try {
+      // STEP 3: set the loading state to true before fetching
+      setIsLoading(true);
+      const token = await getToken();
+      const fetched = await fetch(`${PORT}/update_water_encounter`, {
+          method: 'POST', // or 'PUT'
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token ? token : ''}`
+              
+          },
+          body: JSON.stringify({...water})
+      })
+      console.log('status:', fetched.status);
+      if (fetched.ok) {
+        await refreshWater();
+        await asyncSetIsLoading(false);
+        showMessage({
+          message: "Water succesfully updated!",
+          type: "success",
+        });
+      }
+      else if (fetched.status === 401) {
+        // STEP 5: if unauthorized, show relevant message
+        showMessage({
+          message: "You are unauthorized, signing out.",
+          type: "danger",
+        });
+        if (setIsLoggedIn) await logout(setIsLoggedIn);
+      }  
+    } catch(error) {
+            console.error('Error:', error);
+    } finally {
+      // STEP 7: set the loading state to false after fetching and close modal
+      refreshWater();
+      setIsLoading(false);
+      hideDialog();
+    }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
+  return (!isLoading ? <PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>  : <ActivityIndicator animating={true} size="large" color="#0000ff" />);
 }
 
 const UpdateWaterModal = ({ water, setWater, refreshWater }) => {

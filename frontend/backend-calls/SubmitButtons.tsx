@@ -46,7 +46,7 @@ const SubmitClassification = ({ setStartDepthError, setEndDepthError, classifica
             await refreshClassifications();
             await asyncSetIsLoading(false);
             showMessage({
-              message: "Sample succesfully added!",
+              message: "Classification succesfully added!",
               type: "success",
             });
           }
@@ -109,7 +109,7 @@ const SubmitRemark = ({ setStartDepthError, setRemarkError, remark, hideDialog, 
           await refreshRemarks();
           await asyncSetIsLoading(false);
           showMessage({
-            message: "Sample succesfully added!",
+            message: "Remark succesfully added!",
             type: "success",
           });
         }
@@ -246,7 +246,7 @@ const SubmitLog = ( { log, setModalVisible, getLogs, setLogText, setNameError })
             await getLogs();
             await asyncSetIsLoading(false);
             showMessage({
-              message: "Project succesfully added!",
+              message: "Log succesfully added!",
               type: "success",
             });
           }
@@ -320,10 +320,10 @@ const SubmitProject = ( { project, setvis, onUpdate, setNameError } : SubmitProp
       setNameError(true);
     }
     else {
-      setvis(false)
       try {
         // STEP 3: set the loading state to true before fetching
         setIsLoading(true);
+
         const token = await getToken();
         const fetched = await fetch(`${PORT}/add_project`, {
           method: 'POST', // or 'PUT'

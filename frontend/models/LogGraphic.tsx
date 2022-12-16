@@ -29,8 +29,9 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     },
     ruler_col: {
       flexDirection: 'column',
-      maxWidth: '5%',
+      maxWidth: '3%',
       flex: 2,
+      padding: '0%'
     },
     ruler_box: {
       alignItems: 'flex-start',

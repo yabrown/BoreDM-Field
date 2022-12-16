@@ -111,7 +111,6 @@ const UpdateSample = ( {setStartDepthError, setLengthError, setSamplerError, sam
 
     const onPress = async () => {
       if(sample.start_depth != "" && sample.length != "" && sample.sampler_type != "") {
-        setModalVisible(false)
         try {
           // STEP 3: set the loading state to true before fetching
           setIsLoading(true);
@@ -167,55 +166,86 @@ const UpdateSample = ( {setStartDepthError, setLengthError, setSamplerError, sam
 }
 
 
-// The component that deals with updating a Classification
+/////////////////////////////////// REMARK //////////////////////////////////////////////////
 const UpdateRemark = ( {setStartDepthError, setRemarkError, remark, setModalVisible, refreshRemarks}) => {
 
-    console.log("Log id: " + remark.log_id + " startDepth: " + remark.startDepth + " Remark: " + remark.notes)
+  console.log("Log id: " + remark.log_id + " startDepth: " + remark.startDepth + " Remark: " + remark.notes)
   
-  
-    const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-    let depth = parseFloat(remark.startDepth);
-  
-    const onPress = async () => {
-      if(!isNaN(depth) && remark.notes != "") {
-        setModalVisible(false)
-        try {
-          const token = await getToken();
-          const fetched = await fetch(`${PORT}/update_remark`, {
-              method: 'POST', // or 'PUT'
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token ? token : ''}`,
-              },
-              body: JSON.stringify({remark_id: remark.remark_id, start_depth:depth, notes: remark.notes })
-          })
+  // STEP 1: create a state variable to hold the loading state
+  const [isLoading, setIsLoading] = useState(false);
 
-          console.log("status:", fetched.status)
-          if (fetched.ok) {
-            await refreshRemarks();
-          }
-          else if (fetched.status === 401) {
-            if (setIsLoggedIn) await logout(setIsLoggedIn);
-          }  
-        } catch(error) {
-                console.error('Error:', error);
-            }
-      }
-      else {
-        setStartDepthError(false);
-        setRemarkError(false);
-        if (isNaN(depth)) setStartDepthError(true);
-        if (remark.notes == "") setRemarkError(true);
+  // STEP 2: create a function that will set the state after a promise resolves
+  const asyncSetIsLoading = async (newState: boolean) => {
+    Promise.resolve().then(_ => setIsLoading(newState));
+  }
+  
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  let depth = parseFloat(remark.startDepth);
+
+  const onPress = async () => {
+    if(!isNaN(depth) && remark.notes != "") {
+      try {
+        // STEP 3: set the loading state to true before fetching
+        setIsLoading(true);
+        const token = await getToken();
+        const fetched = await fetch(`${PORT}/update_remark`, {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token ? token : ''}`,
+            },
+            body: JSON.stringify({remark_id: remark.remark_id, start_depth:depth, notes: remark.notes })
+        })
+        console.log("status:", fetched.status)
+        if (fetched.ok) {
+          await refreshRemarks();
+          await asyncSetIsLoading(false);
+          showMessage({
+            message: "Remark succesfully updated!",
+            type: "success",
+          });
+        }
+        else if (fetched.status === 401) {
+          // STEP 5: if unauthorized, show relevant message
+          showMessage({
+            message: "You are unauthorized, signing out.",
+            type: "danger",
+          });
+          if (setIsLoggedIn) await logout(setIsLoggedIn);
+        }  
+      } catch(error) {
+              console.error('Error:', error);
+      } finally {
+        // STEP 7: set the loading state to false after fetching and close modal
+        refreshRemarks();
+        setIsLoading(false);
+        setModalVisible(false);
       }
     }
-    return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
+    else {
+      setStartDepthError(false);
+      setRemarkError(false);
+      if (isNaN(depth)) setStartDepthError(true);
+      if (remark.notes == "") setRemarkError(true);
+    }
   }
+  return (!isLoading ? <PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>  : <ActivityIndicator animating={true} size="large" color="#0000ff" />);
+}
 
 
-// The component that deals with updating a Classification
+/////////////////////////////////// CLASSIFICATION //////////////////////////////////////////////////
 const UpdateClassification = ({ setStartDepthError, setEndDepthError, classification, setModalVisible, refreshClassifications }) => {
 
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
+  // STEP 1: create a state variable to hold the loading state
+  const [isLoading, setIsLoading] = useState(false);
+
+  // STEP 2: create a function that will set the state after a promise resolves
+  const asyncSetIsLoading = async (newState: boolean) => {
+    Promise.resolve().then(_ => setIsLoading(newState));
+  }
+
   const onPress = async () => {
     if(!isNaN(classification.start_depth) && !isNaN(classification.end_depth)) {
       if(Number(classification.end_depth) <= Number(classification.start_depth)) {
@@ -224,8 +254,10 @@ const UpdateClassification = ({ setStartDepthError, setEndDepthError, classifica
         setEndDepthError(true);
       }
       else {
-        setModalVisible(false)
         try {
+          // STEP 3: set the loading state to true before fetching
+          setIsLoading(true);
+
           const token = await getToken();
           const fetched = await fetch(`${PORT}/update_classification`, {
               method: 'POST', // or 'PUT'
@@ -237,13 +269,28 @@ const UpdateClassification = ({ setStartDepthError, setEndDepthError, classifica
           })
           if (fetched.ok) {
             await refreshClassifications();
+            await asyncSetIsLoading(false);
+            showMessage({
+              message: "Classification succesfully updated!",
+              type: "success",
+            });
           }
           else if (fetched.status === 401) {
+            // STEP 5: if unauthorized, show relevant message
+            showMessage({
+              message: "You are unauthorized, signing out.",
+              type: "danger",
+            });
             if (setIsLoggedIn) await logout(setIsLoggedIn);
           }
         } catch(error) {
                 console.error('Error:', error);
-            }
+        } finally {
+            // STEP 7: set the loading state to false after fetching and close modal
+            refreshClassifications();
+            setIsLoading(false);
+            setModalVisible(false);
+        }
         }
       }
     else {
@@ -254,42 +301,70 @@ const UpdateClassification = ({ setStartDepthError, setEndDepthError, classifica
       if(isNaN(classification.end_depth)) setEndDepthError(true);
     }
   }
-  return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>);
+  return (!isLoading ? <PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Update</PaperButton>  : <ActivityIndicator animating={true} size="large" color="#0000ff" />);
 }
 
 
-// The component that deals with the adding a new project
+/////////////////////////////////// PROJECT //////////////////////////////////////////////////
 const UpdateProject = ({ project, setModalVisible, updateProject, setNameError }) => {
-    const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
-      const onPress = async () => {
-        if(project.name == "") {
-          setNameError(true);
-        }
-    
-        else {
-          setModalVisible(false)
-          try {
-            const token = await getToken();
-              const fetched = await fetch(`${PORT}/update_project`, {
-                  method: 'POST', // or 'PUT'
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token ? token : ''}`
-                  },
-                  body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
-              })
-              if (fetched.ok) await updateProject();
-              else if (fetched.status === 401) {
-                if (setIsLoggedIn) await logout(setIsLoggedIn);
-              } 
-          } catch(error) {
-              console.error('Error:', error);
-            }
-        }
-      }
-      return (<PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Submit</PaperButton>);
+  // STEP 1: create a state variable to hold the loading state
+  const [isLoading, setIsLoading] = useState(false);
+
+  // STEP 2: create a function that will set the state after a promise resolves
+  const asyncSetIsLoading = async (newState: boolean) => {
+    Promise.resolve().then(_ => setIsLoading(newState));
+  }
+
+  const onPress = async () => {
+    if(project.name == "") {
+      setNameError(true);
     }
+
+    else {
+      try {
+        // STEP 3: set the loading state to true before fetching
+        setIsLoading(true);
+
+        const token = await getToken();
+          const fetched = await fetch(`${PORT}/update_project`, {
+              method: 'POST', // or 'PUT'
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token ? token : ''}`
+              },
+              body: JSON.stringify({project_id: project.id, project_name: project.name, client_name: project.client, project_location: project.location, project_notes: project.notes})
+          })
+          if (fetched.ok) {
+            // STEP 4: set the loading state to false after fetching
+            await updateProject();
+            showMessage({
+              message: "Project succesfully updated!",
+              type: "success",
+            });
+          }
+          else if (fetched.status === 401) {
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
+          } 
+      } catch(error) {
+          // STEP 6: if error, show relevant message
+          showMessage({
+            message: "Error adding log",
+            description: "Please try again later.",
+            type: "danger",
+          });
+          console.error('Error:', error);
+      } finally {
+        // STEP 7: set the loading state to false after fetching and close modal
+        setIsLoading(false);
+        setModalVisible(false);
+        updateProject();
+      }
+    }
+  }
+  return (!isLoading ? <PaperButton labelStyle={{color: "black" }} onPress={async () => await onPress()}>Submit</PaperButton> : <ActivityIndicator animating={true} size="large" color="#0000ff" />);
+}
   
 
   export {
