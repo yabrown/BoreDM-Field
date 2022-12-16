@@ -539,7 +539,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return (
       <View style={[styles.main_container, {flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}]}>
         <Text style={{ color: 'red', fontWeight: '600', fontSize: '24', marginBottom: '2%'}}>Graphic Unavailable</Text>
-        <Text style={{ fontWeight: '400', fontSize: '20'}}>Graphic cannot be displayed for borings with data beyond 75' below surface.</Text>
+        <Text style={{ fontWeight: '400', fontSize: '20'}}>Graphic cannot be displayed on tablet for borings with data beyond 75' below surface.</Text>
       </View>
     )
   }
