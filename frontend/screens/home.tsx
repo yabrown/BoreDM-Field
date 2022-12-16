@@ -16,6 +16,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AddProjectModal from "../dialogs/AddProjectModal"
 import Map from "../models/Map"
 import { ProjectListContext } from "../contexts/ProjectListContext";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -117,16 +118,37 @@ const Home = ({ navigation }: Props) => {
     <SafeAreaView style={styles.container}>
       <Flex fill flex-grow style={{width:"100%"}}>
       <View>
-          <Header/>
-          <Text variant="titleLarge" style={{fontWeight: "500", marginLeft: '5%'}}>Projects List</Text>
-        </View>
-        <View style={{minHeight: "85%"}}>
-          <ProjectsComponent/>
-        </View>
-        <Spacer />
-        <View style={{ marginHorizontal: 6, marginBottom: 6, minHeight: '5%' }}>
-          <AddProjectModal onUpdate={getProjectsList}/>
-        </View>
+        <Header/>
+      </View>
+      <View style={{minHeight: "80%"}}>
+        <Tab.Navigator
+          initialRouteName="Project List"
+          screenOptions={() => ({
+            tabBarIcon: ({ color, size }) => {
+              let iconName;
+              // You can return any component that you like here!
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: 'black',
+            tabBarInactiveTintColor: 'gray',
+            lazy: true,
+            tabBarScrollEnabled: false,
+            tabBarStyle: { height: '4%' },
+            tabBarLabelStyle: { fontSize: (Dimensions.get('window').height * Dimensions.get('window').width) / 35000 },
+          })}
+          sceneContainerStyle= {{backgroundColor: 'white'}}
+          >
+          <Tab.Screen
+              name="Projects List"
+              component = {ProjectsComponent} 
+              options={{ tabBarLabel: '' }}
+          />
+        </Tab.Navigator>
+      </View>
+      <Spacer />
+      <View style={{ marginHorizontal: 6, marginBottom: 6, minHeight: '5%' }}>
+        <AddProjectModal onUpdate={getProjectsList}/>
+      </View>
       </Flex>
     </SafeAreaView>
   )
