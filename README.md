@@ -58,5 +58,5 @@ We hope that BoreDM Field will streamline the process of safe data collection by
 #### **Part IV: Logging into the App on the Simulator**
 
 - STEP 6: each of the four testers who are testing the app have their own unique accounts with some prepopulated data. The logins are as follows:
-  - Usernames: testuser1, testuser2, testuser3, testuser4
+  - Usernames: testing1, testing2, testing3, testing4
   - Passwords (the same for all accounts): password123
