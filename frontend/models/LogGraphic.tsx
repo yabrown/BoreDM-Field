@@ -524,50 +524,71 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return ruler_boxes
   }
 
-  return (
-    <View style={[styles.main_container, {flexDirection: 'row', flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}]}>
-      <View style={[styles.ruler_col]}>
-        <Text style={{flex: 1}}></Text>
-        {make_ruler_boxes(classifications_list)}
+
+  let deepest_remark = 0;
+  for(let i = 0; i < remarks_list.length; i++) {
+    if(remarks_list[i].start_depth > deepest_remark) deepest_remark = remarks_list[i].start_depth;
+  }
+  let deepest_sample = 0;
+  for(let i = 0; i < samples_list.length; i++) {
+    if(samples_list[i].start_depth > deepest_sample) deepest_sample = samples_list[i].start_depth;
+  }
+  let deepest_entry = Math.max(Number(get_final_depth(classifications_list)), deepest_remark, deepest_sample, water_list.start_depth_1, water_list.start_depth_2, water_list.start_depth_3)
+  
+  if(deepest_entry > 75) {
+    return (
+      <View style={[styles.main_container, {flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}]}>
+        <Text style={{ color: 'red', fontWeight: '600', fontSize: '24', marginBottom: '2%'}}>Graphic Unavailable</Text>
+        <Text style={{ fontWeight: '400', fontSize: '20'}}>Graphic cannot be displayed for borings with data beyond 75' below surface.</Text>
       </View>
-      <View style={[styles.water_col]}>
-        <Text style={{flex: 1}}></Text>
-        {make_water_boxes(water_list, get_final_depth(classifications_list))}
+    )
+  }
+  else {
+    return (
+      <View style={[styles.main_container, {flexDirection: 'row', flex: 1, paddingLeft: '2.5%', paddingTop: '6%', paddingBottom: '2%'}]}>
+        <View style={[styles.ruler_col]}>
+          <Text style={{flex: 1}}></Text>
+          {make_ruler_boxes(classifications_list)}
+        </View>
+        <View style={[styles.water_col]}>
+          <Text style={{flex: 1}}></Text>
+          {make_water_boxes(water_list, get_final_depth(classifications_list))}
+        </View>
+        <View style={[styles.classification_col]}>
+          <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>USCS</Text>
+          {make_uscs_boxes(classifications_list)}
+        </View>
+        <View style={[styles.description_col]}>
+          <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'left'}}>Visual Classification</Text>
+          {make_description_boxes(classifications_list)}
+        </View>
+        <View
+          style = {{
+            borderLeftColor: 'black',
+            borderLeftWidth: StyleSheet.hairlineWidth,
+          }}
+        />
+        <View style={[styles.remarks_col]}>
+          <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>Remarks</Text>
+          {make_remark_boxes(remarks_list, get_final_depth(classifications_list))}
+        </View>
+        <View
+          style = {{
+            borderLeftColor: 'black',
+            borderLeftWidth: StyleSheet.hairlineWidth,
+          }}
+        />
+        <View style={[styles.samples_col]}>
+          <Text style={{flex: 12}}></Text>
+          {make_sample_boxes(samples_list, get_final_depth(classifications_list))}
+        </View>
+        <View style={[styles.sample_description_col]}>
+          <Text style={{flex: 12, fontWeight: 'bold', textAlign: 'left'}}>Samples</Text>
+          {make_sample_description_boxes(samples_list, get_final_depth(classifications_list))}
+        </View>
       </View>
-      <View style={[styles.classification_col]}>
-        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>USCS</Text>
-        {make_uscs_boxes(classifications_list)}
-      </View>
-      <View style={[styles.description_col]}>
-        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'left'}}>Visual Classification</Text>
-        {make_description_boxes(classifications_list)}
-      </View>
-      <View
-        style = {{
-          borderLeftColor: 'black',
-          borderLeftWidth: StyleSheet.hairlineWidth,
-        }}
-      />
-      <View style={[styles.remarks_col]}>
-        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>Remarks</Text>
-        {make_remark_boxes(remarks_list, get_final_depth(classifications_list))}
-      </View>
-      <View
-        style = {{
-          borderLeftColor: 'black',
-          borderLeftWidth: StyleSheet.hairlineWidth,
-        }}
-      />
-      <View style={[styles.samples_col]}>
-        <Text style={{flex: 12}}></Text>
-        {make_sample_boxes(samples_list, get_final_depth(classifications_list))}
-      </View>
-      <View style={[styles.sample_description_col]}>
-        <Text style={{flex: 12, fontWeight: 'bold', textAlign: 'left'}}>Samples</Text>
-        {make_sample_description_boxes(samples_list, get_final_depth(classifications_list))}
-      </View>
-    </View>
-  )
+    )
+  }
 }
 
 export default LogGraphic
