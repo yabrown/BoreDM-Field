@@ -198,21 +198,27 @@ const Log = ({ route, navigation }: Props) => {
     return(
       <View style={dataStyles.container}>
         <View style={[dataStyles.column, {flex: 4}, dataStyles.columnColor]}>
-          <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
+          <View style={{maxHeight:'85%'}}>
+            <SelectClassificationList id={currentLog.id} classifications_list={classificationsList} refreshClassifications={refreshClassifications}/>
+          </View>
           <Spacer />
           <Box style={{ margin: 4 }}>
             <AddClassificationModal log_id={currentLog.id} refreshClassifications={refreshClassifications}/>
           </Box>
         </View>
         <View style={[dataStyles.column, {flex: 4}, dataStyles.columnColor]}>
-          <SelectRemarkList id={currentLog.id} remarks_list={remarksList} refreshRemarks={refreshRemarks}/>
+          <View style={{maxHeight:'85%'}}>
+            <SelectRemarkList id={currentLog.id} remarks_list={remarksList} refreshRemarks={refreshRemarks}/>
+          </View>
           <Spacer />
           <Box style={{ margin: 4 }}>
             <AddRemarkModal log_id={currentLog.id} refreshRemarks={refreshRemarks}/>
           </Box>
         </View>
         <View style={[dataStyles.column, {flex: 4}, dataStyles.columnColor]}>
-          <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
+          <View style={{maxHeight:'85%'}}>
+            <SelectSampleList id={currentLog.id} samplesList={samplesList} refreshSamples={refreshSamples}/>
+          </View>
           <Spacer />
           <Box style={{ margin: 4 }}>
             <AddSampleModal log_id={currentLog.id} refreshSamples={refreshSamples}/>
