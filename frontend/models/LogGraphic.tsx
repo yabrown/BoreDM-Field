@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 import { v4 as uuid } from 'uuid';
+import { GetColorName } from 'hex-color-to-color-name';
 
 
 const LogGraphic = ({classifications_list, remarks_list, samples_list, water_list}) => {
@@ -28,8 +29,9 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     },
     ruler_col: {
       flexDirection: 'column',
-      maxWidth: '5%',
+      maxWidth: '3%',
       flex: 2,
+      padding: '0%'
     },
     ruler_box: {
       alignItems: 'flex-start',
@@ -49,7 +51,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
       flex: 6,
     },
     description_box: {
-      alignItems: 'left',
+      alignItems: 'flex-start',
       justifyContent: 'center',
     },
     remarks_col: {
@@ -58,8 +60,8 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
       flex: 4,
     },
     remark_box: {
-      alignItems: 'left',
-      justifyContent: 'top',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
     },
     samples_col: {
       flexDirection: 'column',
@@ -76,8 +78,10 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
       flex: 3,
     },
     sample_description_box: {
-      alignItems: 'left',
+      alignItems: 'flex-start',
       justifyContent: 'center',
+      alignSelf: 'flex-start',
+      alignContent: 'flex-start',
     },
   })
 
@@ -112,10 +116,10 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
 
   // takes info from classification to generate text for description box
   function generate_description (classification: classification) {
-    var output  = "";
+    let output  = "";
 
     if (classification.color) {
-      output = output + classification.color + ", ";
+      output = output + GetColorName(classification.color) + ", ";
     }
 
     if (classification.moisture) {
@@ -134,8 +138,8 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
 
   }
 
-  function grammar (text: String) {
-    var output = text;
+  function grammar (text: string) {
+    let output = text;
     output = output.toLowerCase();
     output = output.charAt(0).toUpperCase() + output.slice(1);
 
@@ -158,11 +162,11 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
       return <View style={[styles.water_box, {flex: 1}]} key={uuid()} ><Text></Text></View>
     }
 
-    if (code == 1) {
+    else if (code == 1) {
       return <View style={[styles.water_box, {flex: 1}]} key={uuid()} ><Text>&#9660;</Text></View>
     }
 
-    if (code == 2) {
+    else if (code == 2) {
       return <View style={[styles.water_box, {flex: 1}]} key={uuid()} ><Text>&#9661;</Text></View>
     }
 
@@ -177,26 +181,26 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
 
   let make_description_box = function (classification: classification) {
     const length = classification.end_depth - classification.start_depth;
-    var description = generate_description(classification)
+    let description = generate_description(classification)
     description = grammar(description)
     if (classification.uscs) {
       description = classification.uscs + ": " + description;
     }
-    return <View key={uuid()} style={[styles.description_box, {flex: length}]} ><Text>{description}</Text></View>
+    return <View key={uuid()} style={[styles.description_box, {flex: length}]} ><Text numberOfLines={length}>{description}</Text></View>
   };
 
   let make_remark_box = function (remark: remark) {
     const length = 1;
-    var text  = ""
+    let text  = ""
     if (remark.notes) {
       text = remark.notes + " @" + remark.start_depth + "'";
     }
-    return <View key={uuid()} style={[styles.description_box, {flex: length}]} ><Text>{text}</Text></View>
+    return <View key={uuid()} style={[styles.remark_box, {flex: length}]} ><Text numberOfLines={length}>{text}</Text></View>
   };
 
   let make_sample_box = function (sample: sample) {
     const length = sample.length;
-    var color = ""
+    let color = ""
     if (sample.blows_1) {
       color = "black";
     }
@@ -208,9 +212,9 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
 
   let make_sample_description_box = function (sample: sample) {
     const length = sample.length;
-    var text = ""
+    let text = ""
     if (sample.blows_1) {
-      text = sample.blows_1;
+      text = String(sample.blows_1);
     }
     if (sample.blows_2) {
       text = text + "-" + sample.blows_2;
@@ -317,7 +321,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return description_boxes
   }
 
-  let make_remark_boxes = function (remarks: remark[], final_depth: int) {
+  let make_remark_boxes = function (remarks: remark[], final_depth: number) {
     if(remarks.length == 0) return <Text>No Data</Text>;
 
     const remarksCopy  = [...remarks];
@@ -363,7 +367,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return remark_boxes
   }
 
-  let make_sample_boxes = function (samples: sample[], final_depth: int) {
+  let make_sample_boxes = function (samples: sample[], final_depth: number) {
     if(samples.length == 0) return <Text>No Data</Text>;
 
     const samplesCopy  = [...samples];
@@ -383,7 +387,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
       // insert blank box when there's a gap between this classification and the next one
       if(i < samplesCopy.length - 1) {
         if((sample.start_depth + (sample.length / 12)) < samplesCopy[i+1].start_depth) {
-          var distance = samplesCopy[i+1].start_depth * 12;
+          let distance = samplesCopy[i+1].start_depth * 12;
           distance = distance - (sample.start_depth * 12);
           distance = distance - sample.length;
           let emptySample = {"id": "", "log_id": "", "start_depth": sample.start_depth + (sample.length/12), "length": distance, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
@@ -395,7 +399,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     // insert blank box at end to make final depth a multiple of 5
     let bottom = (samplesCopy[samplesCopy.length - 1].start_depth * 12) + samplesCopy[samplesCopy.length - 1].length;
     if(bottom < final_depth * 12) {
-      var distance = final_depth * 12;
+      let distance = final_depth * 12;
       distance = distance - samplesCopy[samplesCopy.length - 1].start_depth * 12;
       distance = distance - samplesCopy[samplesCopy.length - 1].length;
 
@@ -410,7 +414,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return sample_boxes
   }
 
-  let make_sample_description_boxes = function (samples: sample[], final_depth: int) {
+  let make_sample_description_boxes = function (samples: sample[], final_depth: number) {
     if(samples.length == 0) return <Text>No Data</Text>;
 
     const samplesCopy  = [...samples];
@@ -430,7 +434,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
       // insert blank box when there's a gap between this classification and the next one
       if(i < samplesCopy.length - 1) {
         if((sample.start_depth + (sample.length / 12)) < samplesCopy[i+1].start_depth) {
-          var distance = samplesCopy[i+1].start_depth * 12;
+          let distance = samplesCopy[i+1].start_depth * 12;
           distance = distance - (sample.start_depth * 12);
           distance = distance - sample.length;
           let emptySample = {"id": "", "log_id": "", "start_depth": sample.start_depth + (sample.length/12), "length": distance, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
@@ -442,7 +446,7 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     // insert blank box at end to make final depth a multiple of 5
     let bottom = (samplesCopy[samplesCopy.length - 1].start_depth * 12) + samplesCopy[samplesCopy.length - 1].length;
     if(bottom < final_depth * 12) {
-      var distance = final_depth * 12;
+      let distance = final_depth * 12;
       distance = distance - samplesCopy[samplesCopy.length - 1].start_depth * 12;
       distance = distance - samplesCopy[samplesCopy.length - 1].length;
       let emptySample = {"id": "", "log_id": "", "start_depth": bottom / 12 + (samplesCopy[samplesCopy.length - 1].length/12), "length": distance, "blows_1": "", "blows_2": "", "blows 3": "", "blows_4": "", "description": "", "refusal_length": "", "sampler_type": ""}
@@ -456,11 +460,11 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return sample_description_boxes
   }
 
-  let make_water_boxes = function (waters: water, final_depth: int) {
+  let make_water_boxes = function (waters: water, final_depth: number) {
 
     let water = waters;
 
-    var water_depths = [];
+    let water_depths = [];
 
     if (water.start_depth_1) {
       water_depths.splice(0, 0, water.start_depth_1);
@@ -478,9 +482,9 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
 
     water_depths = water_depths.sort()
 
-    var graphics = [];
+    let graphics = [];
 
-    var encounter_counter = 1;
+    let encounter_counter = 1;
 
     for (let i = 0; i < final_depth; i++) {
       if (water_depths.indexOf(i) >= 0) {
@@ -508,8 +512,8 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     const bottom = classifications[classifications.length - 1].end_depth;
     const numboxes = Math.ceil(bottom/5);
 
-    var depths = new Array(numboxes);
-    for (var i = 0; i < depths.length; i++) {
+    let depths = new Array(numboxes);
+    for (let i = 0; i < depths.length; i++) {
       depths[i] = i * 5;
     }
 
@@ -520,50 +524,71 @@ const LogGraphic = ({classifications_list, remarks_list, samples_list, water_lis
     return ruler_boxes
   }
 
-  return (
-    <View style={[styles.main_container, {flexDirection: 'row', flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}]}>
-      <View style={[styles.ruler_col]}>
-        <Text style={{flex: 1}}></Text>
-        {make_ruler_boxes(classifications_list)}
+
+  let deepest_remark = 0;
+  for(let i = 0; i < remarks_list.length; i++) {
+    if(remarks_list[i].start_depth > deepest_remark) deepest_remark = remarks_list[i].start_depth;
+  }
+  let deepest_sample = 0;
+  for(let i = 0; i < samples_list.length; i++) {
+    if(samples_list[i].start_depth > deepest_sample) deepest_sample = samples_list[i].start_depth;
+  }
+  let deepest_entry = Math.max(Number(get_final_depth(classifications_list)), deepest_remark, deepest_sample, water_list.start_depth_1, water_list.start_depth_2, water_list.start_depth_3)
+  
+  if(deepest_entry > 75) {
+    return (
+      <View style={[styles.main_container, {flex: 1, paddingLeft: '6%', paddingTop: '6%', paddingBottom: '2%'}]}>
+        <Text style={{ color: 'red', fontWeight: '600', fontSize: '24', marginBottom: '2%'}}>Graphic Unavailable</Text>
+        <Text style={{ fontWeight: '400', fontSize: '20'}}>Graphic cannot be displayed on tablet for borings with data beyond 75' below surface.</Text>
       </View>
-      <View style={[styles.water_col]}>
-        <Text style={{flex: 1}}></Text>
-        {make_water_boxes(water_list, get_final_depth(classifications_list))}
+    )
+  }
+  else {
+    return (
+      <View style={[styles.main_container, {flexDirection: 'row', flex: 1, paddingLeft: '2.5%', paddingTop: '6%', paddingBottom: '2%'}]}>
+        <View style={[styles.ruler_col]}>
+          <Text style={{flex: 1}}></Text>
+          {make_ruler_boxes(classifications_list)}
+        </View>
+        <View style={[styles.water_col]}>
+          <Text style={{flex: 1}}></Text>
+          {make_water_boxes(water_list, get_final_depth(classifications_list))}
+        </View>
+        <View style={[styles.classification_col]}>
+          <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>USCS</Text>
+          {make_uscs_boxes(classifications_list)}
+        </View>
+        <View style={[styles.description_col]}>
+          <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'left'}}>Visual Classification</Text>
+          {make_description_boxes(classifications_list)}
+        </View>
+        <View
+          style = {{
+            borderLeftColor: 'black',
+            borderLeftWidth: StyleSheet.hairlineWidth,
+          }}
+        />
+        <View style={[styles.remarks_col]}>
+          <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>Remarks</Text>
+          {make_remark_boxes(remarks_list, get_final_depth(classifications_list))}
+        </View>
+        <View
+          style = {{
+            borderLeftColor: 'black',
+            borderLeftWidth: StyleSheet.hairlineWidth,
+          }}
+        />
+        <View style={[styles.samples_col]}>
+          <Text style={{flex: 12}}></Text>
+          {make_sample_boxes(samples_list, get_final_depth(classifications_list))}
+        </View>
+        <View style={[styles.sample_description_col]}>
+          <Text style={{flex: 12, fontWeight: 'bold', textAlign: 'left'}}>Samples</Text>
+          {make_sample_description_boxes(samples_list, get_final_depth(classifications_list))}
+        </View>
       </View>
-      <View style={[styles.classification_col]}>
-        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>USCS</Text>
-        {make_uscs_boxes(classifications_list)}
-      </View>
-      <View style={[styles.description_col]}>
-        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'left'}}>Visual Classification</Text>
-        {make_description_boxes(classifications_list)}
-      </View>
-      <View
-        style = {{
-          borderLeftColor: 'black',
-          borderLeftWidth: StyleSheet.hairlineWidth,
-        }}
-      />
-      <View style={[styles.remarks_col]}>
-        <Text style={{flex: 1, fontWeight: 'bold', textAlign: 'center'}}>Remarks</Text>
-        {make_remark_boxes(remarks_list, get_final_depth(classifications_list))}
-      </View>
-      <View
-        style = {{
-          borderLeftColor: 'black',
-          borderLeftWidth: StyleSheet.hairlineWidth,
-        }}
-      />
-      <View style={[styles.samples_col]}>
-        <Text style={{flex: 12}}></Text>
-        {make_sample_boxes(samples_list, get_final_depth(classifications_list))}
-      </View>
-      <View style={[styles.sample_description_col]}>
-        <Text style={{flex: 12, fontWeight: 'bold', textAlign: 'left'}}>Samples</Text>
-        {make_sample_description_boxes(samples_list, get_final_depth(classifications_list))}
-      </View>
-    </View>
-  )
+    )
+  }
 }
 
 export default LogGraphic

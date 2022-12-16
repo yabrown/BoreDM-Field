@@ -47,11 +47,11 @@ module.exports = (sequelize) => {
 (async () => {
   await sequelize.sync({ force: true });
 
-  const project_1 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 1"});
-  const home_1 = await Coordinate.create({ latitude: 10, longitude: 15 });
-  const log_1 = await Log.create({ project_id: project_1.id, name: "Test Log 1", driller: "Danny", logger: "Ari", notes: "Nice", location: home_1.id});
-  
-  const project_2 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2"});
-  const home_2 = await Coordinate.create({ latitude: 10, longitude: 15 });
-  const log_2 = await Log.create({ project_id: project_2.id, name: "B-2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id});
+  const project_1 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 1" });
+  const home_1 = await Coordinate.create({ latitude: 40.3573, longitude: -74.667221 });
+  const log_1 = await Log.create({ project_id: project_1.id, name: "Test Log 1", driller: "Danny", logger: "Ari", notes: "Nice", location: home_1.id });
+
+  const project_2 = await Project.create({ name: "Kuba", location: "Princeton, NJ", client: "Alicki", notes: "Test Project 2" });
+  const home_2 = await Coordinate.create({ latitude: 40.3573, longitude: -74.667221 });
+  const log_2 = await Log.create({ project_id: project_2.id, name: "B-2", driller: "Louis", logger: "Max", notes: "Very nice!", location: home_2.id });
 })();

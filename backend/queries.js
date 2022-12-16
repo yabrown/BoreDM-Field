@@ -97,6 +97,175 @@ const User = sequelize.define("User", {
   name: DataTypes.STRING,
 })
 
+const createTestAccount = async (username) => {
+  await User.create({
+    username: username,
+    hashed_password: '$2b$10$SuwwzFACGaC2bzE1JE8IaOEIEdAAZsC4ANoLfpPmc9flz8Q9msIde',
+    name: 'Kuba'
+  })
+
+  const proj_test = await Project.create({
+    name: "Princeton Steam Tunnels",
+    username: username,
+    location: "Princeton, NJ",
+    client: "Alicki",
+    notes: "Secret Steam Tunnels"
+  });
+
+  await Project.create({
+    name: "Wiggins St Rennovation",
+    username: username,
+    location: "Princeton, NJ",
+    client: "Dondero",
+    notes: "63 Wiggins"
+  });
+
+  await Project.create({
+    name: "Witherspoon New Construction",
+    username: username,
+    location: "Princeton, NJ",
+    client: "Walker",
+    notes: "Let's build something that shuts down the second largest street in Princeton for a whole semester."
+  });
+
+  await Project.create({
+    name: "Yale Demolition",
+    username: username,
+    location: "New Haven, CT",
+    client: "Eisgruber",
+    notes: "Because we didn't get a bonfire"
+  });
+
+
+  await Project.create({
+    name: "New College South",
+    username: username,
+    location: "Princeton, NJ",
+    client: "Luijendijk",
+    notes: "It's hard to find donors these days."
+  });
+
+  const test_log_1 = await Log.create({
+    project_id: proj_test.id,
+    name: "B-1",
+    driller: "Danny",
+    logger: "Ari",
+    notes: "Boring at the head of the steam tunnel",
+    latitude: 40.346957,
+    longitude: -74.655086
+  });
+
+  const test_log_2 = await Log.create({
+    project_id: proj_test.id,
+    name: "B-2",
+    driller: "Max",
+    logger: "Louis",
+    notes: "Secondary Entry to Steam Tunnel",
+    latitude: 40.344879,
+    longitude: -74.654073
+  });
+
+  const test_log_3 = await Log.create({
+    project_id: proj_test.id,
+    name: "B-3",
+    driller: "Bob",
+    logger: "David",
+    notes: "Potential new exit point for Steam Tunnels.",
+    latitude: 40.345576,
+    longitude: -74.652708
+  });
+
+  const test_class_1 = await Classification.create({
+    log_id: test_log_1.id,
+    start_depth: 1,
+    end_depth: 5,
+    uscs: "CL",
+    color: "Brown",
+    moisture: "Moist",
+    density: "Dense",
+    hardness: "Hard"
+  });
+
+  const test_class_2 = await Classification.create({
+    log_id: test_log_1.id,
+    start_depth: 8,
+    end_depth: 11,
+    uscs: "ML",
+    color: "Light Orange",
+    moisture: "Very Moist",
+    density: "Medium Dense",
+    hardness: "Very Soft"
+  });
+
+  const test_class_3 = await Classification.create({
+    log_id: test_log_1.id,
+    start_depth: 18,
+    end_depth: 22,
+    uscs: "OL",
+    color: "Dark Brown",
+    moisture: "Saturated",
+    density: "Medium Dense",
+    hardness: "Firm"
+  });
+
+  await Remark.create({
+    log_id: test_log_1.id,
+    start_depth: 12,
+    notes: "Drill shaking",
+  });
+
+  await Remark.create({
+    log_id: test_log_1.id,
+    start_depth: 16,
+    notes: "Drill chatter",
+  });
+
+  await Sample.create({
+    log_id: test_log_1.id,
+    start_depth: 7,
+    length: 6,
+    blows_1: 15,
+    blows_2: 25,
+    blows_3: 24,
+    description: "Sample taken at first drill shaking",
+    refusal_length: 4,
+    sampler_type: "SPS"
+  });
+
+  await Sample.create({
+    log_id: test_log_1.id,
+    start_depth: 12,
+    length: 18,
+    blows_1: 8,
+    blows_2: 12,
+    blows_3: 30,
+    description: "Sample 02b6",
+    refusal_length: 4,
+    sampler_type: "OTS"
+  });
+
+  await Water.create({
+    log_id: test_log_1.id,
+    encounter_id: 1,
+    start_depth_1: 7,
+    timing_1: "ATD",
+  });
+
+  await Water.create({
+    log_id: test_log_2.id,
+    encounter_id: 1,
+    start_depth_1: 7,
+    timing_1: "ATD",
+  });
+
+  await Water.create({
+    log_id: test_log_3.id,
+    encounter_id: 1,
+    start_depth_1: 7,
+    timing_1: "ATD",
+  });
+}
+
 const reseed = (async () => {
   console.log("restarting-- ")
   await sequelize.sync({ force: true });
@@ -118,7 +287,7 @@ const reseed = (async () => {
     client: "Alicki",
     notes: "40th St Stormdrain Rebuild"
   });
-  const home_1 = await Coordinate.create({ latitude: 10, longitude: 15 });
+  const home_1 = await Coordinate.create({ latitude: 40.357300, longitude: -74.667221 });
   const log_1 = await Log.create({
     project_id: project_1.id,
     name: "B-1",
@@ -226,172 +395,9 @@ const reseed = (async () => {
   });
 
   // This is all the projects/data that will be displayed to testers
-  await User.create({
-    username: 'cos333_testing',
-    hashed_password: '$2b$10$CSVcdkP0Sa9zUnM/oGXNWuZfAVAqSQUxUX3IUuhENcQPaiKz5AABC',
-    name: 'Kuba'
-  })
-
-  const proj_test = await Project.create({
-    name: "Princeton Steam Tunnels",
-    username: "cos333_testing",
-    location: "Princeton, NJ",
-    client: "Alicki",
-    notes: "Secret Steam Tunnels"
-  });
-
-  await Project.create({
-    name: "Wiggins St Rennovation",
-    username: "cos333_testing",
-    location: "Princeton, NJ",
-    client: "Dondero",
-    notes: "63 Wiggins"
-  });
-
-  await Project.create({
-    name: "Witherspoon New Construction",
-    username: "cos333_testing",
-    location: "Princeton, NJ",
-    client: "Walker",
-    notes: "Let's build something that shuts down the second largest street in Princeton for a whole semester."
-  });
-
-  await Project.create({
-    name: "Yale Demolition",
-    username: "cos333_testing",
-    location: "New Haven, CT",
-    client: "Eisgruber",
-    notes: "Because we didn't get a bonfire"
-  });
-
-
-  await Project.create({
-    name: "New College South",
-    username: "cos333_testing",
-    location: "Princeton, NJ",
-    client: "Luijendijk",
-    notes: "It's hard to find donors these days."
-  });
-
-  const test_log_1 = await Log.create({
-    project_id: proj_test.id,
-    name: "B-1",
-    driller: "Danny",
-    logger: "Ari",
-    notes: "Boring at the head of the steam tunnel",
-    latitude: 40.346957,
-    longitude: -74.655086
-  });
-
-  const test_log_2 = await Log.create({
-    project_id: proj_test.id,
-    name: "B-2",
-    driller: "Max",
-    logger: "Louis",
-    notes: "Secondary Entry to Steam Tunnel",
-    latitude: 40.344879,
-    longitude: -74.654073
-  });
-
-  const test_log_3 = await Log.create({
-    project_id: proj_test.id,
-    name: "B-3",
-    driller: "Bob",
-    logger: "David",
-    notes: "Potential new exit point for Steam Tunnels.",
-    latitude: 40.345576,
-    longitude: -74.652708
-  });
-
-  const test_class_1 = await Classification.create({
-    log_id: test_log_1.id,
-    start_depth: 1,
-    end_depth: 5,
-    uscs: "CL",
-    color: "Brown",
-    moisture: "Moist",
-    density: "Dense",
-    hardness: "Hard"
-  });
-
-  const test_class_2 = await Classification.create({
-    log_id: test_log_1.id,
-    start_depth: 8,
-    end_depth: 11,
-    uscs: "ML",
-    color: "Light Orange",
-    moisture: "Very Moist",
-    density: "Medium Dense",
-    hardness: "Very Soft"
-  });
-
-  const test_class_3= await Classification.create({
-    log_id: test_log_1.id,
-    start_depth: 18,
-    end_depth: 22,
-    uscs: "OL",
-    color: "Dark Brown",
-    moisture: "Saturated",
-    density: "Medium Dense",
-    hardness: "Firm"
-  });
-
-  await Remark.create({
-    log_id: test_log_1.id,
-    start_depth: 12,
-    notes: "Drill shaking",
-  });
-
-  await Remark.create({
-    log_id: test_log_1.id,
-    start_depth: 16,
-    notes: "Drill chatter",
-  });
-
-  await Sample.create({
-    log_id: test_log_1.id,
-    start_depth: 7,
-    length: 6,
-    blows_1: 15,
-    blows_2: 25,
-    blows_3: 24,
-    description: "Sample taken at first drill shaking",
-    refusal_length: 4,
-    sampler_type: "SPS"
-  });
-
-  await Sample.create({
-    log_id: test_log_1.id,
-    start_depth: 12,
-    length: 18,
-    blows_1: 8,
-    blows_2: 12,
-    blows_3: 30,
-    description: "Sample 02b6",
-    refusal_length: 4,
-    sampler_type: "OTS"
-  });
-
-  await Water.create({
-    log_id: test_log_1.id,
-    encounter_id: 1,
-    start_depth_1: 7,
-    timing_1: "ATD",
-  });
-
-  await Water.create({
-    log_id: test_log_2.id,
-    encounter_id: 1,
-    start_depth_1: 7,
-    timing_1: "ATD",
-  });
-
-  await Water.create({
-    log_id: test_log_3.id,
-    encounter_id: 1,
-    start_depth_1: 7,
-    timing_1: "ATD",
-  });
+  for (let i = 1; i <= 4; i++) {
+    await createTestAccount(`testing${i}`);
+  }
 
 })
 reseed()

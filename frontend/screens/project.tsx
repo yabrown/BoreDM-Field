@@ -2,26 +2,20 @@ import { Box, Flex, Spacer } from "@react-native-material/core";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect, useState, useContext } from 'react';
 import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
-import { Button as PaperButton, Dialog, Portal, TextInput } from 'react-native-paper';
 import { PORT } from '../env';
 import Header from '../common/header';
 import SelectLogList from '../models/SelectLogList';
 import * as Location from 'expo-location';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { LoginContext } from "../contexts/LoginContext";
 import { getToken } from "../utils/secureStore";
 import { logout } from "../common/logout";
 import { useIsFocused } from "@react-navigation/native";
-import {SubmitLog} from "../backend-calls/SubmitButtons"
-import {DeleteProject} from "../backend-calls/DeleteButtons"
-import {UpdateProject} from "../backend-calls/UpdateButtons"
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AddLogModal from "../dialogs/AddLogModal"
 import EditProjectModal from "../dialogs/EditProjectModal"
 import Map from "../models/Map"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { ProjectListContext } from "../contexts/ProjectListContext";
-import SelectProjectList from "../models/SelectProjectList";
 import { LogListContext } from "../contexts/LogListContext";
 
 
@@ -61,7 +55,7 @@ const Project = ({ navigation, route}: Props) => {
         setProject(updated_project)
       }
       else if (fetched.status === 401) {
-        if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+        if (setIsLoggedIn) await logout(setIsLoggedIn);
       } 
     } catch(error) {
         console.error(error)
@@ -104,7 +98,7 @@ const Project = ({ navigation, route}: Props) => {
             if (setLogList) setLogList(logs_list)
           }
           else if (fetched.status === 401) {
-            if (isLoggedIn && setIsLoggedIn) await logout(setIsLoggedIn);
+            if (setIsLoggedIn) await logout(setIsLoggedIn);
           } 
       } catch(error) {
           console.error(error)
@@ -130,11 +124,6 @@ const Project = ({ navigation, route}: Props) => {
       }
     }
   }
-  //getLatLon();
-
-  // This is what shows up in the 'Map' tab screen. 
-  // This only exists because for some reason I can't put Map(logs) directly in the component field of Tab.screen-- 
-  // probably just some esoteric type issue
   const MapComponent = () => Map(logList, navigation);
 
   useEffect(() => {
@@ -172,27 +161,19 @@ const Project = ({ navigation, route}: Props) => {
                 if (route.name === 'Logs List') {
                   iconName = focused ? 'ios-list' : 'ios-list-outline';
                 } else if (route.name === 'Maps') {
-                  iconName = focused ? 'ios-list' : 'ios-list-outline';
+                  iconName = focused ? 'map' : 'map-outline';
                 }
     
                 // You can return any component that you like here!
                 return <Ionicons name={iconName} size={size} color={color} />;
               },
-              tabBarActiveTintColor: 'tomato',
+              tabBarActiveTintColor: '#4AADFF',
               tabBarInactiveTintColor: 'gray',
               lazy: true,
               tabBarScrollEnabled: false,
               tabBarStyle: { height: '10%' },
               tabBarLabelStyle: { fontSize: (Dimensions.get('window').height * Dimensions.get('window').width) / 35000 },
             })}
-            // screenOptions={{
-            //   tabBarActiveTintColor: '#000000',
-            //   tabBarLabelStyle: { fontSize: 12 },
-            //   tabBarStyle: { backgroundColor: 'white' },
-            //   // tabBarIndicatorStyle: { backgroundColor: 'black' },
-            //   lazy: true,
-            //   tabBarScrollEnabled: false,
-            // }}
             sceneContainerStyle= {{backgroundColor: 'white'}}
             >
             <Tab.Screen
