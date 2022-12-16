@@ -41,6 +41,7 @@ export default function InputField({
           secureTextEntry={true}
           autoCorrect={false}
           autoCapitalize="none"
+          maxLength={256}
         />
       ) : (
         <TextInput
@@ -50,6 +51,7 @@ export default function InputField({
           onChangeText={(text) => {if (setText) setText(text)}}
           autoCorrect={autoCorrect}
           autoCapitalize={autoCapitalize}
+          maxLength={256}
         />
       )}
       <TouchableOpacity onPress={fieldButtonFunction}>
