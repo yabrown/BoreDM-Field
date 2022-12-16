@@ -1,11 +1,7 @@
-import { Flex, Box, Spacer } from "@react-native-material/core";
+import { Flex } from "@react-native-material/core";
 import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, StyleSheet, Text } from "react-native";
+import { ScrollView, StyleSheet, Text, SafeAreaView } from "react-native";
 import Header from "../common/header";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-
-type Props = NativeStackScreenProps<RootStackParamList, 'About'>;
 
 const About = () => {
 
@@ -14,7 +10,7 @@ const About = () => {
         <Flex flex-grow style={{width:"100%"}}>
         <Header/>
           <ScrollView style={styles.aboutText}>
-            <Text style={{fontWeight: 'normal', fontSize: 20, lineHeight: 35, fontFamily: 'Trebuchet MS', textAlign: 'justify'}}>
+            <Text style={{fontWeight: 'normal', fontSize: 20, lineHeight: 35, textAlign: 'justify'}}>
             <Text style={{fontWeight: 'bold', fontSize: 30}}>{'\n'}How to use the app effectively{'\n\n'}</Text>
             BoreDM Field is a web-app that allows geotechnical engineers to 
             directly enter soil information from the field into an online 
