@@ -54,3 +54,9 @@ We hope that BoreDM Field will streamline the process of safe data collection by
   - When using the app, the device may request access to your location. Please accept these permission for the app to work as expected.
   - In order for the app to remain running, the terminal window you are using to start the frontend must remain running for the duration of the session.
   - **OPTIONAL: Running the app on your device:** Expo makes it easy to not only run the app on your computer, but also to run the app on your Android or iOS device through the Expo Go app. You can install this app on your smartphone or tablet and scan the QR code in the terminal (which you should see once running `npm start`). As mentioned the app views are not optimized for phone-sized screens, but regardless, the app will still run on these devices. You can give this a shot if you would like, but please use the simulator options above if you don't have access to a tablet to use.
+
+#### **Part IV: Logging into the App on the Simulator**
+
+- STEP 6: each of the four testers who are testing the app have their own unique accounts with some prepopulated data. The logins are as follows:
+  - Usernames: testuser1, testuser2, testuser3, testuser4
+  - Passwords (the same for all accounts): password123
